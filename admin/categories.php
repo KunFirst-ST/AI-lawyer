@@ -7,7 +7,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $slug = trim($_POST['slug'] ?? '');
     $description = trim($_POST['description'] ?? '');
     if ($name && $slug) {
-        $stmt = db()->prepare('INSERT INTO legal_categories (name, slug, description) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description)');
+        $sql = db_driver() === 'sqlite'
+            ? 'INSERT INTO legal_categories (name, slug, description) VALUES (?, ?, ?)
+               ON CONFLICT(slug) DO UPDATE SET name = excluded.name, description = excluded.description'
+            : 'INSERT INTO legal_categories (name, slug, description) VALUES (?, ?, ?)
+               ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description)';
+        $stmt = db()->prepare($sql);
         $stmt->execute([$name, $slug, $description]);
         flash('success', 'บันทึกหมวดกฎหมายแล้ว');
     }

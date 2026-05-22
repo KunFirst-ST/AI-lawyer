@@ -107,12 +107,15 @@ final class CaseService
             $primary = $stmt->fetch() ?: null;
         }
 
+        $categoryOrder = db_driver() === 'sqlite'
+            ? 'CASE cc.type WHEN "primary" THEN 1 WHEN "related" THEN 2 ELSE 3 END'
+            : 'FIELD(cc.type, "primary", "related")';
         $stmt = db()->prepare(
-            'SELECT lc.id, lc.name, lc.slug, cc.type
+            "SELECT lc.id, lc.name, lc.slug, cc.type
              FROM case_categories cc
              JOIN legal_categories lc ON lc.id = cc.category_id
              WHERE cc.case_id = ?
-             ORDER BY FIELD(cc.type, "primary", "related"), lc.name'
+             ORDER BY {$categoryOrder}, lc.name"
         );
         $stmt->execute([$caseId]);
         $categories = $stmt->fetchAll();

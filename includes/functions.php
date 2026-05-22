@@ -166,6 +166,22 @@ function ensureMessageMediaColumns(): void
     $done = true;
 
     try {
+        if (db_driver() === 'sqlite') {
+            $columns = db()->query('PRAGMA table_info(messages)')->fetchAll();
+            $existing = array_column($columns, 'name');
+            $defs = [
+                'message_type' => 'ADD COLUMN message_type VARCHAR(20) DEFAULT "text"',
+                'call_type' => 'ADD COLUMN call_type VARCHAR(20) NULL',
+                'call_url' => 'ADD COLUMN call_url VARCHAR(255) NULL',
+            ];
+            foreach ($defs as $column => $alter) {
+                if (!in_array($column, $existing, true)) {
+                    db()->exec('ALTER TABLE messages ' . $alter);
+                }
+            }
+            return;
+        }
+
         $columns = db()->query('SHOW COLUMNS FROM messages')->fetchAll();
         $existing = array_column($columns, 'Field');
         $alters = [];
@@ -259,6 +275,15 @@ function setting(string $key, ?string $default = null): ?string
 function upsertSetting(string $key, string $value): void
 {
     require_once __DIR__ . '/../config/database.php';
+    if (db_driver() === 'sqlite') {
+        $stmt = db()->prepare(
+            'INSERT INTO app_settings (setting_key, setting_value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT(setting_key) DO UPDATE SET setting_value = excluded.setting_value, updated_at = CURRENT_TIMESTAMP'
+        );
+        $stmt->execute([$key, $value]);
+        return;
+    }
+
     $stmt = db()->prepare(
         'INSERT INTO app_settings (setting_key, setting_value) VALUES (?, ?)
          ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)'

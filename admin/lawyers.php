@@ -1,11 +1,14 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 requireRole('admin');
+$lawyerStatusOrder = db_driver() === 'sqlite'
+    ? 'CASE l.status WHEN "pending" THEN 1 WHEN "approved" THEN 2 WHEN "rejected" THEN 3 WHEN "suspended" THEN 4 ELSE 5 END'
+    : 'FIELD(l.status, "pending", "approved", "rejected", "suspended")';
 $lawyers = db()->query(
-    'SELECT l.*, u.name, u.email, u.phone
+    "SELECT l.*, u.name, u.email, u.phone
      FROM lawyers l
      JOIN users u ON u.id = l.user_id
-     ORDER BY FIELD(l.status, "pending", "approved", "rejected", "suspended"), l.created_at DESC'
+     ORDER BY {$lawyerStatusOrder}, l.created_at DESC"
 )->fetchAll();
 $pageTitle = 'จัดการทนาย';
 require_once __DIR__ . '/../includes/header.php';

@@ -8,6 +8,8 @@ storage/*.png
 storage/*.jpg
 storage/*.jpeg
 storage/*.webp
+storage/*.sqlite
+storage/*.db
 storage/tmp/
 uploads/case_documents/*
 uploads/lawyer_documents/*

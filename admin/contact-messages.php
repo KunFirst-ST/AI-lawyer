@@ -30,7 +30,10 @@ if ($filter !== '' && isset($statuses[$filter])) {
     $params[] = $filter;
 }
 
-$stmt = db()->prepare("SELECT * FROM contact_messages {$where} ORDER BY FIELD(status, 'new', 'in_progress', 'closed'), created_at DESC");
+$statusOrder = db_driver() === 'sqlite'
+    ? "CASE status WHEN 'new' THEN 1 WHEN 'in_progress' THEN 2 WHEN 'closed' THEN 3 ELSE 4 END"
+    : "FIELD(status, 'new', 'in_progress', 'closed')";
+$stmt = db()->prepare("SELECT * FROM contact_messages {$where} ORDER BY {$statusOrder}, created_at DESC");
 $stmt->execute($params);
 $messages = $stmt->fetchAll();
 

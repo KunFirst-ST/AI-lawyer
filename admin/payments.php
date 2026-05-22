@@ -18,14 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect(url('/admin/payments.php'));
 }
 
+$paymentStatusOrder = db_driver() === 'sqlite'
+    ? 'CASE p.status WHEN "pending" THEN 1 WHEN "approved" THEN 2 WHEN "rejected" THEN 3 ELSE 4 END'
+    : 'FIELD(p.status, "pending", "approved", "rejected")';
 $payments = db()->query(
-    'SELECT p.*, b.user_id, uu.name AS user_name, lu.name AS lawyer_name
+    "SELECT p.*, b.user_id, uu.name AS user_name, lu.name AS lawyer_name
      FROM payments p
      JOIN bookings b ON b.id = p.booking_id
      JOIN users uu ON uu.id = b.user_id
      JOIN lawyers l ON l.id = b.lawyer_id
      JOIN users lu ON lu.id = l.user_id
-     ORDER BY FIELD(p.status, "pending", "approved", "rejected"), p.created_at DESC'
+     ORDER BY {$paymentStatusOrder}, p.created_at DESC"
 )->fetchAll();
 $pageTitle = 'ตรวจสอบ Payment';
 require_once __DIR__ . '/../includes/header.php';

@@ -146,11 +146,17 @@ final class MatchService
         $pdo->beginTransaction();
         try {
             $pdo->prepare('DELETE FROM case_matches WHERE case_id = ? AND status = "suggested"')->execute([$caseId]);
-            $stmt = $pdo->prepare(
-                'INSERT INTO case_matches (case_id, lawyer_id, match_score, match_reason, status)
-                 VALUES (?, ?, ?, ?, "suggested")
-                 ON DUPLICATE KEY UPDATE match_score = VALUES(match_score), match_reason = VALUES(match_reason), status = "suggested"'
-            );
+            $sql = db_driver() === 'sqlite'
+                ? 'INSERT INTO case_matches (case_id, lawyer_id, match_score, match_reason, status)
+                   VALUES (?, ?, ?, ?, "suggested")
+                   ON CONFLICT(case_id, lawyer_id) DO UPDATE SET
+                       match_score = excluded.match_score,
+                       match_reason = excluded.match_reason,
+                       status = "suggested"'
+                : 'INSERT INTO case_matches (case_id, lawyer_id, match_score, match_reason, status)
+                   VALUES (?, ?, ?, ?, "suggested")
+                   ON DUPLICATE KEY UPDATE match_score = VALUES(match_score), match_reason = VALUES(match_reason), status = "suggested"';
+            $stmt = $pdo->prepare($sql);
             foreach ($matches as $match) {
                 $stmt->execute([$caseId, $match['id'], $match['match_score'], $match['match_reason']]);
             }
