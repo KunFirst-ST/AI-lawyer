@@ -214,6 +214,7 @@ final class AIService
         $categoryName = legalCategoryName($primary);
         $insight = $this->issueInsight($message, $primary, $urgency);
         $actions = $this->actionStepsForCategory($primary, $message, $urgency);
+        $sectionsLine = $this->formatLegalSectionsForReply($sections);
         $actionText = implode("\n", array_map(fn (string $step): string => '- ' . $step, array_slice($actions, 0, 2)));
         $questionText = $questions
             ? "\n\nขอถามเพิ่มนิดเดียว: " . rtrim((string) $questions[0], '?') . '?'
@@ -234,9 +235,44 @@ final class AIService
 
         return $opening .
             "\n\n" . $categoryLine .
+            $sectionsLine .
             "\n\nทำก่อน:\n" . $actionText .
             $questionText .
             "\n\nถ้าต้องการ ผมหาทนายที่เหมาะกับเรื่องนี้ให้ได้ครับ";
+    }
+
+    private function formatLegalSectionsForReply(array $sections): string
+    {
+        $usable = array_values(array_filter($sections, function (array $section): bool {
+            return in_array($section['confidence'] ?? '', ['medium', 'high'], true)
+                && !empty($section['law_name'])
+                && !empty($section['section']);
+        }));
+
+        if (!$usable) {
+            return '';
+        }
+
+        $groups = [];
+        foreach (array_slice($usable, 0, 3) as $section) {
+            $lawName = $this->shortLawNameForReply((string) $section['law_name']);
+            $groups[$lawName][] = (string) $section['section'];
+        }
+
+        $parts = [];
+        foreach ($groups as $lawName => $sectionNumbers) {
+            $parts[] = $lawName . ' ม.' . implode(', ', array_values(array_unique($sectionNumbers)));
+        }
+
+        return "\n\nมาตราที่อาจเกี่ยว: " . implode('; ', $parts) . "\nยังต้องให้ทนายดูข้อเท็จจริงอีกทีนะครับ";
+    }
+
+    private function shortLawNameForReply(string $lawName): string
+    {
+        return match ($lawName) {
+            'พระราชบัญญัติว่าด้วยการกระทำความผิดเกี่ยวกับคอมพิวเตอร์' => 'พ.ร.บ.คอมพิวเตอร์',
+            default => $lawName,
+        };
     }
 
     private function isCasualChat(string $message): bool
@@ -301,6 +337,9 @@ final class AIService
         }
         if ($this->messageContainsAny($message, ['โอนเงิน', 'ไม่ได้รับสินค้า', 'ไม่ส่งของ', 'บล็อก', 'ไม่ตอบแชต', 'หลอกโอน'])) {
             return 'เรื่องนี้คล้ายซื้อของออนไลน์แล้วไม่ได้ของ อาจดูได้ทั้งเรื่องหลอกลวงและการเรียกเงินคืน';
+        }
+        if ($this->messageContainsAny($message, ['โกง', 'ฉ้อโกง', 'โดนโกง', 'หลอก'])) {
+            return 'เรื่องโดนโกงอาจเข้าข่ายฉ้อโกง ต้องดูว่ามีการหลอกตั้งแต่แรกและทำให้เสียเงินหรือทรัพย์สินไหม';
         }
         if ($this->messageContainsAny($message, ['เลิกจ้าง', 'ไม่จ่ายเงินเดือน', 'ค่าชดเชย', 'นายจ้าง'])) {
             return 'ประเด็นหลักคือการจ้างงาน ต้องดูเหตุเลิกจ้าง เงินค้าง และอายุงาน';
@@ -897,7 +936,7 @@ final class AIService
         if ($this->messageContainsAny($message, ['ข่มขืน', 'ล่วงละเมิด', 'อนาจาร', 'คุกคามทางเพศ'])) {
             $questions[] = 'ตอนนี้คุณอยู่ในที่ปลอดภัยแล้วหรือยัง และมีคนที่ไว้ใจได้อยู่ใกล้ ๆ ไหม?';
             $questions[] = 'เหตุเกิดเมื่อไร ที่จังหวัดใด และมีการพบแพทย์หรือแจ้งความแล้วหรือยัง?';
-        } elseif ($this->messageContainsAny($message, ['โอนเงิน', 'ไม่ได้รับสินค้า', 'ไม่ส่งของ', 'บล็อก'])) {
+        } elseif ($this->messageContainsAny($message, ['โกง', 'ฉ้อโกง', 'โดนโกง', 'หลอก', 'หลอกโอน', 'โอนเงิน', 'ไม่ได้รับสินค้า', 'ไม่ส่งของ', 'บล็อก'])) {
             $questions[] = 'โอนเงินวันไหน ยอดเท่าไร และมีชื่อบัญชี/เลขบัญชีของผู้ขายไหม?';
             $questions[] = 'มีแชต ประกาศขาย ลิงก์เพจ หรือสลิปโอนเงินครบหรือไม่?';
         } elseif ($primary === 'labor') {
