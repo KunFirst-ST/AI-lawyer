@@ -1,12 +1,13 @@
 Options -Indexes
 
-<FilesMatch "^(\.env|\.gitignore|README\.md|DEPLOYMENT\.md)$">
+<FilesMatch "^(\.env.*|\.gitignore|\.dockerignore|\.gitattributes|README\.md|DEPLOYMENT\.md|Dockerfile|render\.yaml)$">
     Require all denied
 </FilesMatch>
+
+RedirectMatch 404 /\.git
 
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
-

@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: ai-lawyer
+    runtime: docker
+    plan: free
+    branch: main
+    repo: https://github.com/KunFirst-ST/AI-lawyer.git
+    autoDeployTrigger: commit
+    healthCheckPath: /public/health.php
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: REGISTRATION_ENABLED
+        value: "true"
+      - key: REGISTRATION_RATE_LIMIT
+        value: "10"
+      - key: PASSWORD_MIN_LENGTH
+        value: "8"
+      - key: AUTO_LOGIN_AFTER_REGISTER
+        value: "false"
+      - key: REQUIRE_TERMS_ACCEPTANCE
+        value: "true"
+      - key: LAWYER_REGISTRATION_ENABLED
+        value: "true"
+      - key: APP_URL
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_ENDPOINT
+        value: https://api.openai.com/v1/chat/completions
