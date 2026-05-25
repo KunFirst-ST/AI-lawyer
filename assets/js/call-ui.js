@@ -10,12 +10,30 @@
     const cameraButton = room.querySelector('[data-call-camera]');
     const copyButton = room.querySelector('[data-call-copy]');
     let stream = null;
+    const isLocalSecureHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+    const isMediaSecureContext = () => window.isSecureContext || isLocalSecureHost;
+    const secureContextUrl = () => {
+        const host = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(window.location.hostname)
+            ? `${window.location.hostname}.nip.io`
+            : window.location.host;
+        return `https://${host}${window.location.pathname}${window.location.search}`;
+    };
 
     const setStatus = (message) => {
         if (status) status.textContent = message;
     };
 
     startButton?.addEventListener('click', async () => {
+        if (!isMediaSecureContext()) {
+            setStatus(`ต้องเปิดผ่าน HTTPS ก่อน: ${secureContextUrl()}`);
+            return;
+        }
+
+        if (!navigator.mediaDevices?.getUserMedia) {
+            setStatus('เบราว์เซอร์นี้ยังไม่รองรับการเปิดไมค์/กล้องในเว็บ');
+            return;
+        }
+
         try {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: type === 'video' });
             if (type === 'video') {

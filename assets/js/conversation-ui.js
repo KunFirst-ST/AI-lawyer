@@ -35,6 +35,14 @@
     };
 
     const formatText = (value) => escapeHtml(value).replace(/\r?\n/g, '<br>');
+    const isLocalSecureHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+    const isMicrophoneSecureContext = () => window.isSecureContext || isLocalSecureHost;
+    const secureContextUrl = () => {
+        const host = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(window.location.hostname)
+            ? `${window.location.hostname}.nip.io`
+            : window.location.host;
+        return `https://${host}${window.location.pathname}${window.location.search}`;
+    };
 
     const showResult = (type, message, autoHide = true) => {
         if (!result) return;
@@ -67,16 +75,22 @@
 
     const showMicrophoneHelp = (error = null) => {
         const errorName = error?.name || '';
-        const reason = errorName === 'NotFoundError'
+        const insecureContext = !isMicrophoneSecureContext();
+        const reason = insecureContext
+            ? 'ต้องเปิดเว็บผ่าน HTTPS ก่อนถึงจะใช้ไมโครโฟนได้'
+            : (errorName === 'NotFoundError'
             ? 'ไม่พบไมโครโฟนที่เชื่อมต่อกับเครื่องนี้'
             : (errorName === 'NotAllowedError' || errorName === 'SecurityError'
                 ? 'เบราว์เซอร์ยังไม่อนุญาตให้เว็บนี้ใช้ไมโครโฟน'
-                : 'เบราว์เซอร์ไม่สามารถเปิดไมโครโฟนได้ในตอนนี้');
+                : 'เบราว์เซอร์ไม่สามารถเปิดไมโครโฟนได้ในตอนนี้'));
+        const helpText = insecureContext
+            ? `ตอนนี้คุณเปิดผ่าน <strong>http</strong> อยู่ ให้เปิดผ่าน <a href="${escapeHtml(secureContextUrl())}"><strong>HTTPS</strong></a> แล้วกดปุ่มเสียงอีกครั้ง`
+            : `ให้กดไอคอนกุญแจหรือไอคอนไมค์ข้าง URL <strong>${escapeHtml(window.location.host)}</strong> แล้วตั้งค่า <strong>Microphone = Allow</strong> จากนั้น Reload หน้าและกดปุ่มเสียงอีกครั้ง`;
 
         showResultHtml('warning', `
             <div class="mic-help">
                 <div class="mic-help-title"><i class="bi bi-mic-mute"></i><strong>${escapeHtml(reason)}</strong></div>
-                <div class="mic-help-text">ให้กดไอคอนกุญแจหรือไอคอนไมค์ข้าง URL <strong>${escapeHtml(window.location.host)}</strong> แล้วตั้งค่า <strong>Microphone = Allow</strong> จากนั้น Reload หน้าและกดปุ่มเสียงอีกครั้ง</div>
+                <div class="mic-help-text">${helpText}</div>
                 <div class="mic-help-actions">
                     <button class="btn btn-sm btn-primary" type="button" data-open-audio-file><i class="bi bi-soundwave me-1"></i>เลือกไฟล์เสียงแทน</button>
                     <button class="btn btn-sm btn-outline-secondary" type="button" data-retry-mic><i class="bi bi-arrow-clockwise me-1"></i>ลองเปิดไมค์อีกครั้ง</button>
@@ -104,6 +118,13 @@
     const startSpeechToText = () => {
         if (!receiverInput?.value) {
             showResult('danger', 'กรุณาเลือกคู่สนทนาก่อนพูดเป็นข้อความ', false);
+            return;
+        }
+
+        if (!isMicrophoneSecureContext()) {
+            const error = new Error('insecure-context');
+            error.name = 'SecurityError';
+            showMicrophoneHelp(error);
             return;
         }
 
@@ -325,6 +346,13 @@
     recordButton?.addEventListener('click', async () => {
         if (recorder && recorder.state === 'recording') {
             recorder.stop();
+            return;
+        }
+
+        if (!isMicrophoneSecureContext()) {
+            const error = new Error('insecure-context');
+            error.name = 'SecurityError';
+            showMicrophoneHelp(error);
             return;
         }
 
