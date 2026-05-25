@@ -1887,7 +1887,7 @@ body.admin-page {
 }
 
 .ai-chat-composer {
-    grid-template-columns: minmax(0, 1fr) 48px 48px;
+    grid-template-columns: minmax(0, 1fr) 48px 48px 48px;
 }
 
 .ai-attach-button {
@@ -1908,8 +1908,19 @@ body.admin-page {
     border-color: rgba(36, 87, 166, .35);
 }
 
-.ai-file-preview {
+.ai-voice-button.is-listening {
+    background: #e8f1ff;
+    border-color: rgba(36, 87, 166, .45);
+    color: var(--app-primary);
+    box-shadow: 0 0 0 4px rgba(36, 87, 166, .08);
+}
+
+.ai-file-preview,
+.ai-voice-result {
     grid-column: 1 / -1;
+}
+
+.ai-file-preview {
     display: flex;
     gap: .55rem;
     align-items: center;
@@ -1927,6 +1938,10 @@ body.admin-page {
 .ai-file-preview small {
     margin-left: auto;
     color: var(--app-muted);
+}
+
+.ai-voice-result .alert {
+    margin-bottom: 0;
 }
 
 .ai-analysis-column {

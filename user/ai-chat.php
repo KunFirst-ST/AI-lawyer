@@ -112,12 +112,17 @@ require_once __DIR__ . '/../includes/header.php';
                         <form id="chatForm" class="ai-chat-composer">
                             <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                             <textarea id="messageInput" class="form-control" name="message" rows="1" placeholder="เล่าเรื่องที่เกิดขึ้น หรือถามสิ่งที่กังวลได้เลย..." autocomplete="off" required></textarea>
-                            <label class="ai-attach-button" title="แนบเอกสาร">
+                            <label class="ai-attach-button" title="แนบเอกสารหรือไฟล์เสียง">
                                 <i class="bi bi-paperclip"></i>
-                                <input id="caseDocument" class="d-none" type="file" name="case_document" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx">
+                                <input id="caseDocument" class="d-none" type="file" name="case_document" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,audio/*,.webm">
                             </label>
+                            <button class="ai-attach-button ai-voice-button" type="button" data-ai-speech-text title="พูดเป็นข้อความ">
+                                <i class="bi bi-mic"></i>
+                                <span class="visually-hidden">เสียงเป็นข้อความ</span>
+                            </button>
                             <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i></button>
                             <div class="ai-file-preview" data-ai-file-preview hidden></div>
+                            <div class="ai-voice-result" data-ai-voice-result hidden></div>
                         </form>
                     </main>
 

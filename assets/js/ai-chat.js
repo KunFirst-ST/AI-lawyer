@@ -10,8 +10,13 @@ const messageInput = document.querySelector('#messageInput');
 const fileInput = document.querySelector('#caseDocument');
 const analysisPanel = document.querySelector('#analysisPanel');
 const filePreview = document.querySelector('[data-ai-file-preview]');
+const voiceResult = document.querySelector('[data-ai-voice-result]');
+const speechButton = document.querySelector('[data-ai-speech-text]');
 const sendButton = chatForm?.querySelector('button[type="submit"]');
 const defaultInputPlaceholder = messageInput?.getAttribute('placeholder') || '';
+const defaultSpeechButtonHtml = speechButton?.innerHTML || '';
+let speechRecognition = null;
+let speechBaseText = '';
 
 if (chatState.caseId === '0' || chatState.caseId === '') {
     chatState.caseId = null;
@@ -26,6 +31,15 @@ function escapeHtml(value) {
 function formatMessageText(text) {
     return escapeHtml(text).replace(/\r?\n/g, '<br>');
 }
+
+const isLocalSecureHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+const isMicrophoneSecureContext = () => window.isSecureContext || isLocalSecureHost;
+const secureContextUrl = () => {
+    const host = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(window.location.hostname)
+        ? `${window.location.hostname}.nip.io`
+        : window.location.host;
+    return `https://${host}${window.location.pathname}${window.location.search}`;
+};
 
 function appendMessage(type, text) {
     const wrap = document.createElement('div');
@@ -67,7 +81,145 @@ function setFilePreview(file) {
         return;
     }
     filePreview.hidden = false;
-    filePreview.innerHTML = `<i class="bi bi-paperclip"></i><span>${escapeHtml(file.name)}</span><small>${Math.ceil(file.size / 1024)} KB</small>`;
+    const icon = file.type.startsWith('audio/') || file.type === 'video/webm' ? 'soundwave' : 'paperclip';
+    filePreview.innerHTML = `<i class="bi bi-${icon}"></i><span>${escapeHtml(file.name)}</span><small>${Math.ceil(file.size / 1024)} KB</small>`;
+}
+
+function showVoiceResultHtml(type, html, autoHide = false) {
+    if (!voiceResult) return;
+    voiceResult.hidden = false;
+    voiceResult.innerHTML = `<div class="alert alert-${type}">${html}</div>`;
+    if (autoHide) {
+        window.setTimeout(() => {
+            voiceResult.hidden = true;
+            voiceResult.innerHTML = '';
+        }, 2200);
+    }
+}
+
+function showVoiceResult(type, message, autoHide = false) {
+    showVoiceResultHtml(type, escapeHtml(message), autoHide);
+}
+
+function showMicrophoneHelp(error = null) {
+    const errorName = error?.name || '';
+    const insecureContext = !isMicrophoneSecureContext();
+    const reason = insecureContext
+        ? 'ต้องเปิดเว็บผ่าน HTTPS ก่อนถึงจะใช้ไมโครโฟนได้'
+        : (errorName === 'NotFoundError'
+            ? 'ไม่พบไมโครโฟนที่เชื่อมต่อกับเครื่องนี้'
+            : (errorName === 'NotAllowedError' || errorName === 'SecurityError'
+                ? 'เบราว์เซอร์ยังไม่อนุญาตให้เว็บนี้ใช้ไมโครโฟน'
+                : 'เบราว์เซอร์ไม่สามารถเปิดไมโครโฟนได้ในตอนนี้'));
+    const helpText = insecureContext
+        ? `ตอนนี้คุณเปิดผ่าน <strong>http</strong> อยู่ ให้เปิดผ่าน <a href="${escapeHtml(secureContextUrl())}"><strong>HTTPS</strong></a> แล้วกดปุ่มเสียงอีกครั้ง`
+        : `ให้กดไอคอนกุญแจหรือไอคอนไมค์ข้าง URL <strong>${escapeHtml(window.location.host)}</strong> แล้วตั้งค่า <strong>Microphone = Allow</strong> จากนั้น Reload หน้าและกดปุ่มเสียงอีกครั้ง`;
+
+    showVoiceResultHtml('warning', `
+        <div class="mic-help">
+            <div class="mic-help-title"><i class="bi bi-mic-mute"></i><strong>${escapeHtml(reason)}</strong></div>
+            <div class="mic-help-text">${helpText}</div>
+            <div class="mic-help-actions">
+                <button class="btn btn-sm btn-primary" type="button" data-ai-open-audio-file><i class="bi bi-soundwave me-1"></i>แนบไฟล์เสียงแทน</button>
+                <button class="btn btn-sm btn-outline-secondary" type="button" data-ai-retry-mic><i class="bi bi-arrow-clockwise me-1"></i>ลองเปิดไมค์อีกครั้ง</button>
+            </div>
+        </div>
+    `);
+}
+
+function setSpeechListening(isListening) {
+    if (!speechButton) return;
+    speechButton.classList.toggle('is-listening', isListening);
+    speechButton.innerHTML = isListening
+        ? '<i class="bi bi-mic-fill"></i><span class="visually-hidden">กำลังฟัง</span>'
+        : defaultSpeechButtonHtml;
+}
+
+function appendSpeechText(text) {
+    if (!messageInput || !text.trim()) return;
+    const prefix = speechBaseText.trim();
+    messageInput.value = `${prefix ? `${prefix} ` : ''}${text.trim()}`.trim();
+    messageInput.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function startSpeechToText() {
+    if (!messageInput) return;
+
+    if (!isMicrophoneSecureContext()) {
+        const error = new Error('insecure-context');
+        error.name = 'SecurityError';
+        showMicrophoneHelp(error);
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        showVoiceResultHtml('warning', `
+            <div class="mic-help">
+                <div class="mic-help-title"><i class="bi bi-mic-mute"></i><strong>เบราว์เซอร์นี้ยังไม่รองรับการพูดเป็นข้อความ</strong></div>
+                <div class="mic-help-text">ลองใช้ Chrome หรือ Edge เวอร์ชันล่าสุด หรือพิมพ์คำถามแล้วแนบไฟล์เสียงเป็นหลักฐานแทนได้ครับ</div>
+                <div class="mic-help-actions">
+                    <button class="btn btn-sm btn-primary" type="button" data-ai-open-audio-file><i class="bi bi-soundwave me-1"></i>แนบไฟล์เสียง</button>
+                </div>
+            </div>
+        `);
+        return;
+    }
+
+    if (speechRecognition) {
+        speechRecognition.stop();
+        return;
+    }
+
+    speechBaseText = messageInput.value || '';
+    speechRecognition = new SpeechRecognition();
+    speechRecognition.lang = 'th-TH';
+    speechRecognition.interimResults = true;
+    speechRecognition.continuous = false;
+
+    speechRecognition.addEventListener('start', () => {
+        setSpeechListening(true);
+        showVoiceResult('info', 'กำลังฟังเสียงพูด... พูดแล้วระบบจะเติมข้อความให้ตรวจทานก่อนส่ง');
+    });
+
+    speechRecognition.addEventListener('result', event => {
+        let spokenText = '';
+        for (let index = 0; index < event.results.length; index += 1) {
+            spokenText += event.results[index][0]?.transcript || '';
+        }
+        appendSpeechText(spokenText);
+    });
+
+    speechRecognition.addEventListener('error', event => {
+        if (['not-allowed', 'service-not-allowed'].includes(event.error)) {
+            const error = new Error('not-allowed');
+            error.name = 'NotAllowedError';
+            showMicrophoneHelp(error);
+            return;
+        }
+        if (event.error === 'no-speech') {
+            showVoiceResult('warning', 'ยังไม่ได้ยินเสียงพูด ลองกดไมค์อีกครั้งและพูดใกล้ไมค์มากขึ้น');
+            return;
+        }
+        showVoiceResult('warning', 'ยังแปลงเสียงเป็นข้อความไม่ได้ ลองใหม่อีกครั้ง หรือพิมพ์คำถามแทนได้เลย');
+    });
+
+    speechRecognition.addEventListener('end', () => {
+        speechRecognition = null;
+        setSpeechListening(false);
+        if (voiceResult?.textContent.includes('กำลังฟังเสียงพูด')) {
+            voiceResult.hidden = true;
+            voiceResult.innerHTML = '';
+        }
+    });
+
+    try {
+        speechRecognition.start();
+    } catch (error) {
+        speechRecognition = null;
+        setSpeechListening(false);
+        showMicrophoneHelp(error);
+    }
 }
 
 function levelText(level) {
@@ -304,6 +456,10 @@ chatForm?.addEventListener('submit', async event => {
 
     appendMessage('user', text);
     messageInput.value = '';
+    if (voiceResult) {
+        voiceResult.hidden = true;
+        voiceResult.innerHTML = '';
+    }
 
     const formData = new FormData(chatForm);
     formData.set('message', text);
@@ -347,6 +503,21 @@ chatForm?.addEventListener('submit', async event => {
 });
 
 fileInput?.addEventListener('change', () => setFilePreview(fileInput.files?.[0] || null));
+
+speechButton?.addEventListener('click', startSpeechToText);
+
+voiceResult?.addEventListener('click', event => {
+    const audioButton = event.target.closest('[data-ai-open-audio-file]');
+    if (audioButton) {
+        fileInput?.click();
+        return;
+    }
+
+    const retryButton = event.target.closest('[data-ai-retry-mic]');
+    if (retryButton) {
+        startSpeechToText();
+    }
+});
 
 messageInput?.addEventListener('keydown', event => {
     if (event.key === 'Enter' && !event.shiftKey) {
