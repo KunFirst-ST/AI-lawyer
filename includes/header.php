@@ -5,6 +5,7 @@ if (!headers_sent()) {
 }
 $pageTitle = $pageTitle ?? app_config('app_name');
 $user = currentUser();
+$currentPath = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 $unreadNotifications = 0;
 if ($user) {
     try {
@@ -38,10 +39,10 @@ if ($user) {
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="<?= e(url('/public/lawyers.php')) ?>">ค้นหาทนาย</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= e(url('/public/about.php')) ?>">เกี่ยวกับระบบ</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= e(url('/public/faq.php')) ?>">FAQ</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= e(url('/public/contact.php')) ?>">ติดต่อ</a></li>
+                <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/lawyers.php' ? 'active' : '' ?>" href="<?= e(url('/public/lawyers.php')) ?>">ค้นหาทนาย</a></li>
+                <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/about.php' ? 'active' : '' ?>" href="<?= e(url('/public/about.php')) ?>">เกี่ยวกับระบบ</a></li>
+                <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/faq.php' ? 'active' : '' ?>" href="<?= e(url('/public/faq.php')) ?>">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/contact.php' ? 'active' : '' ?>" href="<?= e(url('/public/contact.php')) ?>">ติดต่อ</a></li>
             </ul>
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <?php if ($user): ?>

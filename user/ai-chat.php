@@ -92,9 +92,12 @@ require_once __DIR__ . '/../includes/header.php';
                                 <h1>AI Legal Assistant</h1>
                                 <p><?= $activeCase ? e($activeCase['title']) : 'เริ่มเล่าปัญหากฎหมายของคุณได้เลย' ?></p>
                             </div>
-                            <?php if ($activeCase): ?>
-                                <a class="btn btn-sm btn-outline-primary ms-auto" href="<?= e(url('/user/case-detail.php?id=' . $activeCase['id'])) ?>">ดูเคส</a>
-                            <?php endif; ?>
+                            <div class="ai-room-actions ms-auto">
+                                <span class="ai-ready-pill"><i class="bi bi-shield-check"></i> พร้อมวิเคราะห์</span>
+                                <?php if ($activeCase): ?>
+                                    <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/user/case-detail.php?id=' . $activeCase['id'])) ?>">ดูเคส</a>
+                                <?php endif; ?>
+                            </div>
                         </header>
 
                         <div id="chatMessages" class="ai-chat-window" data-current-case-id="<?= e((string) $activeCaseId) ?>">
