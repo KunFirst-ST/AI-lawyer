@@ -1,4 +1,7 @@
-<?php $year = date('Y'); ?>
+<?php
+$year = date('Y');
+$themeVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/theme-ui.js') ?: time());
+?>
 </main>
 <footer class="border-top bg-white py-4 mt-5">
     <div class="container">
@@ -19,6 +22,7 @@
     </div>
 </footer>
 <script src="<?= e(url('/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/js/theme-ui.js') . '?v=' . $themeVersion) ?>"></script>
 <script src="<?= e(url('/assets/js/auth-ui.js')) ?>"></script>
 <script src="<?= e(url('/assets/js/admin-ui.js')) ?>"></script>
 <script src="<?= e(url('/assets/js/conversation-ui.js')) ?>"></script>

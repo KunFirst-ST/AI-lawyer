@@ -6,6 +6,7 @@ if (!headers_sent()) {
 $pageTitle = $pageTitle ?? app_config('app_name');
 $user = currentUser();
 $currentPath = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+$cssVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/css/app.css') ?: time());
 $unreadNotifications = 0;
 if ($user) {
     try {
@@ -24,9 +25,20 @@ if ($user) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
     <title><?= e($pageTitle) ?></title>
+    <script>
+        (() => {
+            try {
+                const savedTheme = localStorage.getItem('ai_lawyer_theme');
+                const prefersNight = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+                document.documentElement.dataset.theme = savedTheme || (prefersNight ? 'night' : 'day');
+            } catch (error) {
+                document.documentElement.dataset.theme = 'day';
+            }
+        })();
+    </script>
     <link href="<?= e(url('/assets/vendor/bootstrap/css/bootstrap.min.css')) ?>" rel="stylesheet">
     <link href="<?= e(url('/assets/vendor/bootstrap-icons/bootstrap-icons.css')) ?>" rel="stylesheet">
-    <link href="<?= e(url('/assets/css/app.css')) ?>" rel="stylesheet">
+    <link href="<?= e(url('/assets/css/app.css') . '?v=' . $cssVersion) ?>" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
@@ -34,9 +46,15 @@ if ($user) {
         <a class="navbar-brand fw-bold text-primary" href="<?= e(url('/public/index.php')) ?>">
             <i class="bi bi-shield-check me-1"></i> AI Lawyer
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="เปิดเมนู">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="navbar-quick-actions">
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="สลับโหมดกลางวันกลางคืน" title="สลับโหมดกลางวัน/กลางคืน">
+                <i class="bi bi-moon-stars" data-theme-icon></i>
+                <span data-theme-label>กลางคืน</span>
+            </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="เปิดเมนู">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/lawyers.php' ? 'active' : '' ?>" href="<?= e(url('/public/lawyers.php')) ?>">ค้นหาทนาย</a></li>

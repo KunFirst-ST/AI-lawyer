@@ -2748,3 +2748,281 @@ footer {
         height: 46px;
     }
 }
+
+.theme-toggle {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .35rem .65rem;
+    border: 1px solid rgba(214, 222, 235, .92);
+    border-radius: 999px;
+    background: #fff;
+    color: #475467;
+    font-size: .85rem;
+    font-weight: 850;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(20, 31, 52, .05);
+    transition: background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.theme-toggle:hover {
+    border-color: rgba(36, 87, 166, .28);
+    background: #f1f6ff;
+    color: var(--app-primary);
+}
+
+.theme-toggle i {
+    font-size: .98rem;
+}
+
+.navbar-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin-left: auto;
+}
+
+.navbar-toggler {
+    border-radius: 8px;
+    border-color: rgba(214, 222, 235, .92);
+    background: rgba(255, 255, 255, .72);
+}
+
+.navbar-collapse .d-flex {
+    margin-left: .75rem;
+}
+
+@media (min-width: 992px) {
+    .navbar-brand {
+        order: 1;
+    }
+
+    .navbar-collapse {
+        order: 2;
+    }
+
+    .navbar-quick-actions {
+        order: 3;
+        margin-left: .75rem;
+    }
+}
+
+:root[data-theme="night"] {
+    --app-primary: #74a7ff;
+    --app-primary-dark: #4c82e6;
+    --app-teal: #54d0bf;
+    --app-teal-soft: rgba(84, 208, 191, .13);
+    --app-amber: #f1bc62;
+    --app-ink: #eef5ff;
+    --app-muted: #aab6c8;
+    --app-soft: #0e1422;
+    --app-line: rgba(154, 168, 190, .22);
+    --app-surface: #151e2f;
+    --app-surface-soft: #11192a;
+    --app-shadow-sm: 0 14px 30px rgba(0, 0, 0, .22);
+    --app-shadow-md: 0 22px 52px rgba(0, 0, 0, .32);
+    color-scheme: dark;
+}
+
+:root[data-theme="night"] body {
+    background:
+        linear-gradient(180deg, rgba(31, 55, 92, .58) 0, rgba(14, 20, 34, 0) 300px),
+        linear-gradient(135deg, rgba(84, 208, 191, .10), rgba(241, 188, 98, .06) 46%, rgba(116, 167, 255, .11)),
+        #0e1422;
+    color: var(--app-ink);
+}
+
+:root[data-theme="night"] .navbar,
+:root[data-theme="night"] footer {
+    background: rgba(17, 25, 42, .90) !important;
+    border-color: var(--app-line) !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .24);
+}
+
+:root[data-theme="night"] .navbar-brand,
+:root[data-theme="night"] .footer .fw-semibold,
+:root[data-theme="night"] .text-dark {
+    color: var(--app-ink) !important;
+}
+
+:root[data-theme="night"] .navbar-brand .bi,
+:root[data-theme="night"] .chat-avatar,
+:root[data-theme="night"] .icon-pill {
+    background: linear-gradient(135deg, rgba(116, 167, 255, .22), rgba(84, 208, 191, .16));
+    color: var(--app-primary);
+}
+
+:root[data-theme="night"] .navbar .nav-link,
+:root[data-theme="night"] .footer-links a,
+:root[data-theme="night"] .small-muted,
+:root[data-theme="night"] .text-muted,
+:root[data-theme="night"] .chat-room-header p,
+:root[data-theme="night"] .chat-panel-head span,
+:root[data-theme="night"] .chat-contact small,
+:root[data-theme="night"] .chat-contact em {
+    color: var(--app-muted) !important;
+}
+
+:root[data-theme="night"] .navbar .nav-link:hover,
+:root[data-theme="night"] .navbar .nav-link.active {
+    background: rgba(116, 167, 255, .12);
+    color: var(--app-primary) !important;
+}
+
+:root[data-theme="night"] .theme-toggle,
+:root[data-theme="night"] .navbar-toggler,
+:root[data-theme="night"] .btn-light,
+:root[data-theme="night"] .btn-outline-primary,
+:root[data-theme="night"] .ai-attach-button,
+:root[data-theme="night"] .conversation-tool {
+    border-color: var(--app-line);
+    background: rgba(21, 30, 47, .92);
+    color: var(--app-ink);
+}
+
+:root[data-theme="night"] .navbar-toggler-icon {
+    filter: invert(1) brightness(1.6);
+}
+
+:root[data-theme="night"] .theme-toggle:hover,
+:root[data-theme="night"] .ai-attach-button:hover,
+:root[data-theme="night"] .conversation-tool:hover,
+:root[data-theme="night"] .conversation-tool.is-listening,
+:root[data-theme="night"] .ai-voice-button.is-listening {
+    background: linear-gradient(135deg, rgba(116, 167, 255, .17), rgba(84, 208, 191, .12));
+    color: var(--app-primary);
+}
+
+:root[data-theme="night"] .app-card,
+:root[data-theme="night"] .stat-card,
+:root[data-theme="night"] .app-sidebar,
+:root[data-theme="night"] .admin-nav,
+:root[data-theme="night"] .admin-public-link,
+:root[data-theme="night"] .admin-stat-card,
+:root[data-theme="night"] .admin-feed-list a,
+:root[data-theme="night"] .border.rounded-2.bg-white,
+:root[data-theme="night"] .bg-white {
+    border-color: var(--app-line) !important;
+    background: rgba(21, 30, 47, .94) !important;
+    color: var(--app-ink);
+}
+
+:root[data-theme="night"] .hero {
+    border-color: var(--app-line);
+    background:
+        linear-gradient(135deg, rgba(21, 30, 47, .96), rgba(17, 25, 42, .98) 54%, rgba(24, 48, 58, .90));
+}
+
+:root[data-theme="night"] .hero .lead,
+:root[data-theme="night"] .hero p {
+    color: var(--app-muted);
+}
+
+:root[data-theme="night"] .app-sidebar .list-group-item,
+:root[data-theme="night"] .admin-nav .list-group-item,
+:root[data-theme="night"] .chat-contact,
+:root[data-theme="night"] .admin-public-link {
+    color: var(--app-muted);
+}
+
+:root[data-theme="night"] .app-sidebar .list-group-item:hover,
+:root[data-theme="night"] .app-sidebar .list-group-item.active,
+:root[data-theme="night"] .admin-nav .list-group-item:hover,
+:root[data-theme="night"] .admin-nav .list-group-item.active,
+:root[data-theme="night"] .chat-contact:hover,
+:root[data-theme="night"] .chat-contact.active {
+    background: linear-gradient(135deg, rgba(116, 167, 255, .16), rgba(84, 208, 191, .10));
+    border-color: rgba(116, 167, 255, .22);
+    color: var(--app-primary);
+}
+
+:root[data-theme="night"] .chat-panel-head,
+:root[data-theme="night"] .chat-room-header,
+:root[data-theme="night"] .ai-chat-composer,
+:root[data-theme="night"] .chat-composer-bar {
+    border-color: var(--app-line);
+    background: linear-gradient(180deg, rgba(21, 30, 47, .98), rgba(17, 25, 42, .96));
+}
+
+:root[data-theme="night"] .chat-thread-window,
+:root[data-theme="night"] .ai-chat-window,
+:root[data-theme="night"] .chat-box {
+    background:
+        linear-gradient(180deg, rgba(13, 20, 34, .95), rgba(15, 23, 38, .95)),
+        linear-gradient(90deg, rgba(116, 167, 255, .05) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(84, 208, 191, .04) 1px, transparent 1px);
+    background-size: auto, 32px 32px, 32px 32px;
+}
+
+:root[data-theme="night"] .chat-message.ai,
+:root[data-theme="night"] .conversation-bubble,
+:root[data-theme="night"] .conversation-audio,
+:root[data-theme="night"] .conversation-call-card,
+:root[data-theme="night"] .conversation-file-link,
+:root[data-theme="night"] .ai-file-preview {
+    border-color: var(--app-line);
+    background: rgba(21, 30, 47, .96);
+    color: var(--app-ink);
+}
+
+:root[data-theme="night"] .chat-message.user,
+:root[data-theme="night"] .conversation-message.mine .conversation-bubble,
+:root[data-theme="night"] .btn-primary {
+    background: linear-gradient(135deg, #356cc4, #208c7f);
+    color: #fff;
+}
+
+:root[data-theme="night"] .ai-ready-pill {
+    border-color: rgba(84, 208, 191, .26);
+    background: rgba(84, 208, 191, .12);
+    color: var(--app-teal);
+}
+
+:root[data-theme="night"] .form-control,
+:root[data-theme="night"] .form-select,
+:root[data-theme="night"] .ai-chat-composer .form-control,
+:root[data-theme="night"] .chat-composer-bar .form-control,
+:root[data-theme="night"] .admin-table-search input {
+    border-color: var(--app-line);
+    background: rgba(11, 17, 29, .88);
+    color: var(--app-ink);
+}
+
+:root[data-theme="night"] .form-control::placeholder,
+:root[data-theme="night"] textarea::placeholder {
+    color: #7f8da2;
+}
+
+:root[data-theme="night"] .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--app-ink);
+    --bs-table-border-color: var(--app-line);
+}
+
+:root[data-theme="night"] .admin-data-table thead th {
+    background: rgba(11, 17, 29, .92);
+    color: var(--app-muted);
+}
+
+:root[data-theme="night"] .admin-data-table tbody tr:hover,
+:root[data-theme="night"] .notification-item.unread {
+    background: rgba(116, 167, 255, .08);
+}
+
+:root[data-theme="night"] .alert {
+    border-color: var(--app-line);
+}
+
+:root[data-theme="night"] .modal-content,
+:root[data-theme="night"] .dropdown-menu {
+    border-color: var(--app-line);
+    background: var(--app-surface);
+    color: var(--app-ink);
+}
+
+@media (max-width: 575.98px) {
+    .theme-toggle span {
+        display: none;
+    }
+}
