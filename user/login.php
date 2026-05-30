@@ -96,6 +96,8 @@ require_once __DIR__ . '/../includes/header.php';
                             <p class="text-muted mb-0">ใช้บัญชีผู้ใช้ทั่วไปเท่านั้น หากเป็นทนายหรือแอดมินให้เลือกพอร์ทัลด้านบน</p>
                         </div>
 
+                        <?php require __DIR__ . '/../includes/social-auth-buttons.php'; ?>
+
                         <form method="post" class="auth-form">
                             <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                             <div class="auth-input-icon">

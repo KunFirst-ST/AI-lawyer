@@ -15,6 +15,19 @@ return [
     'auto_login_after_register' => envBool('AUTO_LOGIN_AFTER_REGISTER', false),
     'require_terms_acceptance' => envBool('REQUIRE_TERMS_ACCEPTANCE', true),
     'lawyer_registration_enabled' => envBool('LAWYER_REGISTRATION_ENABLED', true),
+    'social_login' => [
+        'google' => [
+            'enabled' => envBool('GOOGLE_LOGIN_ENABLED', false),
+            'client_id' => envValue('GOOGLE_CLIENT_ID', ''),
+            'client_secret' => envValue('GOOGLE_CLIENT_SECRET', ''),
+        ],
+        'facebook' => [
+            'enabled' => envBool('FACEBOOK_LOGIN_ENABLED', false),
+            'client_id' => envValue('FACEBOOK_CLIENT_ID', ''),
+            'client_secret' => envValue('FACEBOOK_CLIENT_SECRET', ''),
+            'graph_version' => envValue('FACEBOOK_GRAPH_VERSION', 'v24.0'),
+        ],
+    ],
     'upload_max_bytes' => 15 * 1024 * 1024,
     'allowed_upload_mimes' => [
         'application/pdf',

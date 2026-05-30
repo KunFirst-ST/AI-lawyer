@@ -1,7 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../services/SocialAuthService.php';
 requireRole('user');
 $user = currentUser();
+$socialProviders = SocialAuthService::providerSummaries();
+$connectedSocialProviders = SocialAuthService::connectedProvidersForUser((int) $user['id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
@@ -42,6 +45,28 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="col-md-6"><label class="form-label">เปลี่ยนรหัสผ่าน</label><input class="form-control" type="password" name="password" minlength="8"></div>
                         <div class="col-12"><button class="btn btn-primary">บันทึก</button></div>
                     </form>
+                </div>
+                <div class="app-card p-4 mt-3">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <div>
+                            <h2 class="h5 fw-bold mb-1">บัญชี Social Login</h2>
+                            <p class="small-muted mb-0">สถานะบัญชี Google และ Facebook สำหรับการเข้าสู่ระบบผู้ใช้</p>
+                        </div>
+                        <i class="bi bi-shield-check text-primary fs-4"></i>
+                    </div>
+                    <div class="profile-social-grid">
+                        <?php foreach ($socialProviders as $provider): ?>
+                            <?php $connection = $connectedSocialProviders[$provider['key']] ?? null; ?>
+                            <div class="profile-social-item">
+                                <i class="bi <?= e($provider['icon']) ?> <?= e($provider['class']) ?>"></i>
+                                <div>
+                                    <strong><?= e($provider['name']) ?></strong>
+                                    <span><?= $connection ? e((string) $connection['provider_email']) : ($provider['configured'] ? 'พร้อมเชื่อมเมื่อเข้าสู่ระบบครั้งแรก' : 'ผู้ดูแลยังไม่ได้เปิดใช้งาน') ?></span>
+                                </div>
+                                <em class="<?= $connection ? 'is-connected' : '' ?>"><?= $connection ? 'เชื่อมแล้ว' : 'ยังไม่เชื่อม' ?></em>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </div>

@@ -110,6 +110,8 @@ require_once __DIR__ . '/../includes/header.php';
                             <p class="text-muted mb-0">ฟอร์มนี้สร้างเฉพาะบัญชีผู้ใช้ทั่วไป หากต้องการรับงานในฐานะทนายให้ใช้หน้าสมัครทนาย</p>
                         </div>
 
+                        <?php require __DIR__ . '/../includes/social-auth-buttons.php'; ?>
+
                         <?php if (!$registrationEnabled): ?>
                             <div class="alert alert-warning mb-0">ระบบปิดรับสมัครสมาชิกชั่วคราว กรุณาติดต่อทีมงาน</div>
                         <?php else: ?>

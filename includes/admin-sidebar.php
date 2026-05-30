@@ -21,6 +21,7 @@ $adminNav = [
     ['file' => 'contact-messages.php', 'label' => 'ข้อความติดต่อ', 'icon' => 'inbox', 'badge' => $adminBadge('SELECT COUNT(*) FROM contact_messages WHERE status = "new"')],
     ['file' => 'commissions.php', 'label' => 'Commission', 'icon' => 'percent'],
     ['file' => 'ai-settings.php', 'label' => 'AI Settings', 'icon' => 'cpu'],
+    ['file' => 'social-login.php', 'label' => 'Social Login', 'icon' => 'shield-check'],
     ['file' => 'reports.php', 'label' => 'Reports', 'icon' => 'bar-chart'],
 ];
 ?>
