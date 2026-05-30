@@ -16,15 +16,6 @@ final class SocialAuthService
             'token_url' => 'https://oauth2.googleapis.com/token',
             'profile_url' => 'https://www.googleapis.com/oauth2/v3/userinfo',
         ],
-        'facebook' => [
-            'name' => 'Facebook',
-            'icon' => 'bi-facebook',
-            'class' => 'is-facebook',
-            'scope' => 'email,public_profile',
-            'auth_url' => 'https://www.facebook.com/%s/dialog/oauth',
-            'token_url' => 'https://graph.facebook.com/%s/oauth/access_token',
-            'profile_url' => 'https://graph.facebook.com/%s/me',
-        ],
     ];
 
     public static function providerSummaries(): array
@@ -174,26 +165,13 @@ final class SocialAuthService
             ], $payload);
         }
 
-        return $this->requestJson('GET', $this->withQuery($this->providerEndpoint($provider, 'token_url'), $payload), [
-            'Accept: application/json',
-        ]);
+        throw new InvalidArgumentException('Unsupported social login provider.');
     }
 
     private function fetchProfile(string $provider, string $accessToken): array
     {
         if ($accessToken === '') {
             throw new RuntimeException('ไม่สามารถรับ access token จากผู้ให้บริการได้');
-        }
-
-        if ($provider === 'facebook') {
-            $config = self::providerConfig($provider);
-            return $this->requestJson('GET', $this->withQuery($this->providerEndpoint($provider, 'profile_url'), [
-                'fields' => 'id,name,email',
-                'access_token' => $accessToken,
-                'appsecret_proof' => hash_hmac('sha256', $accessToken, (string) $config['client_secret']),
-            ]), [
-                'Accept: application/json',
-            ]);
         }
 
         return $this->requestJson('GET', $this->providerEndpoint($provider, 'profile_url'), [
@@ -207,7 +185,7 @@ final class SocialAuthService
         self::ensureSocialAccountsTable();
         $email = strtolower(trim((string) ($profile['email'] ?? '')));
         $name = trim((string) ($profile['name'] ?? ''));
-        $providerUserId = trim((string) ($provider === 'google' ? ($profile['sub'] ?? '') : ($profile['id'] ?? '')));
+        $providerUserId = trim((string) ($profile['sub'] ?? ''));
 
         if ($providerUserId === '') {
             throw new InvalidArgumentException(self::PROVIDERS[$provider]['name'] . ' did not return an account ID. Please try again.');
@@ -393,17 +371,7 @@ final class SocialAuthService
     private function providerEndpoint(string $provider, string $key): string
     {
         $endpoint = (string) (self::PROVIDERS[$provider][$key] ?? '');
-        if ($provider !== 'facebook') {
-            return $endpoint;
-        }
-
-        $config = self::providerConfig($provider);
-        $version = (string) ($config['graph_version'] ?? 'v24.0');
-        if (!preg_match('/^v\d+\.\d+$/', $version)) {
-            $version = 'v24.0';
-        }
-
-        return sprintf($endpoint, $version);
+        return $endpoint;
     }
 
     private function requestJson(string $method, string $url, array $headers = [], array $body = []): array

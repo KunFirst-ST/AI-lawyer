@@ -43,10 +43,6 @@ require_once __DIR__ . '/../includes/header.php';
                         <code>GOOGLE_LOGIN_ENABLED=true</code>
                         <code>GOOGLE_CLIENT_ID=...</code>
                         <code>GOOGLE_CLIENT_SECRET=...</code>
-                        <code>FACEBOOK_LOGIN_ENABLED=true</code>
-                        <code>FACEBOOK_CLIENT_ID=...</code>
-                        <code>FACEBOOK_CLIENT_SECRET=...</code>
-                        <code>FACEBOOK_GRAPH_VERSION=v24.0</code>
                     </div>
                     <p class="small-muted mt-3 mb-0">เก็บ Client Secret ในไฟล์ .env บนเซิร์ฟเวอร์เท่านั้น ห้ามใส่ Secret ลง GitHub</p>
                 </div>

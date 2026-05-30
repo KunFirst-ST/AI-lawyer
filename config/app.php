@@ -21,12 +21,6 @@ return [
             'client_id' => envValue('GOOGLE_CLIENT_ID', ''),
             'client_secret' => envValue('GOOGLE_CLIENT_SECRET', ''),
         ],
-        'facebook' => [
-            'enabled' => envBool('FACEBOOK_LOGIN_ENABLED', false),
-            'client_id' => envValue('FACEBOOK_CLIENT_ID', ''),
-            'client_secret' => envValue('FACEBOOK_CLIENT_SECRET', ''),
-            'graph_version' => envValue('FACEBOOK_GRAPH_VERSION', 'v24.0'),
-        ],
     ],
     'upload_max_bytes' => 15 * 1024 * 1024,
     'allowed_upload_mimes' => [

@@ -759,7 +759,7 @@ a {
 
 .auth-social-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: .75rem;
 }
 
@@ -795,10 +795,6 @@ a {
     color: #db4437;
 }
 
-.auth-social-button.is-facebook i {
-    color: #1877f2;
-}
-
 .auth-social-button em {
     padding: .2rem .4rem;
     border-radius: 999px;
@@ -812,7 +808,7 @@ a {
 .profile-social-grid,
 .social-admin-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: .85rem;
 }
 
@@ -843,11 +839,6 @@ a {
 .profile-social-item i.is-google,
 .social-admin-head i.is-google {
     color: #db4437;
-}
-
-.profile-social-item i.is-facebook,
-.social-admin-head i.is-facebook {
-    color: #1877f2;
 }
 
 .profile-social-item div {

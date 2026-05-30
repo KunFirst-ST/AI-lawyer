@@ -64,7 +64,7 @@ LAWYER_REGISTRATION_ENABLED=true
 
 ## Social Login
 
-User accounts can sign in with Google or Facebook OAuth. Lawyer and admin portals still use their separated login forms.
+User accounts can sign in with Google OAuth. Lawyer and admin portals still use their separated login forms.
 
 Set these values in `.env` after creating OAuth apps:
 
@@ -72,16 +72,11 @@ Set these values in `.env` after creating OAuth apps:
 GOOGLE_LOGIN_ENABLED=true
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-FACEBOOK_LOGIN_ENABLED=true
-FACEBOOK_CLIENT_ID=your_facebook_app_id
-FACEBOOK_CLIENT_SECRET=your_facebook_app_secret
-FACEBOOK_GRAPH_VERSION=v24.0
 ```
 
 Callback URLs:
 
 - Google: `${APP_URL}/public/oauth-callback.php?provider=google`
-- Facebook: `${APP_URL}/public/oauth-callback.php?provider=facebook`
 
 ## Separated Portals
 
