@@ -278,6 +278,28 @@ CREATE TABLE IF NOT EXISTS notifications (
     FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS email_notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    notification_id INT NULL,
+    user_id INT NULL,
+    recipient_email VARCHAR(255) NOT NULL,
+    recipient_name VARCHAR(255),
+    subject VARCHAR(255) NOT NULL,
+    html_body LONGTEXT NOT NULL,
+    text_body LONGTEXT NOT NULL,
+    notification_type VARCHAR(100) DEFAULT 'system',
+    status VARCHAR(20) DEFAULT 'queued',
+    attempts INT DEFAULT 0,
+    last_error TEXT,
+    sent_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (notification_id) REFERENCES notifications(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    KEY idx_email_notifications_status_created (status, created_at),
+    KEY idx_email_notifications_user_type_created (user_id, notification_type, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS social_accounts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,

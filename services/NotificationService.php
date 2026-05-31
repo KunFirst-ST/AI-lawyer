@@ -8,6 +8,14 @@ final class NotificationService
     {
         $stmt = db()->prepare('INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)');
         $stmt->execute([$userId, $title, $message, $type]);
+        $notificationId = (int) db()->lastInsertId();
+
+        try {
+            require_once __DIR__ . '/EmailNotificationService.php';
+            (new EmailNotificationService())->queueForNotification($notificationId, $userId, $title, $message, $type);
+        } catch (Throwable $exception) {
+            error_log('Unable to queue email notification #' . $notificationId . ': ' . $exception->getMessage());
+        }
     }
 
     public function markRead(int $notificationId, int $userId): void

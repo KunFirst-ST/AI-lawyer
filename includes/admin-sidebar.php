@@ -22,6 +22,7 @@ $adminNav = [
     ['file' => 'commissions.php', 'label' => 'Commission', 'icon' => 'percent'],
     ['file' => 'ai-settings.php', 'label' => 'AI Settings', 'icon' => 'cpu'],
     ['file' => 'social-login.php', 'label' => 'Social Login', 'icon' => 'shield-check'],
+    ['file' => 'email-notifications.php', 'label' => 'Gmail Alerts', 'icon' => 'envelope-check', 'badge' => $adminBadge('SELECT COUNT(*) FROM email_notifications WHERE status = "failed"')],
     ['file' => 'reports.php', 'label' => 'Reports', 'icon' => 'bar-chart'],
     ['file' => 'audit-logs.php', 'label' => 'Audit Logs', 'icon' => 'journal-text'],
 ];

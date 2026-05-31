@@ -265,6 +265,28 @@ CREATE TABLE IF NOT EXISTS notifications (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS email_notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    notification_id INTEGER NULL,
+    user_id INTEGER NULL,
+    recipient_email TEXT NOT NULL,
+    recipient_name TEXT,
+    subject TEXT NOT NULL,
+    html_body TEXT NOT NULL,
+    text_body TEXT NOT NULL,
+    notification_type TEXT DEFAULT 'system',
+    status TEXT DEFAULT 'queued',
+    attempts INTEGER DEFAULT 0,
+    last_error TEXT,
+    sent_at TEXT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (notification_id) REFERENCES notifications(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_email_notifications_status_created ON email_notifications(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_email_notifications_user_type_created ON email_notifications(user_id, notification_type, created_at);
+
 CREATE TABLE IF NOT EXISTS social_accounts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
