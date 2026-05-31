@@ -4044,6 +4044,12 @@ footer {
     color: var(--app-ink);
 }
 
+:root[data-theme="night"] .badge.text-bg-light.text-dark {
+    border: 1px solid rgba(99, 198, 184, .28);
+    background: rgba(99, 198, 184, .13) !important;
+    color: #bcebe4 !important;
+}
+
 @media (max-width: 991.98px) {
     .brand-hero {
         min-height: 610px;
