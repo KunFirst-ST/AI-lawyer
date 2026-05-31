@@ -6,6 +6,18 @@ if (!headers_sent()) {
 $pageTitle = $pageTitle ?? app_config('app_name');
 $user = currentUser();
 $currentPath = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+$bodyClasses = [];
+if (str_starts_with($currentPath, '/public/')) {
+    $bodyClasses[] = 'public-page';
+}
+if (str_starts_with($currentPath, '/admin/')) {
+    $bodyClasses[] = 'admin-page';
+} elseif (str_starts_with($currentPath, '/user/') || str_starts_with($currentPath, '/lawyer/')) {
+    $bodyClasses[] = 'workspace-page';
+}
+if (str_contains($currentPath, 'login.php') || str_contains($currentPath, 'register')) {
+    $bodyClasses[] = 'auth-page';
+}
 $cssVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/css/app.css') ?: time());
 $unreadNotifications = 0;
 if ($user) {
@@ -41,7 +53,7 @@ if ($user) {
     <link href="<?= e(url('/assets/css/app.css') . '?v=' . $cssVersion) ?>" rel="stylesheet">
     <link rel="icon" href="<?= e(url('/assets/images/thanai-khu-dee-mark.svg')) ?>" type="image/svg+xml">
 </head>
-<body>
+<body class="<?= e(implode(' ', $bodyClasses)) ?>">
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container">
         <a class="navbar-brand" href="<?= e(url('/public/index.php')) ?>" aria-label="ทนายคู่ดี หน้าแรก">

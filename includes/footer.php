@@ -4,7 +4,7 @@ $themeVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/theme-ui.js'
 $callVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/call-ui.js') ?: time());
 ?>
 </main>
-<footer class="border-top bg-white py-4 mt-5">
+<footer class="site-footer border-top bg-white py-4 mt-5">
     <div class="container">
         <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 small text-muted">
             <div>

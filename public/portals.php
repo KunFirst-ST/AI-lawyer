@@ -11,6 +11,7 @@ require_once __DIR__ . '/../includes/header.php';
 $portals = [
     [
         'title' => 'ผู้ใช้',
+        'tone' => 'member',
         'text' => 'ถาม AI บันทึกเคส Match ทนาย จองปรึกษา ชำระเงิน และรีวิวหลังปิดงาน',
         'icon' => 'person',
         'login' => url('/user/login.php'),
@@ -20,6 +21,7 @@ $portals = [
     ],
     [
         'title' => 'ทนาย',
+        'tone' => 'lawyer',
         'text' => 'จัดการโปรไฟล์ ความเชี่ยวชาญ เคสที่ถูกเสนอ Booking แชต รายได้ และรีวิว',
         'icon' => 'person-badge',
         'login' => url('/lawyer/login.php'),
@@ -29,7 +31,7 @@ $portals = [
     ],
 ];
 ?>
-<section class="section-band">
+<section class="section-band portal-page">
     <div class="container">
         <div class="row justify-content-center text-center mb-4">
             <div class="col-lg-7">
@@ -38,10 +40,10 @@ $portals = [
                 <p class="text-muted mb-0">เลือกระหว่างพื้นที่สำหรับผู้ใช้บริการและพื้นที่ทำงานของทนาย เพื่อให้ข้อมูล สิทธิ์ และขั้นตอนการทำงานไม่ปนกัน</p>
             </div>
         </div>
-        <div class="row g-3">
+        <div class="row g-3 portal-grid">
             <?php foreach ($portals as $portal): ?>
                 <div class="col-md-6">
-                    <div class="app-card portal-card p-4 h-100">
+                    <div class="app-card portal-card portal-card-<?= e($portal['tone']) ?> p-4 h-100">
                         <div class="portal-icon mb-3"><i class="bi bi-<?= e($portal['icon']) ?>"></i></div>
                         <h2 class="h4 fw-bold"><?= e($portal['title']) ?></h2>
                         <p class="text-muted"><?= e($portal['text']) ?></p>
