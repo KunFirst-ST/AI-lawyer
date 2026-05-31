@@ -10,7 +10,7 @@ $stmt = db()->prepare(
      FROM case_matches cm
      JOIN cases c ON c.id = cm.case_id
      JOIN users u ON u.id = c.user_id
-     WHERE cm.lawyer_id = ?
+     WHERE cm.lawyer_id = ? AND cm.status IN ("suggested", "viewed", "selected")
      ORDER BY cm.match_score DESC, cm.created_at DESC'
 );
 $stmt->execute([$lawyerId]);

@@ -1,21 +1,17 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/message-helpers.php';
+require_once __DIR__ . '/../services/ConversationService.php';
 requireRole('user');
 ensureMessageMediaColumns();
 
 $user = currentUser();
+$conversationService = new ConversationService();
 $caseId = (int) ($_GET['case_id'] ?? 0);
 $requestedPeerId = (int) ($_GET['peer_id'] ?? 0);
 $lawyerId = (int) ($_GET['lawyer_id'] ?? 0);
 
-$contacts = db()->query(
-    'SELECT l.id AS lawyer_id, l.user_id, l.province, l.consultation_fee, u.name, u.email
-     FROM lawyers l
-     JOIN users u ON u.id = l.user_id
-     WHERE l.status = "approved"
-     ORDER BY u.name'
-)->fetchAll();
+$contacts = $conversationService->contactsForUser((int) $user['id']);
 
 if ($lawyerId) {
     $stmt = db()->prepare('SELECT user_id FROM lawyers WHERE id = ? LIMIT 1');
@@ -48,6 +44,10 @@ foreach ($contacts as $contact) {
         $activeContact = $contact;
         break;
     }
+}
+if (!$activeContact) {
+    $activePeerId = (int) ($contacts[0]['user_id'] ?? 0);
+    $activeContact = $contacts[0] ?? null;
 }
 
 $thread = [];
@@ -107,7 +107,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <em><?= $latest ? e(substr((string) $latest['created_at'], 5, 11)) : '' ?></em>
                                 </a>
                             <?php endforeach; ?>
-                            <?php if (!$contacts): ?><div class="text-muted p-3">ยังไม่มีทนายที่อนุมัติ</div><?php endif; ?>
+                            <?php if (!$contacts): ?><div class="text-muted p-3">ยังไม่มีทนายที่เชื่อมกับเคสของคุณ</div><?php endif; ?>
                         </div>
                     </aside>
 

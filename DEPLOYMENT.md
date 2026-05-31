@@ -18,6 +18,7 @@ Copy `.env.example` เป็น `.env` แล้วตั้งค่า:
 APP_URL=https://your-domain.com
 APP_ENV=production
 APP_DEBUG=false
+SHOW_DEMO_ACCOUNTS=false
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=ai_lawyer_platform
@@ -37,6 +38,12 @@ Import `database/schema.sql` ผ่าน phpMyAdmin หรือ MySQL CLI ใ�
 mysql -u your_db_user -p --default-character-set=utf8mb4 < database/schema.sql
 ```
 
+หลังอัปเดตระบบแชตบนฐานข้อมูลเดิม ให้รัน migration แบบไม่ล้างข้อมูล:
+
+```bash
+php database/migrate_message_media.php
+```
+
 ไฟล์ schema ปัจจุบันเป็นแบบ `CREATE TABLE IF NOT EXISTS` และ seed เป็น `INSERT IGNORE` เพื่อลดความเสี่ยงล้างข้อมูลโดยไม่ตั้งใจ แต่ควร backup database ก่อน import ทุกครั้ง
 
 ## 4. Web Root
@@ -52,6 +59,7 @@ mysql -u your_db_user -p --default-character-set=utf8mb4 < database/schema.sql
 ```text
 /public/file.php?document_id=...
 /public/file.php?payment_id=...
+/public/file.php?message_id=...
 ```
 
 อย่าเปิด directory listing และอย่าให้ execute PHP ใน `uploads`

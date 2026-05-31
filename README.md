@@ -17,6 +17,8 @@ php -S localhost:8000 -t ai-lawyer-platform
 
 ตรวจสุขภาพระบบได้ที่ `http://localhost:8000/public/health.php`
 
+เมื่ออัปเดตฐานข้อมูลเดิม ให้รัน `php database/migrate_message_media.php` เพื่อเพิ่มคอลัมน์สำหรับแชตและห้องโทรโดยไม่ล้างข้อมูล
+
 ## Demo Accounts
 
 - Admin: `admin@example.com` / `Admin@1234`

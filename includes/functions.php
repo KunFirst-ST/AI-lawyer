@@ -173,6 +173,7 @@ function ensureMessageMediaColumns(): void
                 'message_type' => 'ADD COLUMN message_type VARCHAR(20) DEFAULT "text"',
                 'call_type' => 'ADD COLUMN call_type VARCHAR(20) NULL',
                 'call_url' => 'ADD COLUMN call_url VARCHAR(255) NULL',
+                'call_room' => 'ADD COLUMN call_room VARCHAR(80) NULL',
             ];
             foreach ($defs as $column => $alter) {
                 if (!in_array($column, $existing, true)) {
@@ -193,6 +194,9 @@ function ensureMessageMediaColumns(): void
         }
         if (!in_array('call_url', $existing, true)) {
             $alters[] = 'ADD COLUMN call_url VARCHAR(255) NULL AFTER call_type';
+        }
+        if (!in_array('call_room', $existing, true)) {
+            $alters[] = 'ADD COLUMN call_room VARCHAR(80) NULL AFTER call_url';
         }
         if ($alters) {
             db()->exec('ALTER TABLE messages ' . implode(', ', $alters));

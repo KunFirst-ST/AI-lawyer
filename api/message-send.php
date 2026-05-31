@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/message-helpers.php';
 require_once __DIR__ . '/../services/NotificationService.php';
+require_once __DIR__ . '/../services/ConversationService.php';
 
 try {
     requireLogin();
@@ -21,6 +22,7 @@ try {
     $filePath = null;
     $messageType = 'text';
     $callUrl = null;
+    $callRoom = null;
 
     if (!in_array($requestedType, ['text', 'call'], true)) {
         jsonResponse(false, 'ชนิดแชตไม่ถูกต้อง', [], ['message_type' => 'invalid'], 422);
@@ -30,12 +32,7 @@ try {
         jsonResponse(false, 'กรุณาพิมพ์แชตหรือแนบไฟล์', [], [], 422);
     }
 
-    $receiverStmt = db()->prepare('SELECT id, name FROM users WHERE id = ? AND status = "active" LIMIT 1');
-    $receiverStmt->execute([$receiverId]);
-    $receiver = $receiverStmt->fetch();
-    if (!$receiver) {
-        jsonResponse(false, 'ไม่พบคู่สนทนาในแชต', [], ['receiver_id' => 'invalid'], 422);
-    }
+    (new ConversationService())->assertCanTalk((int) $user['id'], $receiverId, $caseId, $bookingId);
 
     if ($requestedType === 'call') {
         if (!in_array($callType, ['audio', 'video'], true)) {
@@ -43,8 +40,8 @@ try {
         }
 
         $messageType = 'call';
-        $room = 'room_' . bin2hex(random_bytes(12));
-        $callUrl = '/public/call.php?room=' . rawurlencode($room) . '&type=' . rawurlencode($callType) . '&peer=' . $receiverId;
+        $callRoom = 'room_' . bin2hex(random_bytes(12));
+        $callUrl = '/public/call.php?room=' . rawurlencode($callRoom) . '&type=' . rawurlencode($callType);
         if ($message === '') {
             $message = $callType === 'video' ? 'เริ่มวิดีโอคอล' : 'เริ่มโทรเสียง';
         }
@@ -58,8 +55,8 @@ try {
     }
 
     ensureMessageMediaColumns();
-    $stmt = db()->prepare('INSERT INTO messages (case_id, booking_id, sender_id, receiver_id, message, file_path, message_type, call_type, call_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$caseId, $bookingId, (int) $user['id'], $receiverId, $message, $filePath, $messageType, $messageType === 'call' ? $callType : null, $callUrl]);
+    $stmt = db()->prepare('INSERT INTO messages (case_id, booking_id, sender_id, receiver_id, message, file_path, message_type, call_type, call_url, call_room) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$caseId, $bookingId, (int) $user['id'], $receiverId, $message, $filePath, $messageType, $messageType === 'call' ? $callType : null, $callUrl, $callRoom]);
     $messageId = (int) db()->lastInsertId();
 
     $sentStmt = db()->prepare(
@@ -85,6 +82,8 @@ try {
         'message_type' => $messageType,
         'call_url' => $callUrl ? url($callUrl) : null,
     ]);
+} catch (DomainException $exception) {
+    jsonResponse(false, $exception->getMessage(), [], ['receiver_id' => 'forbidden'], 403);
 } catch (Throwable $exception) {
     jsonResponse(false, 'เกิดข้อผิดพลาดในการส่งแชต', [], ['detail' => $exception->getMessage()], 500);
 }

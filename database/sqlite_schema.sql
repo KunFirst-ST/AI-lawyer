@@ -175,6 +175,7 @@ CREATE TABLE IF NOT EXISTS messages (
     message_type TEXT DEFAULT 'text',
     call_type TEXT NULL,
     call_url TEXT NULL,
+    call_room TEXT NULL,
     is_read INTEGER DEFAULT 0,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (case_id) REFERENCES cases(id),

@@ -7,6 +7,7 @@ return [
     'base_url' => envValue('APP_URL', ''),
     'env' => envValue('APP_ENV', 'local'),
     'debug' => envBool('APP_DEBUG', false),
+    'show_demo_accounts' => envBool('SHOW_DEMO_ACCOUNTS', envValue('APP_ENV', 'local') !== 'production'),
     'timezone' => 'Asia/Bangkok',
     'commission_percent' => 20,
     'registration_enabled' => envBool('REGISTRATION_ENABLED', true),

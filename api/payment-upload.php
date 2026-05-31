@@ -10,11 +10,14 @@ try {
 
     $user = currentUser();
     $bookingId = (int) ($_POST['booking_id'] ?? 0);
-    $stmt = db()->prepare('SELECT b.id, p.id AS payment_id FROM bookings b JOIN payments p ON p.booking_id = b.id WHERE b.id = ? AND b.user_id = ? LIMIT 1');
+    $stmt = db()->prepare('SELECT b.id, b.status AS booking_status, p.id AS payment_id, p.status AS payment_status FROM bookings b JOIN payments p ON p.booking_id = b.id WHERE b.id = ? AND b.user_id = ? LIMIT 1');
     $stmt->execute([$bookingId, (int) $user['id']]);
     $booking = $stmt->fetch();
     if (!$booking) {
         jsonResponse(false, 'ไม่พบรายการชำระเงิน', [], [], 404);
+    }
+    if ($booking['booking_status'] !== 'pending' || !in_array($booking['payment_status'], ['pending', 'rejected'], true)) {
+        jsonResponse(false, 'รายการนี้ไม่สามารถอัปโหลดสลิปเพิ่มได้', [], ['payment' => 'locked'], 422);
     }
 
     if (empty($_FILES['slip_image'])) {

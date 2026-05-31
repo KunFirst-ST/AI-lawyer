@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../services/NotificationService.php';
 requireRole('admin');
 $lawyerId = (int) ($_GET['id'] ?? ($_POST['lawyer_id'] ?? 0));
 
@@ -16,6 +17,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $verified = $action === 'approve' ? 1 : 0;
         $stmt = db()->prepare('UPDATE lawyers SET status = ?, verified = ? WHERE id = ?');
         $stmt->execute([$status, $verified, $lawyerId]);
+        $userStmt = db()->prepare('SELECT user_id FROM lawyers WHERE id = ? LIMIT 1');
+        $userStmt->execute([$lawyerId]);
+        $lawyerUserId = $userStmt->fetchColumn();
+        if ($lawyerUserId !== false) {
+            $message = match ($status) {
+                'approved' => 'โปรไฟล์ทนายของคุณผ่านการตรวจสอบแล้วและพร้อมรับเคสจากระบบ',
+                'rejected' => 'โปรไฟล์ทนายของคุณยังไม่ผ่านการตรวจสอบ กรุณาตรวจสอบข้อมูลและเอกสาร',
+                default => 'โปรไฟล์ทนายของคุณถูกระงับชั่วคราว กรุณาติดต่อผู้ดูแลระบบ',
+            };
+            (new NotificationService())->create((int) $lawyerUserId, 'อัปเดตสถานะโปรไฟล์ทนาย', $message, 'lawyer_status');
+        }
         flash('success', 'อัปเดตสถานะทนายแล้ว');
     }
     redirect(url('/admin/lawyer-verify.php?id=' . $lawyerId));
@@ -60,7 +72,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <h2 class="h6 fw-bold">หมวดเชี่ยวชาญ</h2>
                     <div class="mb-3"><?php foreach ($categories as $category): ?><span class="badge text-bg-light text-dark"><?= e($category['name']) ?></span><?php endforeach; ?></div>
                     <h2 class="h6 fw-bold">เอกสารทนาย</h2>
-                    <?php foreach ($documents as $doc): ?><div class="border-bottom py-2"><i class="bi bi-file-earmark-text me-2"></i><?= e($doc['document_type']) ?> · <?= e($doc['original_name'] ?: basename($doc['file_path'])) ?></div><?php endforeach; ?>
+                    <?php foreach ($documents as $doc): ?><div class="border-bottom py-2"><i class="bi bi-file-earmark-text me-2"></i><a href="<?= e(url('/public/file.php?document_id=' . $doc['id'])) ?>" target="_blank"><?= e($doc['document_type']) ?> · <?= e($doc['original_name'] ?: basename($doc['file_path'])) ?></a></div><?php endforeach; ?>
                     <?php if (!$documents): ?><div class="text-muted">ยังไม่มีเอกสาร</div><?php endif; ?>
                     <form method="post" class="d-flex flex-wrap gap-2 mt-4">
                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">

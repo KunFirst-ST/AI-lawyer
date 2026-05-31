@@ -125,6 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <span>ยังไม่มีบัญชีผู้ใช้?</span>
                             <a href="<?= e(url('/public/register.php')) ?>">สมัครสมาชิกผู้ใช้</a>
                         </div>
+                        <?php if (app_config('show_demo_accounts', false)): ?>
                         <div class="auth-demo-card">
                             <div>
                                 <i class="bi bi-key"></i>
@@ -135,6 +136,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="user@example.com" data-demo-password="User@1234">เติมข้อมูล</button>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

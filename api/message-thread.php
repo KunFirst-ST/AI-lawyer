@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/message-helpers.php';
+require_once __DIR__ . '/../services/ConversationService.php';
 
 try {
     requireLogin();
@@ -15,11 +16,7 @@ try {
         jsonResponse(false, 'กรุณาเลือกคู่สนทนา', [], ['peer_id' => 'required'], 422);
     }
 
-    $peerStmt = db()->prepare('SELECT id FROM users WHERE id = ? AND status = "active" LIMIT 1');
-    $peerStmt->execute([$peerId]);
-    if (!$peerStmt->fetchColumn()) {
-        jsonResponse(false, 'ไม่พบคู่สนทนา', [], ['peer_id' => 'invalid'], 422);
-    }
+    (new ConversationService())->assertCanTalk($currentUserId, $peerId);
 
     ensureMessageMediaColumns();
     $threadStmt = db()->prepare(
@@ -41,6 +38,8 @@ try {
         'messages' => $messages,
         'last_message_id' => $messages ? (int) end($messages)['id'] : 0,
     ]);
+} catch (DomainException $exception) {
+    jsonResponse(false, $exception->getMessage(), [], ['peer_id' => 'forbidden'], 403);
 } catch (Throwable $exception) {
     jsonResponse(false, 'เกิดข้อผิดพลาดในการโหลดแชต', [], ['detail' => $exception->getMessage()], 500);
 }

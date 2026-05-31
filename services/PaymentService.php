@@ -12,7 +12,7 @@ final class PaymentService
         $pdo->beginTransaction();
         try {
             $stmt = $pdo->prepare(
-                'SELECT p.*, b.lawyer_id, b.user_id, b.price
+                'SELECT p.*, b.lawyer_id, b.user_id, b.price, b.case_id, b.status AS booking_status
                  FROM payments p
                  JOIN bookings b ON b.id = p.booking_id
                  WHERE p.id = ?
@@ -23,9 +23,13 @@ final class PaymentService
             if (!$payment) {
                 throw new RuntimeException('ไม่พบรายการชำระเงิน');
             }
+            if ($payment['status'] !== 'pending' || empty($payment['slip_image']) || $payment['booking_status'] !== 'pending') {
+                throw new DomainException('รายการนี้ไม่พร้อมอนุมัติ กรุณาตรวจสอบสถานะและสลิปอีกครั้ง');
+            }
 
             $pdo->prepare('UPDATE payments SET status = "approved", admin_note = ? WHERE id = ?')->execute([$adminNote, $paymentId]);
             $pdo->prepare('UPDATE bookings SET status = "confirmed" WHERE id = ?')->execute([(int) $payment['booking_id']]);
+            $pdo->prepare('UPDATE cases SET status = "in_progress" WHERE id = ? AND status = "booked"')->execute([(int) $payment['case_id']]);
 
             $commissionExists = $pdo->prepare('SELECT id FROM commissions WHERE booking_id = ? LIMIT 1');
             $commissionExists->execute([(int) $payment['booking_id']]);
@@ -75,6 +79,9 @@ final class PaymentService
         $payment = $stmt->fetch();
         if (!$payment) {
             throw new RuntimeException('ไม่พบรายการชำระเงิน');
+        }
+        if ($payment['status'] !== 'pending') {
+            throw new DomainException('รายการนี้ไม่สามารถปฏิเสธซ้ำได้');
         }
 
         $update = db()->prepare('UPDATE payments SET status = "rejected", admin_note = ? WHERE id = ?');

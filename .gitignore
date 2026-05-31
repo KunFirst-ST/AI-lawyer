@@ -22,8 +22,10 @@
 /uploads/lawyer_documents/*
 /uploads/profile_images/*
 /uploads/slips/*
+/uploads/message_media/*
 !/uploads/.htaccess
 !/uploads/case_documents/.gitkeep
 !/uploads/lawyer_documents/.gitkeep
 !/uploads/profile_images/.gitkeep
 !/uploads/slips/.gitkeep
+!/uploads/message_media/.gitkeep

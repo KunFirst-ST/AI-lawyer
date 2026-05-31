@@ -75,7 +75,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="app-card p-3 h-100">
                             <h2 class="h5 fw-bold">เอกสารเคส</h2>
                             <?php foreach ($documents as $doc): ?>
-                                <div class="border-bottom py-2"><i class="bi bi-paperclip me-2"></i><?= e($doc['original_name'] ?: basename($doc['file_path'])) ?></div>
+                                <div class="border-bottom py-2"><i class="bi bi-paperclip me-2"></i><a href="<?= e(url('/public/file.php?document_id=' . $doc['id'])) ?>" target="_blank"><?= e($doc['original_name'] ?: basename($doc['file_path'])) ?></a></div>
                             <?php endforeach; ?>
                             <?php if (!$documents): ?><div class="text-muted">ยังไม่มีเอกสาร</div><?php endif; ?>
                         </div>

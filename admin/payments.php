@@ -9,11 +9,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $note = trim($_POST['admin_note'] ?? '');
     $service = new PaymentService();
     if (($_POST['action'] ?? '') === 'approve') {
-        $service->approve($paymentId, $note);
-        flash('success', 'อนุมัติสลิปแล้ว');
+        try {
+            $service->approve($paymentId, $note);
+            flash('success', 'อนุมัติสลิปแล้ว');
+        } catch (DomainException $exception) {
+            flash('danger', $exception->getMessage());
+        }
     } elseif (($_POST['action'] ?? '') === 'reject') {
-        $service->reject($paymentId, $note);
-        flash('success', 'ปฏิเสธสลิปแล้ว');
+        try {
+            $service->reject($paymentId, $note);
+            flash('success', 'ปฏิเสธสลิปแล้ว');
+        } catch (DomainException $exception) {
+            flash('danger', $exception->getMessage());
+        }
     }
     redirect(url('/admin/payments.php'));
 }
@@ -49,6 +57,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td><?= $payment['slip_image'] ? '<a href="' . e(url('/public/file.php?payment_id=' . $payment['id'])) . '" target="_blank">ดูสลิป</a>' : '<span class="text-muted">ยังไม่มี</span>' ?></td>
                                 <td><span class="badge text-bg-light text-dark"><?= e($payment['status']) ?></span></td>
                                 <td>
+                                    <?php if ($payment['status'] === 'pending' && $payment['slip_image']): ?>
                                     <form method="post" class="d-flex gap-2">
                                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                         <input type="hidden" name="payment_id" value="<?= e($payment['id']) ?>">
@@ -56,6 +65,9 @@ require_once __DIR__ . '/../includes/header.php';
                                         <button class="btn btn-sm btn-success" name="action" value="approve">อนุมัติ</button>
                                         <button class="btn btn-sm btn-outline-danger" name="action" value="reject">ปฏิเสธ</button>
                                     </form>
+                                    <?php else: ?>
+                                        <span class="text-muted">ไม่มีรายการที่ต้องดำเนินการ</span>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

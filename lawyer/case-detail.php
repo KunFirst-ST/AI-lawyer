@@ -12,7 +12,7 @@ $stmt = db()->prepare(
      JOIN cases c ON c.id = cm.case_id
      JOIN users u ON u.id = c.user_id
      LEFT JOIN legal_categories lc ON lc.id = c.primary_category_id
-     WHERE cm.case_id = ? AND cm.lawyer_id = ?
+     WHERE cm.case_id = ? AND cm.lawyer_id = ? AND cm.status IN ("suggested", "viewed", "selected")
      LIMIT 1'
 );
 $stmt->execute([$caseId, $lawyerId]);
@@ -46,7 +46,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <h2 class="h6 fw-bold">สรุปเคสจาก AI</h2>
                     <p><?= nl2br(e($case['ai_summary'])) ?></p>
                     <h2 class="h6 fw-bold">เอกสาร</h2>
-                    <?php foreach ($documents as $doc): ?><div class="border-bottom py-2"><i class="bi bi-paperclip me-2"></i><?= e($doc['original_name'] ?: basename($doc['file_path'])) ?></div><?php endforeach; ?>
+                    <?php foreach ($documents as $doc): ?><div class="border-bottom py-2"><i class="bi bi-paperclip me-2"></i><a href="<?= e(url('/public/file.php?document_id=' . $doc['id'])) ?>" target="_blank"><?= e($doc['original_name'] ?: basename($doc['file_path'])) ?></a></div><?php endforeach; ?>
                     <?php if (!$documents): ?><div class="text-muted">ยังไม่มีเอกสาร</div><?php endif; ?>
                 </div>
             </div>

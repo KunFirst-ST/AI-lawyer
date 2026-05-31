@@ -5,15 +5,31 @@ $user = currentUser();
 $caseId = (int) ($_GET['case_id'] ?? 0);
 $lawyerId = (int) ($_GET['lawyer_id'] ?? 0);
 
-$casesStmt = db()->prepare('SELECT id, title FROM cases WHERE user_id = ? ORDER BY created_at DESC');
+$casesStmt = db()->prepare(
+    'SELECT c.id, c.title
+     FROM cases c
+     WHERE c.user_id = ? AND c.user_wants_lawyer = 1 AND c.status = "matched"
+       AND NOT EXISTS (
+           SELECT 1 FROM bookings b
+           WHERE b.case_id = c.id AND b.status IN ("pending", "confirmed", "completed")
+       )
+     ORDER BY c.created_at DESC'
+);
 $casesStmt->execute([$user['id']]);
 $cases = $casesStmt->fetchAll();
-$lawyers = db()->query(
-    'SELECT l.id, l.consultation_fee, u.name
-     FROM lawyers l JOIN users u ON u.id = l.user_id
-     WHERE l.status = "approved"
+$lawyersStmt = db()->prepare(
+    'SELECT cm.case_id, l.id, l.consultation_fee, u.name
+     FROM case_matches cm
+     JOIN cases c ON c.id = cm.case_id
+     JOIN lawyers l ON l.id = cm.lawyer_id
+     JOIN users u ON u.id = l.user_id
+     WHERE c.user_id = ? AND c.user_wants_lawyer = 1 AND c.status = "matched"
+       AND cm.status IN ("suggested", "viewed", "selected")
+       AND l.status = "approved" AND l.is_available = 1 AND u.status = "active"
      ORDER BY u.name'
-)->fetchAll();
+);
+$lawyersStmt->execute([$user['id']]);
+$lawyers = $lawyersStmt->fetchAll();
 
 $pageTitle = 'จองปรึกษาทนาย';
 require_once __DIR__ . '/../includes/header.php';
@@ -41,7 +57,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <select class="form-select" name="lawyer_id" required>
                                 <option value="">เลือกทนาย</option>
                                 <?php foreach ($lawyers as $lawyer): ?>
-                                    <option value="<?= e($lawyer['id']) ?>" <?= $lawyerId === (int) $lawyer['id'] ? 'selected' : '' ?>><?= e($lawyer['name']) ?> (<?= e(formatMoney($lawyer['consultation_fee'])) ?>)</option>
+                                    <option value="<?= e($lawyer['id']) ?>" data-case-id="<?= e($lawyer['case_id']) ?>" <?= $lawyerId === (int) $lawyer['id'] && (!$caseId || $caseId === (int) $lawyer['case_id']) ? 'selected' : '' ?>><?= e($lawyer['name']) ?> (<?= e(formatMoney($lawyer['consultation_fee'])) ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -57,8 +73,9 @@ require_once __DIR__ . '/../includes/header.php';
                             </select>
                         </div>
                         <div class="col-12"><label class="form-label">แนบเอกสารคดี</label><input class="form-control" type="file" name="case_document" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"></div>
-                        <div class="col-12"><button class="btn btn-primary">สร้าง Booking</button></div>
+                        <div class="col-12"><button class="btn btn-primary" <?= $cases && $lawyers ? '' : 'disabled' ?>>สร้าง Booking</button></div>
                     </form>
+                    <?php if (!$cases): ?><div class="alert alert-info mt-3 mb-0">ยังไม่มีเคสที่พร้อมจอง กรุณาเลือกทนายจากหน้าผล Match ก่อน</div><?php endif; ?>
                     <div id="bookingResult" class="mt-3"></div>
                 </div>
             </div>
@@ -66,10 +83,24 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </section>
 <script>
-document.querySelector('#bookingForm').addEventListener('submit', async function (event) {
+const bookingForm = document.querySelector('#bookingForm');
+const bookingCase = bookingForm.querySelector('[name="case_id"]');
+const bookingLawyer = bookingForm.querySelector('[name="lawyer_id"]');
+const filterMatchedLawyers = () => {
+    const selectedCaseId = bookingCase.value;
+    Array.from(bookingLawyer.options).forEach((option, index) => {
+        if (index === 0) return;
+        option.hidden = option.dataset.caseId !== selectedCaseId;
+        option.disabled = option.hidden;
+    });
+    if (bookingLawyer.selectedOptions[0]?.disabled) bookingLawyer.value = '';
+};
+bookingCase.addEventListener('change', filterMatchedLawyers);
+filterMatchedLawyers();
+bookingForm.addEventListener('submit', async function (event) {
     event.preventDefault();
     const result = document.querySelector('#bookingResult');
-    const response = await fetch('/api/booking-create.php', {
+    const response = await fetch('<?= e(url('/api/booking-create.php')) ?>', {
         method: 'POST',
         headers: {'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content},
         body: new FormData(this)

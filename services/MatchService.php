@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/NotificationService.php';
 
 final class MatchService
 {
@@ -84,6 +85,9 @@ final class MatchService
         usort($matches, fn ($a, $b) => $b['match_score'] <=> $a['match_score']);
         $matches = array_slice($matches, 0, 10);
         $this->storeMatches($caseId, $matches);
+        if ($matches) {
+            $this->notifyMatches($case, $matches);
+        }
 
         return $matches;
     }
@@ -120,7 +124,7 @@ final class MatchService
                     (SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.lawyer_id = l.id) AS avg_rating
              FROM lawyers l
              JOIN users u ON u.id = l.user_id
-             WHERE l.status = "approved"
+             WHERE l.status = "approved" AND l.is_available = 1 AND u.status = "active"
              ORDER BY l.verified DESC, l.is_available DESC'
         );
         $stmt->execute();
@@ -180,5 +184,20 @@ final class MatchService
         }
 
         return 'ทนายคนนี้' . implode(' และ', array_map(fn ($reason) => $reason, $reasons));
+    }
+
+    private function notifyMatches(array $case, array $matches): void
+    {
+        $notify = new NotificationService();
+        $notify->create((int) $case['user_id'], 'พบทนายที่เหมาะกับเคสแล้ว', 'ระบบ Match ทนายให้เคสของคุณแล้ว กรุณาตรวจสอบรายชื่อและเลือกทนายที่ต้องการปรึกษา', 'match');
+
+        $stmt = db()->prepare('SELECT user_id FROM lawyers WHERE id = ? LIMIT 1');
+        foreach ($matches as $match) {
+            $stmt->execute([(int) $match['id']]);
+            $lawyerUserId = $stmt->fetchColumn();
+            if ($lawyerUserId !== false) {
+                $notify->create((int) $lawyerUserId, 'มีเคสใหม่ที่ตรงกับความเชี่ยวชาญ', 'ระบบเสนอเคสใหม่ให้คุณตรวจสอบในหน้ารายการเคส', 'match');
+            }
+        }
     }
 }

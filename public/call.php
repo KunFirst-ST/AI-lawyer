@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/message-helpers.php';
+require_once __DIR__ . '/../services/ConversationService.php';
 requireLogin();
 
 $room = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) ($_GET['room'] ?? ''));
@@ -8,6 +9,10 @@ $type = ($_GET['type'] ?? 'audio') === 'video' ? 'video' : 'audio';
 if ($room === '') {
     http_response_code(404);
     exit('ไม่พบห้องสนทนา');
+}
+if (!(new ConversationService())->canAccessCallRoom((int) currentUser()['id'], $room)) {
+    http_response_code(403);
+    exit('Forbidden');
 }
 
 $pageTitle = $type === 'video' ? 'วิดีโอคอล' : 'โทรเสียง';

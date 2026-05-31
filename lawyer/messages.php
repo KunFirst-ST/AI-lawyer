@@ -1,13 +1,14 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/message-helpers.php';
+require_once __DIR__ . '/../services/ConversationService.php';
 requireRole('lawyer');
 ensureMessageMediaColumns();
 
 $user = currentUser();
 $requestedPeerId = (int) ($_GET['peer_id'] ?? 0);
 
-$contacts = db()->query('SELECT id AS user_id, name, email, phone FROM users WHERE role = "user" AND status = "active" ORDER BY name')->fetchAll();
+$contacts = (new ConversationService())->contactsForLawyer((int) $user['id']);
 
 $messageStmt = db()->prepare(
     'SELECT m.*, su.name AS sender_name, ru.name AS receiver_name
@@ -34,6 +35,10 @@ foreach ($contacts as $contact) {
         $activeContact = $contact;
         break;
     }
+}
+if (!$activeContact) {
+    $activePeerId = (int) ($contacts[0]['user_id'] ?? 0);
+    $activeContact = $contacts[0] ?? null;
 }
 
 $thread = [];
@@ -93,7 +98,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <em><?= $latest ? e(substr((string) $latest['created_at'], 5, 11)) : '' ?></em>
                                 </a>
                             <?php endforeach; ?>
-                            <?php if (!$contacts): ?><div class="text-muted p-3">ยังไม่มีผู้ใช้</div><?php endif; ?>
+                            <?php if (!$contacts): ?><div class="text-muted p-3">ยังไม่มีลูกความที่เชื่อมกับเคสของคุณ</div><?php endif; ?>
                         </div>
                     </aside>
 

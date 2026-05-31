@@ -188,6 +188,7 @@ CREATE TABLE IF NOT EXISTS messages (
     message_type VARCHAR(20) DEFAULT 'text',
     call_type VARCHAR(20) NULL,
     call_url VARCHAR(255) NULL,
+    call_room VARCHAR(80) NULL,
     is_read TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (case_id) REFERENCES cases(id),

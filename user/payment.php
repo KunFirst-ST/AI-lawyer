@@ -4,7 +4,7 @@ requireRole('user');
 $user = currentUser();
 $bookingId = (int) ($_GET['booking_id'] ?? 0);
 $stmt = db()->prepare(
-    'SELECT b.*, p.id AS payment_id, p.amount, p.status AS payment_status, p.slip_image, u.name AS lawyer_name
+    'SELECT b.*, b.status AS booking_status, p.id AS payment_id, p.amount, p.status AS payment_status, p.slip_image, u.name AS lawyer_name
      FROM bookings b
      JOIN lawyers l ON l.id = b.lawyer_id
      JOIN users u ON u.id = l.user_id
@@ -25,6 +25,7 @@ $bank = [
     'account_number' => setting('bank_account_number', $bankConfig['account_number']),
     'promptpay_id' => setting('promptpay_id', $bankConfig['promptpay_id']),
 ];
+$canUpload = $booking['booking_status'] === 'pending' && in_array($booking['payment_status'], ['pending', 'rejected'], true);
 $pageTitle = 'ชำระเงิน';
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -52,12 +53,16 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                         </div>
                     </div>
+                    <?php if ($canUpload): ?>
                     <form id="paymentForm" enctype="multipart/form-data" class="row g-3">
                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                         <input type="hidden" name="booking_id" value="<?= e($booking['id']) ?>">
                         <div class="col-12"><label class="form-label">อัปโหลดสลิป</label><input class="form-control" type="file" name="slip_image" accept=".jpg,.jpeg,.png,.webp,.pdf" required></div>
                         <div class="col-12"><button class="btn btn-primary">ส่งสลิปให้แอดมินตรวจสอบ</button></div>
                     </form>
+                    <?php else: ?>
+                        <div class="alert alert-info mb-0">รายการนี้ถูกล็อกตามสถานะปัจจุบัน ไม่ต้องอัปโหลดสลิปเพิ่ม</div>
+                    <?php endif; ?>
                     <div class="mt-3">สถานะ: <span class="badge text-bg-light text-dark"><?= e($booking['payment_status']) ?></span></div>
                     <div id="paymentResult" class="mt-3"></div>
                 </div>
@@ -66,10 +71,10 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </section>
 <script>
-document.querySelector('#paymentForm').addEventListener('submit', async function (event) {
+document.querySelector('#paymentForm')?.addEventListener('submit', async function (event) {
     event.preventDefault();
     const result = document.querySelector('#paymentResult');
-    const response = await fetch('/api/payment-upload.php', {
+    const response = await fetch('<?= e(url('/api/payment-upload.php')) ?>', {
         method: 'POST',
         headers: {'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content},
         body: new FormData(this)

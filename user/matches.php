@@ -17,7 +17,7 @@ $stmt = db()->prepare(
      JOIN cases c ON c.id = cm.case_id
      JOIN lawyers l ON l.id = cm.lawyer_id
      JOIN users u ON u.id = l.user_id
-     WHERE {$where}
+     WHERE {$where} AND cm.status IN ('suggested', 'viewed', 'selected')
      ORDER BY cm.match_score DESC, cm.created_at DESC"
 );
 $stmt->execute($params);

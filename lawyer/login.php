@@ -119,6 +119,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <span>ยังไม่มีบัญชีทนาย?</span>
                             <a href="<?= e(url('/lawyer/register-lawyer.php')) ?>">สมัครเป็นทนาย</a>
                         </div>
+                        <?php if (app_config('show_demo_accounts', false)): ?>
                         <div class="auth-demo-card">
                             <div>
                                 <i class="bi bi-key"></i>
@@ -129,6 +130,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="criminal.lawyer@example.com" data-demo-password="Lawyer@1234">เติมข้อมูล</button>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

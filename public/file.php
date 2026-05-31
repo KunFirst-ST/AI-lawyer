@@ -68,7 +68,8 @@ if (isset($_GET['payment_id'])) {
             'SELECT COUNT(*)
              FROM case_matches cm
              JOIN lawyers l ON l.id = cm.lawyer_id
-             WHERE cm.case_id = ? AND l.user_id = ?'
+             WHERE cm.case_id = ? AND l.user_id = ?
+               AND cm.status IN ("suggested", "viewed", "selected")'
         );
         $accessStmt->execute([(int) $document['case_id'], (int) $user['id']]);
         $canAccess = (int) $accessStmt->fetchColumn() > 0;

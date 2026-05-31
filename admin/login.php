@@ -123,6 +123,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="auth-footnote">
                             <a href="<?= e(url('/public/portals.php')) ?>">กลับไปเลือกพอร์ทัล</a>
                         </div>
+                        <?php if (app_config('show_demo_accounts', false)): ?>
                         <div class="auth-demo-card">
                             <div>
                                 <i class="bi bi-key"></i>
@@ -133,6 +134,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="admin@example.com" data-demo-password="Admin@1234">เติมข้อมูล</button>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
