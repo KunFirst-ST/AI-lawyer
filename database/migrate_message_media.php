@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../services/CallService.php';
 
 ensureMessageMediaColumns();
 
@@ -14,5 +15,7 @@ foreach (['message_type', 'call_type', 'call_url', 'call_room'] as $column) {
         throw new RuntimeException('Missing messages column: ' . $column);
     }
 }
+
+(new CallService())->ensureSchema();
 
 echo "message-media-ready\n";

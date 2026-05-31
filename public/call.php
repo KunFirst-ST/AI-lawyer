@@ -1,34 +1,43 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/message-helpers.php';
-require_once __DIR__ . '/../services/ConversationService.php';
+require_once __DIR__ . '/../services/CallService.php';
 requireLogin();
 
 $room = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) ($_GET['room'] ?? ''));
-$type = ($_GET['type'] ?? 'audio') === 'video' ? 'video' : 'audio';
 if ($room === '') {
     http_response_code(404);
     exit('ไม่พบห้องสนทนา');
 }
-if (!(new ConversationService())->canAccessCallRoom((int) currentUser()['id'], $room)) {
+$callService = new CallService();
+try {
+    $call = $callService->roomForParticipant((int) currentUser()['id'], $room);
+} catch (DomainException) {
     http_response_code(403);
     exit('Forbidden');
 }
+$type = $call['call_type'] === 'video' ? 'video' : 'audio';
 
 $pageTitle = $type === 'video' ? 'วิดีโอคอล' : 'โทรเสียง';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="call-room-section">
     <div class="container">
-        <div class="call-room" data-call-type="<?= e($type) ?>">
+        <div class="call-room" data-call-type="<?= e($type) ?>" data-call-room="<?= e($room) ?>" data-call-initiator="<?= $call['is_initiator'] ? '1' : '0' ?>">
             <div class="call-room-main">
                 <span class="call-room-badge"><i class="bi bi-<?= e(callTypeIcon($type)) ?>"></i> <?= e(callTypeLabel($type)) ?></span>
                 <h1>ห้องสนทนา <?= e($room) ?></h1>
                 <p>เปิดไมค์<?= $type === 'video' ? 'และกล้อง' : '' ?>เพื่อเริ่มสนทนาในเบราว์เซอร์ ลิงก์นี้ถูกส่งผ่านแชตแล้ว</p>
 
-                <div class="call-preview" data-call-preview>
-                    <i class="bi bi-<?= e(callTypeIcon($type)) ?>"></i>
-                    <span>พร้อมเริ่มสนทนา</span>
+                <div class="call-stage">
+                    <div class="call-preview call-remote" data-call-remote>
+                        <i class="bi bi-<?= e(callTypeIcon($type)) ?>"></i>
+                        <span>รออีกฝ่ายเข้าห้องสนทนา</span>
+                    </div>
+                    <div class="call-local-preview" data-call-preview>
+                        <i class="bi bi-person-video3"></i>
+                        <span>ภาพของคุณ</span>
+                    </div>
                 </div>
 
                 <div class="call-controls">
@@ -38,7 +47,8 @@ require_once __DIR__ . '/../includes/header.php';
                         <button class="btn btn-outline-light" type="button" data-call-camera disabled><i class="bi bi-camera-video"></i> กล้อง</button>
                     <?php endif; ?>
                     <button class="btn btn-outline-light" type="button" data-call-copy><i class="bi bi-link-45deg"></i> คัดลอกลิงก์</button>
-                    <a class="btn btn-danger" href="<?= e(url('/public/notifications.php')) ?>"><i class="bi bi-telephone-x"></i> วางสาย</a>
+                    <button class="btn btn-danger" type="button" data-call-end><i class="bi bi-telephone-x"></i> วางสาย</button>
+                    <a class="btn btn-outline-light" href="<?= e(url('/public/notifications.php')) ?>"><i class="bi bi-box-arrow-left"></i> ออกจากห้อง</a>
                 </div>
                 <div class="call-status" data-call-status>ยังไม่ได้เปิดไมค์<?= $type === 'video' ? '/กล้อง' : '' ?></div>
             </div>
@@ -52,8 +62,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <strong><?= e($room) ?></strong>
                 </div>
                 <div>
-                    <span>ผู้ใช้</span>
-                    <strong><?= e(currentUser()['name'] ?? '-') ?></strong>
+                    <span>คู่สนทนา</span>
+                    <strong><?= e($call['peer_name']) ?></strong>
                 </div>
             </aside>
         </div>

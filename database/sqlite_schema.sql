@@ -198,6 +198,19 @@ CREATE TABLE IF NOT EXISTS documents (
     FOREIGN KEY (lawyer_id) REFERENCES lawyers(id)
 );
 
+CREATE TABLE IF NOT EXISTS call_signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    room TEXT NOT NULL,
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    signal_type TEXT NOT NULL,
+    payload TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_call_signals_room_receiver_id ON call_signals (room, receiver_id, id);
+
 CREATE TABLE IF NOT EXISTS commissions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     booking_id INTEGER NOT NULL,

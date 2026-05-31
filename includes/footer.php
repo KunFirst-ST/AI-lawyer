@@ -1,6 +1,7 @@
 <?php
 $year = date('Y');
 $themeVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/theme-ui.js') ?: time());
+$callVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/call-ui.js') ?: time());
 ?>
 </main>
 <footer class="border-top bg-white py-4 mt-5">
@@ -26,6 +27,6 @@ $themeVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/theme-ui.js'
 <script src="<?= e(url('/assets/js/auth-ui.js')) ?>"></script>
 <script src="<?= e(url('/assets/js/admin-ui.js')) ?>"></script>
 <script src="<?= e(url('/assets/js/conversation-ui.js')) ?>"></script>
-<script src="<?= e(url('/assets/js/call-ui.js')) ?>"></script>
+<script src="<?= e(url('/assets/js/call-ui.js') . '?v=' . $callVersion) ?>"></script>
 </body>
 </html>

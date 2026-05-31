@@ -211,6 +211,19 @@ CREATE TABLE IF NOT EXISTS documents (
     FOREIGN KEY (lawyer_id) REFERENCES lawyers(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS call_signals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    room VARCHAR(80) NOT NULL,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    signal_type VARCHAR(20) NOT NULL,
+    payload LONGTEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id),
+    KEY idx_call_signals_room_receiver_id (room, receiver_id, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS commissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     booking_id INT NOT NULL,
