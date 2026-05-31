@@ -9,7 +9,7 @@
     const applyTheme = (theme) => {
         const nextTheme = theme === 'night' ? 'night' : 'day';
         root.dataset.theme = nextTheme;
-        localStorage.setItem('ai_lawyer_theme', nextTheme);
+        localStorage.setItem('thanai_khu_dee_theme', nextTheme);
         button.setAttribute('aria-pressed', nextTheme === 'night' ? 'true' : 'false');
         button.setAttribute('title', nextTheme === 'night' ? 'เปลี่ยนเป็นโหมดกลางวัน' : 'เปลี่ยนเป็นโหมดกลางคืน');
         if (icon) {

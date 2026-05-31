@@ -1,4 +1,4 @@
-# AI Lawyer Matching Platform
+# ทนายคู่ดี
 
 PHP 8 + MySQL + Bootstrap 5 MVP สำหรับถามปัญหากฎหมายกับ AI และ Match ทนายหลังผู้ใช้ยินยอมเท่านั้น
 

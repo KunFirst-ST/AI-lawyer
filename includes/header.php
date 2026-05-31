@@ -28,7 +28,7 @@ if ($user) {
     <script>
         (() => {
             try {
-                const savedTheme = localStorage.getItem('ai_lawyer_theme');
+                const savedTheme = localStorage.getItem('thanai_khu_dee_theme') || localStorage.getItem('ai_lawyer_theme');
                 const prefersNight = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
                 document.documentElement.dataset.theme = savedTheme || (prefersNight ? 'night' : 'day');
             } catch (error) {
@@ -39,12 +39,14 @@ if ($user) {
     <link href="<?= e(url('/assets/vendor/bootstrap/css/bootstrap.min.css')) ?>" rel="stylesheet">
     <link href="<?= e(url('/assets/vendor/bootstrap-icons/bootstrap-icons.css')) ?>" rel="stylesheet">
     <link href="<?= e(url('/assets/css/app.css') . '?v=' . $cssVersion) ?>" rel="stylesheet">
+    <link rel="icon" href="<?= e(url('/assets/images/thanai-khu-dee-mark.svg')) ?>" type="image/svg+xml">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold text-primary" href="<?= e(url('/public/index.php')) ?>">
-            <i class="bi bi-shield-check me-1"></i> AI Lawyer
+        <a class="navbar-brand" href="<?= e(url('/public/index.php')) ?>" aria-label="ทนายคู่ดี หน้าแรก">
+            <img class="brand-mark" src="<?= e(url('/assets/images/thanai-khu-dee-mark.svg')) ?>" alt="">
+            <span class="brand-wordmark"><strong>ทนายคู่ดี</strong><small>LEGAL CARE PLATFORM</small></span>
         </a>
         <div class="navbar-quick-actions">
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="สลับโหมดกลางวันกลางคืน" title="สลับโหมดกลางวัน/กลางคืน">
@@ -73,8 +75,8 @@ if ($user) {
                     <a class="btn btn-outline-primary btn-sm" href="<?= e(dashboardPathForRole($user['role'])) ?>"><?= e($user['role'] === 'user' ? 'ถาม AI' : 'แดชบอร์ด') ?></a>
                     <a class="btn btn-light btn-sm" href="<?= e(url('/public/logout.php')) ?>">ออกจากระบบ</a>
                 <?php else: ?>
-                    <a class="btn btn-outline-primary btn-sm" href="<?= e(url('/public/portals.php')) ?>">เลือกพอร์ทัล</a>
-                    <a class="btn btn-primary btn-sm" href="<?= e(url('/public/register.php')) ?>">สมัครผู้ใช้</a>
+                    <a class="btn btn-outline-primary btn-sm" href="<?= e(url('/public/portals.php')) ?>">เข้าสู่ระบบ</a>
+                    <a class="btn btn-primary btn-sm" href="<?= e(url('/public/register.php')) ?>">เริ่มใช้งาน</a>
                 <?php endif; ?>
             </div>
         </div>

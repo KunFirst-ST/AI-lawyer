@@ -8,7 +8,10 @@ $callVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/call-ui.js') 
     <div class="container">
         <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 small text-muted">
             <div>
-                <div class="fw-semibold text-dark">&copy; <?= e((string) $year) ?> AI Lawyer Matching Platform</div>
+                <a class="footer-brand" href="<?= e(url('/public/index.php')) ?>">
+                    <img src="<?= e(url('/assets/images/thanai-khu-dee-mark.svg')) ?>" alt="">
+                    <span><strong>ทนายคู่ดี</strong><small>&copy; <?= e((string) $year) ?> Legal Care Platform</small></span>
+                </a>
                 <div>AI วิเคราะห์เบื้องต้น ไม่ใช่คำปรึกษาทางกฎหมายจากทนายโดยตรง</div>
             </div>
             <div class="footer-links d-flex flex-wrap gap-3">

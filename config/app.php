@@ -3,7 +3,7 @@
 require_once __DIR__ . '/env.php';
 
 return [
-    'app_name' => 'AI Lawyer Matching Platform',
+    'app_name' => 'ทนายคู่ดี',
     'base_url' => envValue('APP_URL', ''),
     'env' => envValue('APP_ENV', 'local'),
     'debug' => envBool('APP_DEBUG', false),
@@ -45,7 +45,7 @@ return [
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ],
     'bank' => [
-        'account_name' => 'AI Lawyer Matching Platform Co., Ltd.',
+        'account_name' => 'ทนายคู่ดี',
         'account_number' => '000-0-00000-0',
         'bank_name' => 'ธนาคารตัวอย่าง',
         'promptpay_id' => '0999999999',

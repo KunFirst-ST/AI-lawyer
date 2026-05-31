@@ -89,7 +89,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <header class="chat-room-header">
                             <div class="chat-avatar lg"><i class="bi bi-robot"></i></div>
                             <div>
-                                <h1>AI Legal Assistant</h1>
+                                <h1>ผู้ช่วยกฎหมาย คู่ดี AI</h1>
                                 <p><?= $activeCase ? e($activeCase['title']) : 'เริ่มเล่าปัญหากฎหมายของคุณได้เลย' ?></p>
                             </div>
                             <div class="ai-room-actions ms-auto">

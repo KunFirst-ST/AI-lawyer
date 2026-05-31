@@ -106,7 +106,7 @@ final class MemberRegistrationService
     private function notifyWelcome(array $user): void
     {
         $notify = new NotificationService();
-        $notify->create((int) $user['id'], 'สมัครสมาชิกสำเร็จ', 'ยินดีต้อนรับเข้าสู่ AI Lawyer คุณสามารถเริ่มถาม AI หรือค้นหาทนายได้ทันที', 'account');
+        $notify->create((int) $user['id'], 'สมัครสมาชิกสำเร็จ', 'ยินดีต้อนรับสู่ทนายคู่ดี คุณสามารถเริ่มถาม AI หรือค้นหาทนายได้ทันที', 'account');
 
         $admins = db()->query('SELECT id FROM users WHERE role = "admin" AND status = "active"')->fetchAll();
         foreach ($admins as $admin) {

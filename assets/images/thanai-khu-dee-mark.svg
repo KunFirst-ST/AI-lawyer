@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>ทนายคู่ดี</title>
+  <rect width="64" height="64" rx="18" fill="#0B433D"/>
+  <path d="M18 31.5C18 24.044 24.044 18 31.5 18H36" stroke="#E7F4EF" stroke-width="5" stroke-linecap="round"/>
+  <path d="M46 32.5C46 39.956 39.956 46 32.5 46H28" stroke="#E7F4EF" stroke-width="5" stroke-linecap="round"/>
+  <path d="M23 40.5C19.91 38.027 18 34.2 18 30" stroke="#F1B56A" stroke-width="5" stroke-linecap="round"/>
+  <path d="M41 23.5C44.09 25.973 46 29.8 46 34" stroke="#F1B56A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="24" cy="24" r="4" fill="#FFFFFF"/>
+  <circle cx="40" cy="40" r="4" fill="#FFFFFF"/>
+</svg>

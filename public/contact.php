@@ -48,7 +48,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="row g-4 align-items-start">
             <div class="col-lg-5">
                 <span class="legal-badge mb-3"><i class="bi bi-headset"></i> Support</span>
-                <h1 class="fw-bold mb-3">ติดต่อทีมงาน AI Lawyer</h1>
+                <h1 class="fw-bold mb-3">ติดต่อทีมงานทนายคู่ดี</h1>
                 <p class="lead text-muted">ส่งคำถามเรื่องการใช้งาน สมัครทนาย การชำระเงิน หรือประเด็นข้อมูลส่วนบุคคล ทีมงานจะตรวจในแอดมินและตอบกลับตามความเร่งด่วน</p>
                 <div class="row g-3 mt-2">
                     <div class="col-sm-6">

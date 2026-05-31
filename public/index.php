@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'AI Lawyer Matching Platform';
+$pageTitle = 'ทนายคู่ดี | เข้าใจกฎหมาย เข้าถึงทนาย';
 require_once __DIR__ . '/../includes/header.php';
 
 $categories = [];
@@ -23,171 +23,137 @@ try {
         ['name' => 'กฎหมายธุรกิจ', 'slug' => 'business', 'description' => 'บริษัท หุ้นส่วน สัญญา'],
     ];
 }
+
+$categoryIcons = [
+    'criminal' => 'shield-exclamation',
+    'civil' => 'file-earmark-text',
+    'family' => 'people',
+    'labor' => 'briefcase',
+    'business' => 'buildings',
+    'land' => 'geo-alt',
+    'inheritance' => 'diagram-3',
+    'tax' => 'calculator',
+    'consumer' => 'bag-check',
+    'contract' => 'pen',
+];
 ?>
-<section class="hero section-band">
-    <div class="container">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-6">
-                <span class="legal-badge mb-3"><i class="bi bi-stars"></i> AI Legal Assistant สำหรับประเทศไทย</span>
-                <h1 class="display-5 fw-bold mb-3">ถามปัญหากฎหมายกับ AI แล้วเลือกให้ระบบช่วยหาทนายเมื่อคุณพร้อม</h1>
-                <p class="lead text-muted mb-4">AI ช่วยวิเคราะห์ปัญหากฎหมายเบื้องต้นเท่านั้น ไม่ใช่คำปรึกษาทางกฎหมายจากทนายโดยตรง</p>
-                <p class="text-muted">หากต้องการ ระบบสามารถช่วยจับคู่ทนายที่เหมาะสมให้คุณได้ โดยจะถามความยินยอมก่อนทุกครั้ง</p>
-                <div class="d-flex flex-wrap gap-2 mt-4">
-                    <a class="btn btn-primary btn-lg" href="<?= e($user ? url('/user/ai-chat.php') : url('/user/login.php')) ?>"><i class="bi bi-chat-dots me-2"></i>ถาม AI ฟรี</a>
-                    <a class="btn btn-outline-primary btn-lg" href="<?= e(url('/public/lawyers.php')) ?>"><i class="bi bi-search me-2"></i>ค้นหาทนาย</a>
-                </div>
+<section class="brand-hero">
+    <img class="brand-hero-image" src="<?= e(url('/assets/images/thanai-khu-dee-hero.png')) ?>" alt="ทนายกำลังให้คำปรึกษาลูกความ">
+    <div class="brand-hero-shade"></div>
+    <div class="container brand-hero-content">
+        <div class="brand-hero-copy">
+            <span class="brand-kicker"><i class="bi bi-patch-check-fill"></i> พื้นที่กฎหมายที่เข้าใจคุณ</span>
+            <h1>ทนายคู่ดี</h1>
+            <p class="brand-hero-lead">เริ่มจากคำถามที่คุณกังวล ให้ AI ช่วยจัดประเด็น แล้วเลือกทนายที่เหมาะกับเรื่องของคุณอย่างมั่นใจ</p>
+            <div class="brand-hero-actions">
+                <a class="btn btn-primary btn-lg" href="<?= e($user ? url('/user/ai-chat.php') : url('/user/login.php')) ?>"><i class="bi bi-chat-heart me-2"></i>เริ่มปรึกษาเบื้องต้น</a>
+                <a class="btn btn-light btn-lg" href="<?= e(url('/public/lawyers.php')) ?>"><i class="bi bi-search me-2"></i>ค้นหาทนาย</a>
             </div>
-            <div class="col-lg-6">
-                <div class="hero-visual app-card p-4">
-                    <div class="hero-visual-inner">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div>
-                                <div class="small text-white-50">Case Analysis</div>
-                                <h3 class="h5 mb-0">AI วิเคราะห์เบื้องต้น</h3>
-                            </div>
-                            <span class="badge text-bg-success">Consent Required</span>
-                        </div>
-                        <div class="bg-white text-dark p-3 rounded-2 mb-3">
-                            <div class="small text-muted">หมวดหลัก</div>
-                            <div class="fw-bold">กฎหมายอาญา</div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-6"><div class="bg-white text-dark p-3 rounded-2"><div class="small text-muted">ซับซ้อน</div><div class="fw-bold">ปานกลาง</div></div></div>
-                            <div class="col-6"><div class="bg-white text-dark p-3 rounded-2"><div class="small text-muted">เร่งด่วน</div><div class="fw-bold">สูง</div></div></div>
-                        </div>
-                        <div class="mt-4 p-3 border border-light rounded-2">
-                            <div class="fw-semibold mb-2">ต้องการให้ระบบช่วยหาทนายไหม?</div>
-                            <div class="d-flex gap-2">
-                                <span class="btn btn-light btn-sm disabled">ต้องการหาทนาย</span>
-                                <span class="btn btn-outline-light btn-sm disabled">ยังไม่ต้องการ</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="brand-hero-note"><i class="bi bi-shield-check"></i> คุณเป็นผู้ตัดสินใจทุกขั้นตอน ระบบจะไม่ส่งต่อเคสให้ทนายจนกว่าจะได้รับความยินยอม</div>
         </div>
     </div>
 </section>
 
-<section class="section-band bg-white">
+<section class="trust-strip">
     <div class="container">
-        <div class="row g-4 align-items-start">
-            <div class="col-lg-4">
-                <h2 class="h3 fw-bold">AI Legal Assistant ทำอะไรได้บ้าง</h2>
-                <p class="text-muted">ระบบช่วยแยกหมวดกฎหมาย วิเคราะห์ความซับซ้อน ความเร่งด่วน และแนะนำเอกสารที่ควรเตรียม โดยไม่จับคู่ทนายทันทีหลังวิเคราะห์</p>
-            </div>
-            <div class="col-lg-8">
-                <div class="row g-3">
-                    <?php foreach (['แยกหมวดหลักและหมวดเกี่ยวข้อง', 'ประเมินความซับซ้อนและเร่งด่วน', 'แนะนำเอกสารที่ควรเตรียม', 'ถามความยินยอมก่อน Match เสมอ'] as $item): ?>
-                        <div class="col-md-6">
-                            <div class="app-card p-3 h-100">
-                                <span class="icon-pill mb-3"><i class="bi bi-check2-circle"></i></span>
-                                <div class="fw-semibold"><?= e($item) ?></div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+        <div class="trust-grid">
+            <div><i class="bi bi-person-check"></i><span><strong>ทนายผ่านการตรวจสอบ</strong><small>โปรไฟล์พร้อมข้อมูลสำคัญ</small></span></div>
+            <div><i class="bi bi-stars"></i><span><strong>AI ช่วยจัดประเด็น</strong><small>เริ่มต้นได้แม้ยังไม่รู้หมวดกฎหมาย</small></span></div>
+            <div><i class="bi bi-chat-square-text"></i><span><strong>คุยต่อเนื่องในระบบ</strong><small>แชต เสียง ไฟล์ และวิดีโอคอล</small></span></div>
+            <div><i class="bi bi-shield-lock"></i><span><strong>ควบคุมการส่งต่อข้อมูล</strong><small>ยินยอมก่อน Match ทนายเสมอ</small></span></div>
         </div>
     </div>
 </section>
 
-<section class="section-band">
+<section class="section-band brand-intro">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-3">
-            <div>
-                <h2 class="h3 fw-bold mb-1">หมวดกฎหมายยอดนิยม</h2>
-                <p class="text-muted mb-0">รองรับเคสหลายหมวดในคดีเดียว</p>
-            </div>
+        <div class="section-heading">
+            <span class="brand-kicker">เริ่มต้นได้ง่าย</span>
+            <h2>จากเรื่องที่กังวล สู่คำปรึกษาที่ตรงจุด</h2>
+            <p>ทนายคู่ดีช่วยลดความสับสนในช่วงแรก และทำให้การเข้าถึงทนายเป็นขั้นตอนที่ชัดเจนขึ้น</p>
         </div>
-        <div class="row g-3">
-            <?php foreach ($categories as $category): ?>
-                <div class="col-md-3">
-                    <a class="app-card p-3 h-100 d-block text-dark" href="<?= e(url('/public/lawyers.php?category=' . urlencode($category['slug']))) ?>">
-                        <div class="fw-bold"><?= e($category['name']) ?></div>
-                        <div class="small-muted mt-1"><?= e($category['description'] ?? '') ?></div>
-                    </a>
-                </div>
+        <div class="brand-steps">
+            <?php foreach ([
+                ['chat-dots', 'เล่าเรื่องที่เกิดขึ้น', 'เริ่มจากภาษาธรรมดา ไม่จำเป็นต้องรู้ศัพท์กฎหมาย'],
+                ['stars', 'รับสรุปเบื้องต้นจาก AI', 'ดูหมวด ประเด็น ความเร่งด่วน และเอกสารที่ควรเตรียม'],
+                ['person-check', 'เลือกทนายที่เหมาะกับคุณ', 'เปรียบเทียบข้อมูล นัดหมาย และติดตามสถานะได้ในระบบ'],
+            ] as $index => $step): ?>
+                <article>
+                    <span class="brand-step-number">0<?= $index + 1 ?></span>
+                    <i class="bi bi-<?= e($step[0]) ?>"></i>
+                    <h3><?= e($step[1]) ?></h3>
+                    <p><?= e($step[2]) ?></p>
+                </article>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
 
-<section class="section-band bg-white">
+<section class="section-band brand-category-section">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-3">
+        <div class="section-heading section-heading-row">
             <div>
-                <h2 class="h3 fw-bold mb-1">ทนายแนะนำ</h2>
-                <p class="text-muted mb-0">แสดงเฉพาะทนายที่ผ่านการอนุมัติจากแอดมิน</p>
+                <span class="brand-kicker">หมวดกฎหมาย</span>
+                <h2>ค้นหาความช่วยเหลือที่ตรงเรื่อง</h2>
+                <p>เลือกหมวดเพื่อดูทนาย หรือเริ่มจาก AI หากยังไม่แน่ใจว่าปัญหาอยู่ในกลุ่มไหน</p>
             </div>
-            <a href="<?= e(url('/public/lawyers.php')) ?>" class="btn btn-outline-primary">ดูทั้งหมด</a>
+            <a class="btn btn-outline-primary" href="<?= e(url('/public/lawyers.php')) ?>">ดูทนายทั้งหมด <i class="bi bi-arrow-right ms-2"></i></a>
         </div>
-        <div class="row g-3">
+        <div class="category-grid">
+            <?php foreach ($categories as $category): ?>
+                <a class="category-tile" href="<?= e(url('/public/lawyers.php?category=' . urlencode($category['slug']))) ?>">
+                    <i class="bi bi-<?= e($categoryIcons[$category['slug']] ?? 'folder2-open') ?>"></i>
+                    <span><strong><?= e($category['name']) ?></strong><small><?= e($category['description'] ?? '') ?></small></span>
+                    <i class="bi bi-arrow-up-right"></i>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<section class="section-band lawyer-showcase">
+    <div class="container">
+        <div class="section-heading section-heading-row">
+            <div>
+                <span class="brand-kicker">ทนายแนะนำ</span>
+                <h2>เริ่มรู้จักทนายก่อนตัดสินใจ</h2>
+                <p>ดูพื้นที่ให้บริการ ค่าปรึกษา และข้อมูลยืนยันก่อนเลือกนัดหมาย</p>
+            </div>
+            <a class="btn btn-outline-primary" href="<?= e(url('/public/lawyers.php')) ?>">ค้นหาทนาย <i class="bi bi-search ms-2"></i></a>
+        </div>
+        <div class="lawyer-showcase-grid">
             <?php foreach ($featuredLawyers as $lawyer): ?>
-                <div class="col-md-4">
-                    <div class="app-card p-3 h-100">
-                        <div class="d-flex gap-3">
-                            <div class="profile-avatar"><i class="bi bi-person-badge"></i></div>
-                            <div>
-                                <h3 class="h6 fw-bold mb-1"><?= e($lawyer['name']) ?></h3>
-                                <div class="small-muted"><?= e($lawyer['province']) ?> · <?= e(formatMoney($lawyer['consultation_fee'])) ?></div>
-                                <div class="mt-2">
-                                    <span class="badge text-bg-success">Verified</span>
-                                    <span class="badge text-bg-light text-dark">รีวิว <?= e(number_format((float) $lawyer['avg_rating'], 1)) ?></span>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="btn btn-sm btn-primary mt-3" href="<?= e(url('/public/lawyer-detail.php?id=' . $lawyer['id'])) ?>">ดูโปรไฟล์</a>
+                <article class="lawyer-showcase-card">
+                    <div class="lawyer-showcase-head">
+                        <div class="profile-avatar"><i class="bi bi-person-badge"></i></div>
+                        <span class="verified-pill"><i class="bi bi-patch-check-fill"></i> ยืนยันแล้ว</span>
                     </div>
-                </div>
+                    <h3><?= e($lawyer['name']) ?></h3>
+                    <p><i class="bi bi-geo-alt"></i> <?= e($lawyer['province']) ?></p>
+                    <div class="lawyer-showcase-meta">
+                        <span><small>ค่าปรึกษา</small><strong><?= e(formatMoney($lawyer['consultation_fee'])) ?></strong></span>
+                        <span><small>คะแนนรีวิว</small><strong><?= e(number_format((float) $lawyer['avg_rating'], 1)) ?></strong></span>
+                    </div>
+                    <a class="btn btn-outline-primary w-100" href="<?= e(url('/public/lawyer-detail.php?id=' . $lawyer['id'])) ?>">ดูโปรไฟล์ทนาย</a>
+                </article>
             <?php endforeach; ?>
             <?php if (!$featuredLawyers): ?>
-                <div class="col-12"><div class="alert alert-info">ยังไม่มีทนายที่แสดงในระบบ กรุณา import database และอนุมัติทนาย</div></div>
+                <div class="alert alert-info mb-0">ยังไม่มีทนายที่เปิดรับงานในขณะนี้</div>
             <?php endif; ?>
         </div>
     </div>
 </section>
 
-<section class="section-band">
+<section class="brand-care-band">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-4"><h2 class="h3 fw-bold">ขั้นตอนการใช้งาน</h2></div>
-            <div class="col-lg-8">
-                <div class="row g-3">
-                    <?php foreach (['ถามปัญหากฎหมายกับ AI', 'อ่านผลวิเคราะห์เบื้องต้นและเอกสารที่ควรเตรียม', 'ตัดสินใจว่าจะให้ระบบหาทนายหรือไม่', 'เลือกทนาย จองปรึกษา และอัปโหลดสลิป'] as $index => $step): ?>
-                        <div class="col-md-6">
-                            <div class="app-card p-3 h-100">
-                                <div class="fw-bold text-primary mb-2">0<?= $index + 1 ?></div>
-                                <div><?= e($step) ?></div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+        <div>
+            <span class="brand-kicker">พร้อมเริ่มเมื่อคุณพร้อม</span>
+            <h2>เรื่องกฎหมายไม่จำเป็นต้องเริ่มจากความสับสน</h2>
+            <p>เล่าเรื่องของคุณให้ AI ช่วยจัดประเด็นเบื้องต้น หรือค้นหาทนายที่ผ่านการตรวจสอบได้ทันที</p>
         </div>
-    </div>
-</section>
-
-<section class="section-band bg-white">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-md-6">
-                <h2 class="h3 fw-bold">รีวิวผู้ใช้</h2>
-                <div class="app-card p-4">“เข้าใจประเด็นกฎหมายได้เร็วขึ้น และชอบที่ระบบถามก่อนว่าจะให้หาทนายไหม”</div>
-            </div>
-            <div class="col-md-6">
-                <h2 class="h3 fw-bold">FAQ</h2>
-                <div class="accordion" id="faq">
-                    <div class="accordion-item">
-                        <h3 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">AI เป็นทนายไหม?</button></h3>
-                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faq"><div class="accordion-body">ไม่ใช่ AI ให้ข้อมูลเบื้องต้นเท่านั้น</div></div>
-                    </div>
-                    <div class="accordion-item">
-                        <h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">ระบบจับคู่ทนายทันทีหรือไม่?</button></h3>
-                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">ไม่ ระบบต้องถามความยินยอมก่อนทุกครั้ง</div></div>
-                    </div>
-                </div>
-            </div>
+        <div class="brand-care-actions">
+            <a class="btn btn-primary btn-lg" href="<?= e($user ? url('/user/ai-chat.php') : url('/public/register.php')) ?>">เริ่มใช้งานทนายคู่ดี</a>
+            <a class="btn btn-outline-primary btn-lg" href="<?= e(url('/public/faq.php')) ?>">อ่านคำถามที่พบบ่อย</a>
         </div>
     </div>
 </section>

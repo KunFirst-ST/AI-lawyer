@@ -7,7 +7,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="row g-4 align-items-start">
             <div class="col-lg-7">
                 <span class="legal-badge mb-3"><i class="bi bi-shield-check"></i> LegalTech Platform</span>
-                <h1 class="fw-bold">เกี่ยวกับ AI Lawyer Matching Platform</h1>
+                <h1 class="fw-bold">เกี่ยวกับทนายคู่ดี</h1>
                 <p class="lead text-muted">ระบบนี้ออกแบบให้ผู้ใช้เริ่มจากการทำความเข้าใจปัญหากฎหมายเบื้องต้นด้วย AI แล้วเลือกเองว่าจะให้ระบบช่วยจับคู่ทนายหรือไม่ โดยแยกบทบาทผู้ใช้ ทนาย และแอดมินอย่างชัดเจน</p>
                 <div class="app-card p-4">
                     <h2 class="h5 fw-bold">หลักการสำคัญ</h2>

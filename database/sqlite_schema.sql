@@ -336,6 +336,6 @@ INSERT OR IGNORE INTO app_settings (setting_key, setting_value) VALUES
 ('legal_disclaimer', 'AI provides preliminary legal issue spotting only and is not direct legal advice from a lawyer.'),
 ('auto_match_after_consent', '1'),
 ('commission_percent', '20'),
-('bank_account_name', 'AI Lawyer Matching Platform Co., Ltd.'),
+('bank_account_name', 'ทนายคู่ดี'),
 ('bank_account_number', '000-0-00000-0'),
 ('promptpay_id', '0999999999');

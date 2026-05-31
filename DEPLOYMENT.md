@@ -1,6 +1,6 @@
 # Deployment Guide
 
-แนวทางนี้สำหรับนำ AI Lawyer Matching Platform ไปใช้จริงบน XAMPP, VPS, shared hosting หรือ internal server
+แนวทางนี้สำหรับนำทนายคู่ดีไปใช้จริงบน XAMPP, VPS, shared hosting หรือ internal server
 
 ## 1. Requirements
 
