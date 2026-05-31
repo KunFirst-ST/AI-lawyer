@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../services/ActivityService.php';
 requireRole('user');
 $user = currentUser();
 $caseId = (int) ($_GET['id'] ?? 0);
@@ -23,6 +24,7 @@ $chats = $chatStmt->fetchAll();
 $docStmt = db()->prepare('SELECT * FROM documents WHERE case_id = ? AND user_id = ? ORDER BY created_at DESC');
 $docStmt->execute([$caseId, $user['id']]);
 $documents = $docStmt->fetchAll();
+$timeline = (new ActivityService())->caseTimeline($caseId);
 
 $pageTitle = 'รายละเอียดเคส';
 require_once __DIR__ . '/../includes/header.php';
@@ -79,6 +81,21 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php endforeach; ?>
                             <?php if (!$documents): ?><div class="text-muted">ยังไม่มีเอกสาร</div><?php endif; ?>
                         </div>
+                    </div>
+                </div>
+                <div class="app-card p-3 mt-3">
+                    <h2 class="h5 fw-bold mb-3">Timeline เคส</h2>
+                    <div class="case-timeline">
+                        <?php foreach ($timeline as $event): ?>
+                            <div class="case-timeline-item">
+                                <span class="case-timeline-dot"></span>
+                                <div>
+                                    <strong><?= e($event['title']) ?></strong>
+                                    <small><?= e($event['actor_name'] ?: 'ระบบ') ?> · <?= e(formatDateThai($event['created_at'])) ?></small>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                        <?php if (!$timeline): ?><div class="text-muted">ยังไม่มีเหตุการณ์ใน timeline</div><?php endif; ?>
                     </div>
                 </div>
             </div>

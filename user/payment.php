@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../services/BookingWorkflowService.php';
 requireRole('user');
 $user = currentUser();
+(new BookingWorkflowService())->ensureSchema();
 $bookingId = (int) ($_GET['booking_id'] ?? 0);
 $stmt = db()->prepare(
     'SELECT b.*, b.status AS booking_status, p.id AS payment_id, p.amount, p.status AS payment_status, p.slip_image, u.name AS lawyer_name
@@ -25,7 +27,7 @@ $bank = [
     'account_number' => setting('bank_account_number', $bankConfig['account_number']),
     'promptpay_id' => setting('promptpay_id', $bankConfig['promptpay_id']),
 ];
-$canUpload = $booking['booking_status'] === 'pending' && in_array($booking['payment_status'], ['pending', 'rejected'], true);
+$canUpload = $booking['booking_status'] === 'pending' && $booking['lawyer_response_status'] === 'accepted' && in_array($booking['payment_status'], ['pending', 'rejected'], true);
 $pageTitle = 'ชำระเงิน';
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -61,7 +63,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="col-12"><button class="btn btn-primary">ส่งสลิปให้แอดมินตรวจสอบ</button></div>
                     </form>
                     <?php else: ?>
-                        <div class="alert alert-info mb-0">รายการนี้ถูกล็อกตามสถานะปัจจุบัน ไม่ต้องอัปโหลดสลิปเพิ่ม</div>
+                        <div class="alert alert-info mb-0"><?= $booking['lawyer_response_status'] === 'pending' ? 'กรุณารอทนายตอบรับนัดหมายก่อนชำระเงิน' : 'รายการนี้ถูกล็อกตามสถานะปัจจุบัน ไม่ต้องอัปโหลดสลิปเพิ่ม' ?></div>
                     <?php endif; ?>
                     <div class="mt-3">สถานะ: <span class="badge text-bg-light text-dark"><?= e($booking['payment_status']) ?></span></div>
                     <div id="paymentResult" class="mt-3"></div>

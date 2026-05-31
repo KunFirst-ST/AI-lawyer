@@ -16,7 +16,9 @@ try {
         jsonResponse(false, 'กรุณาเลือกคู่สนทนา', [], ['peer_id' => 'required'], 422);
     }
 
-    (new ConversationService())->assertCanTalk($currentUserId, $peerId);
+    $conversation = new ConversationService();
+    $conversation->assertCanTalk($currentUserId, $peerId);
+    $conversation->markThreadRead($currentUserId, $peerId);
 
     ensureMessageMediaColumns();
     $threadStmt = db()->prepare(

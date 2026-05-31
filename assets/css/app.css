@@ -1920,13 +1920,72 @@ body.admin-page {
 
 .chat-contact {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) auto;
+    grid-template-columns: 42px minmax(0, 1fr) auto auto;
     gap: .75rem;
     align-items: center;
     padding: .75rem;
     border: 1px solid transparent;
     border-radius: 8px;
     color: #344054;
+}
+
+.chat-unread-badge {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 .35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #c73b4a;
+    color: #fff;
+    font-size: .72rem;
+    line-height: 1;
+}
+
+.case-timeline {
+    display: grid;
+    gap: 0;
+}
+
+.case-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: .7rem;
+    min-height: 58px;
+    padding-bottom: .8rem;
+}
+
+.case-timeline-item:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 15px;
+    bottom: 0;
+    width: 2px;
+    background: rgba(36, 87, 166, .18);
+}
+
+.case-timeline-dot {
+    position: relative;
+    z-index: 1;
+    width: 16px;
+    height: 16px;
+    margin-top: .2rem;
+    border: 3px solid #dce9ff;
+    border-radius: 50%;
+    background: var(--app-primary);
+}
+
+.case-timeline-item strong,
+.case-timeline-item small {
+    display: block;
+}
+
+.case-timeline-item small {
+    margin-top: .2rem;
+    color: var(--app-muted);
 }
 
 .chat-contact:hover,

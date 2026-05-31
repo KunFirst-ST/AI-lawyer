@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../services/NotificationService.php';
+require_once __DIR__ . '/../services/BookingWorkflowService.php';
 requireRole('lawyer');
 
 $user = currentUser();
+$workflow = new BookingWorkflowService();
+$workflow->ensureSchema();
 $lawyerStmt = db()->prepare('SELECT id FROM lawyers WHERE user_id = ? ORDER BY id DESC LIMIT 1');
 $lawyerStmt->execute([$user['id']]);
 $lawyerId = (int) ($lawyerStmt->fetchColumn() ?: 0);
@@ -13,39 +15,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bookingId = (int) ($_POST['booking_id'] ?? 0);
     $action = $_POST['action'] ?? '';
 
-    if ($action === 'complete' && $lawyerId > 0) {
-        $stmt = db()->prepare(
-            'SELECT b.*, c.title AS case_title
-             FROM bookings b
-             JOIN cases c ON c.id = b.case_id
-             WHERE b.id = ? AND b.lawyer_id = ?
-             LIMIT 1'
-        );
-        $stmt->execute([$bookingId, $lawyerId]);
-        $booking = $stmt->fetch();
-
-        if (!$booking || $booking['status'] !== 'confirmed') {
-            flash('danger', 'สามารถปิดงานได้เฉพาะ Booking ที่ยืนยันแล้วเท่านั้น');
-        } else {
-            $pdo = db();
-            $pdo->beginTransaction();
-            try {
-                $pdo->prepare('UPDATE bookings SET status = "completed" WHERE id = ? AND lawyer_id = ?')->execute([$bookingId, $lawyerId]);
-                $pdo->prepare('UPDATE cases SET status = "closed" WHERE id = ?')->execute([(int) $booking['case_id']]);
-                $pdo->commit();
-
-                (new NotificationService())->create(
-                    (int) $booking['user_id'],
-                    'การปรึกษาเสร็จสิ้นแล้ว',
-                    'Booking สำหรับเคส "' . ($booking['case_title'] ?: 'ไม่ระบุชื่อเคส') . '" ถูกปิดงานแล้ว คุณสามารถให้รีวิวทนายได้',
-                    'booking'
-                );
-                flash('success', 'ปิดงานเรียบร้อย ผู้ใช้สามารถให้รีวิวได้แล้ว');
-            } catch (Throwable $exception) {
-                $pdo->rollBack();
-                flash('danger', 'ไม่สามารถปิดงานได้: ' . $exception->getMessage());
-            }
+    try {
+        if (in_array($action, ['accept', 'reject'], true)) {
+            $workflow->respond((int) $user['id'], $bookingId, $action, trim((string) ($_POST['lawyer_note'] ?? '')));
+            flash('success', $action === 'accept' ? 'ตอบรับนัดหมายแล้ว' : 'ปฏิเสธนัดหมายแล้ว');
+        } elseif ($action === 'complete') {
+            $workflow->complete((int) $user['id'], $bookingId);
+            flash('success', 'ปิดงานเรียบร้อย ผู้ใช้สามารถให้รีวิวได้แล้ว');
         }
+    } catch (DomainException $exception) {
+        flash('danger', $exception->getMessage());
+    } catch (Throwable $exception) {
+        flash('danger', 'ไม่สามารถอัปเดต Booking ได้');
     }
 
     redirect(url('/lawyer/bookings.php'));
@@ -107,7 +88,17 @@ require_once __DIR__ . '/../includes/header.php';
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if ($booking['status'] === 'confirmed'): ?>
+                                    <?php if ($booking['status'] === 'pending' && $booking['lawyer_response_status'] === 'pending'): ?>
+                                        <form method="post" class="d-flex flex-column gap-2">
+                                            <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                                            <input type="hidden" name="booking_id" value="<?= e($booking['id']) ?>">
+                                            <input class="form-control form-control-sm" name="lawyer_note" placeholder="หมายเหตุถึงลูกความ">
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-sm btn-success" name="action" value="accept">ตอบรับ</button>
+                                                <button class="btn btn-sm btn-outline-danger" name="action" value="reject">ปฏิเสธ</button>
+                                            </div>
+                                        </form>
+                                    <?php elseif ($booking['status'] === 'confirmed'): ?>
                                         <form method="post" class="d-inline">
                                             <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                             <input type="hidden" name="booking_id" value="<?= e($booking['id']) ?>">
@@ -115,6 +106,10 @@ require_once __DIR__ . '/../includes/header.php';
                                         </form>
                                     <?php elseif ($booking['status'] === 'completed'): ?>
                                         <span class="text-success small">ปิดงานแล้ว</span>
+                                    <?php elseif ($booking['lawyer_response_status'] === 'accepted'): ?>
+                                        <span class="text-muted small">ตอบรับแล้ว รอลูกค้าชำระเงิน</span>
+                                    <?php elseif ($booking['lawyer_response_status'] === 'rejected'): ?>
+                                        <span class="text-danger small">ปฏิเสธแล้ว</span>
                                     <?php else: ?>
                                         <span class="text-muted small">รอขั้นตอนก่อนหน้า</span>
                                     <?php endif; ?>

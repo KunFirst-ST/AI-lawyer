@@ -33,7 +33,7 @@ try {
 
     jsonResponse(true, 'สร้าง Booking แล้ว กรุณาชำระเงินและอัปโหลดสลิป', [
         'booking_id' => $bookingId,
-        'redirect' => url('/user/payment.php?booking_id=' . $bookingId),
+        'redirect' => url('/user/bookings.php'),
     ]);
 } catch (DomainException $exception) {
     jsonResponse(false, $exception->getMessage(), [], ['booking' => 'invalid'], 422);

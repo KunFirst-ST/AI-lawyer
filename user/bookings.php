@@ -1,9 +1,23 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../services/NotificationService.php';
+require_once __DIR__ . '/../services/BookingWorkflowService.php';
 requireRole('user');
 
 $user = currentUser();
+$workflow = new BookingWorkflowService();
+$workflow->ensureSchema();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cancel') {
+    verify_csrf();
+    try {
+        $workflow->cancelByUser((int) $user['id'], (int) ($_POST['booking_id'] ?? 0));
+        flash('success', 'ยกเลิกคำขอนัดหมายแล้ว');
+    } catch (DomainException $exception) {
+        flash('danger', $exception->getMessage());
+    }
+    redirect(url('/user/bookings.php'));
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'review') {
     verify_csrf();
@@ -103,11 +117,22 @@ require_once __DIR__ . '/../includes/header.php';
                                     <td>
                                         <div class="d-flex flex-wrap gap-2">
                                             <?php if (($booking['payment_status'] ?? '') !== 'approved'): ?>
-                                                <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/user/payment.php?booking_id=' . $booking['id'])) ?>">ชำระเงิน</a>
+                                                <?php if ($booking['status'] === 'pending' && $booking['lawyer_response_status'] === 'accepted'): ?>
+                                                    <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/user/payment.php?booking_id=' . $booking['id'])) ?>">ชำระเงิน</a>
+                                                <?php elseif ($booking['status'] === 'pending' && $booking['lawyer_response_status'] === 'pending'): ?>
+                                                    <span class="badge text-bg-warning align-self-center">รอทนายตอบรับ</span>
+                                                <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="badge text-bg-success align-self-center">ชำระแล้ว</span>
                                             <?php endif; ?>
                                             <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('/user/messages.php?lawyer_id=' . $booking['lawyer_id'] . '&case_id=' . $booking['case_id'])) ?>"><i class="bi bi-chat-dots me-1"></i>แชต</a>
+                                            <?php if ($booking['status'] === 'pending' && ($booking['payment_status'] ?? '') !== 'approved'): ?>
+                                                <form method="post" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                                                    <input type="hidden" name="booking_id" value="<?= e($booking['id']) ?>">
+                                                    <button class="btn btn-sm btn-outline-danger" name="action" value="cancel">ยกเลิก</button>
+                                                </form>
+                                            <?php endif; ?>
                                             <?php if ($booking['review_id']): ?>
                                                 <span class="badge text-bg-warning align-self-center">รีวิว <?= e($booking['review_rating']) ?>/5</span>
                                             <?php endif; ?>

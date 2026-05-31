@@ -3,11 +3,16 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/NotificationService.php';
+require_once __DIR__ . '/ActivityService.php';
+require_once __DIR__ . '/BookingWorkflowService.php';
 
 final class BookingService
 {
     public function create(int $userId, array $data): int
     {
+        (new BookingWorkflowService())->ensureSchema();
+        $activity = new ActivityService();
+        $activity->ensureSchema();
         $caseId = (int) ($data['case_id'] ?? 0);
         $lawyerId = (int) ($data['lawyer_id'] ?? 0);
         $bookingDate = trim((string) ($data['booking_date'] ?? ''));
@@ -102,31 +107,37 @@ final class BookingService
             $pdo->prepare('UPDATE case_matches SET status = "selected" WHERE case_id = ? AND lawyer_id = ?')->execute([$caseId, $lawyerId]);
             $pdo->prepare('UPDATE cases SET status = "booked" WHERE id = ? AND user_id = ?')->execute([$caseId, $userId]);
             $pdo->commit();
-
-            $this->notifyAfterCreate($bookingId, $userId, $lawyerId);
-
-            return $bookingId;
         } catch (Throwable $exception) {
             $pdo->rollBack();
             throw $exception;
         }
+
+        $activity->caseEvent($caseId, $userId, 'booking_requested', 'ผู้ใช้ส่งคำขอนัดหมายให้ทนาย', [
+            'booking_id' => $bookingId,
+            'lawyer_id' => $lawyerId,
+            'consultation_type' => $consultationType,
+        ]);
+        $activity->audit($userId, 'booking.create', 'booking', $bookingId, ['case_id' => $caseId, 'lawyer_id' => $lawyerId]);
+        $this->notifyAfterCreate($bookingId, $userId, $lawyerId);
+
+        return $bookingId;
     }
 
     private function notifyAfterCreate(int $bookingId, int $userId, int $lawyerId): void
     {
         $notify = new NotificationService();
-        $notify->create($userId, 'สร้าง Booking แล้ว', 'กรุณาชำระเงินและอัปโหลดสลิปสำหรับ Booking #' . $bookingId, 'booking');
+        $notify->create($userId, 'ส่งคำขอนัดหมายแล้ว', 'ระบบส่ง Booking #' . $bookingId . ' ให้ทนายแล้ว กรุณารอทนายตอบรับก่อนชำระเงิน', 'booking');
 
         $admins = db()->query('SELECT id FROM users WHERE role = "admin" AND status = "active"')->fetchAll();
         foreach ($admins as $admin) {
-            $notify->create((int) $admin['id'], 'มี Booking ใหม่', 'ผู้ใช้สร้าง Booking #' . $bookingId . ' และกำลังรอชำระเงิน', 'booking');
+            $notify->create((int) $admin['id'], 'มี Booking ใหม่', 'ผู้ใช้สร้าง Booking #' . $bookingId . ' และกำลังรอทนายตอบรับ', 'booking');
         }
 
         $lawyerStmt = db()->prepare('SELECT user_id FROM lawyers WHERE id = ? LIMIT 1');
         $lawyerStmt->execute([$lawyerId]);
         $lawyerUserId = $lawyerStmt->fetchColumn();
         if ($lawyerUserId !== false) {
-            $notify->create((int) $lawyerUserId, 'มีคำขอ Booking ใหม่', 'ลูกความเลือกคุณสำหรับ Booking #' . $bookingId . ' ระบบกำลังรอตรวจสอบการชำระเงิน', 'booking');
+            $notify->create((int) $lawyerUserId, 'มีคำขอ Booking ใหม่', 'ลูกความเลือกคุณสำหรับ Booking #' . $bookingId . ' กรุณาตรวจสอบและตอบรับนัดหมาย', 'booking');
         }
     }
 }

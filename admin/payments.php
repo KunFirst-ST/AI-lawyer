@@ -10,14 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $service = new PaymentService();
     if (($_POST['action'] ?? '') === 'approve') {
         try {
-            $service->approve($paymentId, $note);
+            $service->approve($paymentId, $note, (int) currentUser()['id']);
             flash('success', 'อนุมัติสลิปแล้ว');
         } catch (DomainException $exception) {
             flash('danger', $exception->getMessage());
         }
     } elseif (($_POST['action'] ?? '') === 'reject') {
         try {
-            $service->reject($paymentId, $note);
+            $service->reject($paymentId, $note, (int) currentUser()['id']);
             flash('success', 'ปฏิเสธสลิปแล้ว');
         } catch (DomainException $exception) {
             flash('danger', $exception->getMessage());

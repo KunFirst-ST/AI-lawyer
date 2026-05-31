@@ -3,16 +3,21 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/NotificationService.php';
+require_once __DIR__ . '/ActivityService.php';
+require_once __DIR__ . '/BookingWorkflowService.php';
 
 final class PaymentService
 {
-    public function approve(int $paymentId, string $adminNote = ''): void
+    public function approve(int $paymentId, string $adminNote = '', ?int $adminUserId = null): void
     {
+        (new BookingWorkflowService())->ensureSchema();
+        $activity = new ActivityService();
+        $activity->ensureSchema();
         $pdo = db();
         $pdo->beginTransaction();
         try {
             $stmt = $pdo->prepare(
-                'SELECT p.*, b.lawyer_id, b.user_id, b.price, b.case_id, b.status AS booking_status
+                'SELECT p.*, b.lawyer_id, b.user_id, b.price, b.case_id, b.status AS booking_status, b.lawyer_response_status
                  FROM payments p
                  JOIN bookings b ON b.id = p.booking_id
                  WHERE p.id = ?
@@ -23,7 +28,7 @@ final class PaymentService
             if (!$payment) {
                 throw new RuntimeException('ไม่พบรายการชำระเงิน');
             }
-            if ($payment['status'] !== 'pending' || empty($payment['slip_image']) || $payment['booking_status'] !== 'pending') {
+            if ($payment['status'] !== 'pending' || empty($payment['slip_image']) || $payment['booking_status'] !== 'pending' || $payment['lawyer_response_status'] !== 'accepted') {
                 throw new DomainException('รายการนี้ไม่พร้อมอนุมัติ กรุณาตรวจสอบสถานะและสลิปอีกครั้ง');
             }
 
@@ -53,23 +58,26 @@ final class PaymentService
             }
 
             $pdo->commit();
-
-            $notify = new NotificationService();
-            $notify->create((int) $payment['user_id'], 'ชำระเงินสำเร็จ', 'แอดมินอนุมัติสลิปแล้ว การจองของคุณได้รับการยืนยัน', 'payment');
-            $lawyerUserId = $this->lawyerUserId((int) $payment['lawyer_id']);
-            if ($lawyerUserId) {
-                $notify->create($lawyerUserId, 'มี Booking ยืนยันแล้ว', 'ลูกค้าชำระเงินเรียบร้อยแล้ว กรุณาตรวจสอบตารางนัด', 'booking');
-            }
         } catch (Throwable $exception) {
             $pdo->rollBack();
             throw $exception;
         }
+
+        $activity->caseEvent((int) $payment['case_id'], $adminUserId, 'payment_approved', 'แอดมินอนุมัติการชำระเงินและยืนยันนัดหมาย', ['payment_id' => $paymentId, 'booking_id' => (int) $payment['booking_id']]);
+        $activity->audit($adminUserId, 'payment.approve', 'payment', $paymentId, ['booking_id' => (int) $payment['booking_id']]);
+        $notify = new NotificationService();
+        $notify->create((int) $payment['user_id'], 'ชำระเงินสำเร็จ', 'แอดมินอนุมัติสลิปแล้ว การจองของคุณได้รับการยืนยัน', 'payment');
+        $lawyerUserId = $this->lawyerUserId((int) $payment['lawyer_id']);
+        if ($lawyerUserId) {
+            $notify->create($lawyerUserId, 'มี Booking ยืนยันแล้ว', 'ลูกค้าชำระเงินเรียบร้อยแล้ว กรุณาตรวจสอบตารางนัด', 'booking');
+        }
     }
 
-    public function reject(int $paymentId, string $adminNote = ''): void
+    public function reject(int $paymentId, string $adminNote = '', ?int $adminUserId = null): void
     {
+        (new BookingWorkflowService())->ensureSchema();
         $stmt = db()->prepare(
-            'SELECT p.*, b.user_id
+            'SELECT p.*, b.user_id, b.case_id
              FROM payments p
              JOIN bookings b ON b.id = p.booking_id
              WHERE p.id = ?
@@ -86,6 +94,9 @@ final class PaymentService
 
         $update = db()->prepare('UPDATE payments SET status = "rejected", admin_note = ? WHERE id = ?');
         $update->execute([$adminNote, $paymentId]);
+        $activity = new ActivityService();
+        $activity->caseEvent((int) $payment['case_id'], $adminUserId, 'payment_rejected', 'แอดมินขอให้ตรวจสอบสลิปใหม่', ['payment_id' => $paymentId, 'note' => $adminNote]);
+        $activity->audit($adminUserId, 'payment.reject', 'payment', $paymentId, ['case_id' => (int) $payment['case_id']]);
 
         (new NotificationService())->create(
             (int) $payment['user_id'],

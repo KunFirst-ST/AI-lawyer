@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../services/NotificationService.php';
+require_once __DIR__ . '/../services/ActivityService.php';
 requireRole('admin');
 $lawyerId = (int) ($_GET['id'] ?? ($_POST['lawyer_id'] ?? 0));
 
@@ -17,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $verified = $action === 'approve' ? 1 : 0;
         $stmt = db()->prepare('UPDATE lawyers SET status = ?, verified = ? WHERE id = ?');
         $stmt->execute([$status, $verified, $lawyerId]);
+        (new ActivityService())->audit((int) currentUser()['id'], 'lawyer.' . $status, 'lawyer', $lawyerId);
         $userStmt = db()->prepare('SELECT user_id FROM lawyers WHERE id = ? LIMIT 1');
         $userStmt->execute([$lawyerId]);
         $lawyerUserId = $userStmt->fetchColumn();

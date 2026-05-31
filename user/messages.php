@@ -49,6 +49,17 @@ if (!$activeContact) {
     $activePeerId = (int) ($contacts[0]['user_id'] ?? 0);
     $activeContact = $contacts[0] ?? null;
 }
+$conversationService->markThreadRead((int) $user['id'], $activePeerId);
+if ($activeContact) {
+    $activeContact['unread_count'] = 0;
+    foreach ($contacts as &$contact) {
+        if ((int) $contact['user_id'] === $activePeerId) {
+            $contact['unread_count'] = 0;
+            break;
+        }
+    }
+    unset($contact);
+}
 
 $thread = [];
 if ($activePeerId > 0) {
@@ -105,6 +116,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <small><?= e($latest['message'] ?? ($contact['province'] ?: 'พร้อมให้คุยในแชต')) ?></small>
                                     </span>
                                     <em><?= $latest ? e(substr((string) $latest['created_at'], 5, 11)) : '' ?></em>
+                                    <?php if ((int) ($contact['unread_count'] ?? 0) > 0): ?><b class="chat-unread-badge"><?= e((string) min((int) $contact['unread_count'], 99)) ?></b><?php endif; ?>
                                 </a>
                             <?php endforeach; ?>
                             <?php if (!$contacts): ?><div class="text-muted p-3">ยังไม่มีทนายที่เชื่อมกับเคสของคุณ</div><?php endif; ?>

@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/ActivityService.php';
 
 final class CaseService
 {
@@ -9,6 +10,7 @@ final class CaseService
     {
         $pdo = db();
         $pdo->beginTransaction();
+        $created = false;
 
         try {
             $case = $caseId ? $this->findForUser($caseId, $userId) : null;
@@ -45,6 +47,7 @@ final class CaseService
                     $userId,
                 ]);
             } else {
+                $created = true;
                 $stmt = $pdo->prepare(
                     'INSERT INTO cases
                      (user_id, title, description, primary_category_id, complexity_level, urgency, ai_summary, lawyer_review_required, match_status, status)
@@ -69,12 +72,18 @@ final class CaseService
                 $this->syncIssues((int) $caseId, $analysis['sub_issues'] ?? []);
             }
             $pdo->commit();
-
-            return (int) $caseId;
         } catch (Throwable $exception) {
             $pdo->rollBack();
             throw $exception;
         }
+
+        if ($created) {
+            $activity = new ActivityService();
+            $activity->caseEvent((int) $caseId, $userId, 'case_created', 'สร้างเคสจากการสนทนากับ AI');
+            $activity->audit($userId, 'case.create', 'case', (int) $caseId);
+        }
+
+        return (int) $caseId;
     }
 
     public function saveChat(int $userId, int $caseId, string $userMessage, array $analysis): void
@@ -279,6 +288,17 @@ final class CaseService
             $caseId,
             $userId,
         ]);
+
+        if ($stmt->rowCount() > 0) {
+            $activity = new ActivityService();
+            $activity->caseEvent(
+                $caseId,
+                $userId,
+                $wantsLawyer ? 'lawyer_requested' : 'lawyer_declined',
+                $wantsLawyer ? 'ผู้ใช้ขอให้ระบบช่วยค้นหาทนาย' : 'ผู้ใช้ยังไม่ต้องการค้นหาทนาย'
+            );
+            $activity->audit($userId, $wantsLawyer ? 'case.request_lawyer' : 'case.decline_lawyer', 'case', $caseId);
+        }
     }
 
     public function categoryIdBySlug(?string $slug): ?int

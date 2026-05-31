@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../services/ActivityService.php';
 requireRole('lawyer');
 $user = currentUser();
 $caseId = (int) ($_GET['id'] ?? 0);
@@ -24,6 +25,7 @@ if (!$case) {
 $docStmt = db()->prepare('SELECT * FROM documents WHERE case_id = ? ORDER BY created_at DESC');
 $docStmt->execute([$caseId]);
 $documents = $docStmt->fetchAll();
+$timeline = (new ActivityService())->caseTimeline($caseId);
 $pageTitle = 'รายละเอียดเคส';
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -48,6 +50,21 @@ require_once __DIR__ . '/../includes/header.php';
                     <h2 class="h6 fw-bold">เอกสาร</h2>
                     <?php foreach ($documents as $doc): ?><div class="border-bottom py-2"><i class="bi bi-paperclip me-2"></i><a href="<?= e(url('/public/file.php?document_id=' . $doc['id'])) ?>" target="_blank"><?= e($doc['original_name'] ?: basename($doc['file_path'])) ?></a></div><?php endforeach; ?>
                     <?php if (!$documents): ?><div class="text-muted">ยังไม่มีเอกสาร</div><?php endif; ?>
+                </div>
+                <div class="app-card p-3 mt-3">
+                    <h2 class="h5 fw-bold mb-3">Timeline เคส</h2>
+                    <div class="case-timeline">
+                        <?php foreach ($timeline as $event): ?>
+                            <div class="case-timeline-item">
+                                <span class="case-timeline-dot"></span>
+                                <div>
+                                    <strong><?= e($event['title']) ?></strong>
+                                    <small><?= e($event['actor_name'] ?: 'ระบบ') ?> · <?= e(formatDateThai($event['created_at'])) ?></small>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                        <?php if (!$timeline): ?><div class="text-muted">ยังไม่มีเหตุการณ์ใน timeline</div><?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>

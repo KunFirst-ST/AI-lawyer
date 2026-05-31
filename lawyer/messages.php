@@ -8,7 +8,8 @@ ensureMessageMediaColumns();
 $user = currentUser();
 $requestedPeerId = (int) ($_GET['peer_id'] ?? 0);
 
-$contacts = (new ConversationService())->contactsForLawyer((int) $user['id']);
+$conversationService = new ConversationService();
+$contacts = $conversationService->contactsForLawyer((int) $user['id']);
 
 $messageStmt = db()->prepare(
     'SELECT m.*, su.name AS sender_name, ru.name AS receiver_name
@@ -39,6 +40,17 @@ foreach ($contacts as $contact) {
 if (!$activeContact) {
     $activePeerId = (int) ($contacts[0]['user_id'] ?? 0);
     $activeContact = $contacts[0] ?? null;
+}
+$conversationService->markThreadRead((int) $user['id'], $activePeerId);
+if ($activeContact) {
+    $activeContact['unread_count'] = 0;
+    foreach ($contacts as &$contact) {
+        if ((int) $contact['user_id'] === $activePeerId) {
+            $contact['unread_count'] = 0;
+            break;
+        }
+    }
+    unset($contact);
 }
 
 $thread = [];
@@ -96,6 +108,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <small><?= e($latest['message'] ?? ($contact['phone'] ?: $contact['email'])) ?></small>
                                     </span>
                                     <em><?= $latest ? e(substr((string) $latest['created_at'], 5, 11)) : '' ?></em>
+                                    <?php if ((int) ($contact['unread_count'] ?? 0) > 0): ?><b class="chat-unread-badge"><?= e((string) min((int) $contact['unread_count'], 99)) ?></b><?php endif; ?>
                                 </a>
                             <?php endforeach; ?>
                             <?php if (!$contacts): ?><div class="text-muted p-3">ยังไม่มีลูกความที่เชื่อมกับเคสของคุณ</div><?php endif; ?>

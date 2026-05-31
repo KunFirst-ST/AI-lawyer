@@ -15,7 +15,7 @@ $adminNav = [
     ['file' => 'users.php', 'label' => 'ผู้ใช้', 'icon' => 'people'],
     ['file' => 'lawyers.php', 'label' => 'ทนาย', 'icon' => 'person-badge', 'badge' => $adminBadge('SELECT COUNT(*) FROM lawyers WHERE status = "pending"')],
     ['file' => 'cases.php', 'label' => 'เคส', 'icon' => 'folder2-open', 'badge' => $adminBadge('SELECT COUNT(*) FROM cases WHERE match_status = "requested_by_user"')],
-    ['file' => 'bookings.php', 'label' => 'Booking', 'icon' => 'calendar-check'],
+    ['file' => 'bookings.php', 'label' => 'Booking', 'icon' => 'calendar-check', 'badge' => $adminBadge('SELECT COUNT(*) FROM bookings WHERE status = "pending" AND lawyer_response_status = "pending"')],
     ['file' => 'payments.php', 'label' => 'Payment', 'icon' => 'receipt', 'badge' => $adminBadge('SELECT COUNT(*) FROM payments WHERE status = "pending" AND slip_image IS NOT NULL')],
     ['file' => 'categories.php', 'label' => 'หมวดกฎหมาย', 'icon' => 'tags'],
     ['file' => 'contact-messages.php', 'label' => 'ข้อความติดต่อ', 'icon' => 'inbox', 'badge' => $adminBadge('SELECT COUNT(*) FROM contact_messages WHERE status = "new"')],
@@ -23,6 +23,7 @@ $adminNav = [
     ['file' => 'ai-settings.php', 'label' => 'AI Settings', 'icon' => 'cpu'],
     ['file' => 'social-login.php', 'label' => 'Social Login', 'icon' => 'shield-check'],
     ['file' => 'reports.php', 'label' => 'Reports', 'icon' => 'bar-chart'],
+    ['file' => 'audit-logs.php', 'label' => 'Audit Logs', 'icon' => 'journal-text'],
 ];
 ?>
 <aside class="admin-sidebar app-sidebar">

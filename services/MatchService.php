@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/NotificationService.php';
+require_once __DIR__ . '/ActivityService.php';
 
 final class MatchService
 {
@@ -86,6 +87,9 @@ final class MatchService
         $matches = array_slice($matches, 0, 10);
         $this->storeMatches($caseId, $matches);
         if ($matches) {
+            $activity = new ActivityService();
+            $activity->caseEvent($caseId, (int) $case['user_id'], 'lawyers_matched', 'ระบบพบทนายที่เหมาะกับเคส', ['match_count' => count($matches)]);
+            $activity->audit((int) $case['user_id'], 'case.match', 'case', $caseId, ['match_count' => count($matches)]);
             $this->notifyMatches($case, $matches);
         }
 

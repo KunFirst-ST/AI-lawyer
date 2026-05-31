@@ -144,10 +144,39 @@ CREATE TABLE IF NOT EXISTS bookings (
     consultation_type ENUM('chat','phone','video','onsite'),
     price DECIMAL(10,2),
     status ENUM('pending','confirmed','completed','cancelled') DEFAULT 'pending',
+    lawyer_response_status VARCHAR(20) DEFAULT 'pending',
+    lawyer_note TEXT NULL,
+    responded_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (case_id) REFERENCES cases(id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (lawyer_id) REFERENCES lawyers(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS case_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    case_id INT NOT NULL,
+    actor_user_id INT NULL,
+    event_type VARCHAR(60) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    details TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (case_id) REFERENCES cases(id),
+    FOREIGN KEY (actor_user_id) REFERENCES users(id),
+    KEY idx_case_events_case_created (case_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    actor_user_id INT NULL,
+    action VARCHAR(100) NOT NULL,
+    entity_type VARCHAR(60) NOT NULL,
+    entity_id INT NULL,
+    details TEXT,
+    ip_address VARCHAR(64),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (actor_user_id) REFERENCES users(id),
+    KEY idx_audit_logs_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS payments (

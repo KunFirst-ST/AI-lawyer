@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../services/BookingWorkflowService.php';
 requireRole('admin');
+(new BookingWorkflowService())->ensureSchema();
 
 $fetchValue = static function (string $sql) {
     try {
@@ -27,6 +29,7 @@ $stats = [
     'cases' => $fetchValue('SELECT COUNT(*) FROM cases'),
     'requested_matches' => $fetchValue('SELECT COUNT(*) FROM cases WHERE match_status = "requested_by_user"'),
     'bookings' => $fetchValue('SELECT COUNT(*) FROM bookings'),
+    'pending_booking_responses' => $fetchValue('SELECT COUNT(*) FROM bookings WHERE status = "pending" AND lawyer_response_status = "pending"'),
     'pending_payments' => $fetchValue('SELECT COUNT(*) FROM payments WHERE status = "pending" AND slip_image IS NOT NULL'),
     'contact_new' => $fetchValue('SELECT COUNT(*) FROM contact_messages WHERE status = "new"'),
     'revenue' => $fetchValue('SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = "approved"'),
@@ -101,6 +104,7 @@ require_once __DIR__ . '/../includes/header.php';
                         ['label' => 'ทนายรอตรวจ', 'value' => $stats['pending_lawyers'], 'hint' => 'ต้องอนุมัติ', 'icon' => 'hourglass-split', 'tone' => 'amber'],
                         ['label' => 'เคสทั้งหมด', 'value' => $stats['cases'], 'hint' => 'ขอ match ' . $stats['requested_matches'], 'icon' => 'folder2-open', 'tone' => 'blue'],
                         ['label' => 'Booking', 'value' => $stats['bookings'], 'hint' => 'การนัดหมาย', 'icon' => 'calendar-check', 'tone' => 'green'],
+                        ['label' => 'Booking รอทนาย', 'value' => $stats['pending_booking_responses'], 'hint' => 'รอตอบรับนัดหมาย', 'icon' => 'calendar2-check', 'tone' => 'amber'],
                         ['label' => 'Payment รอตรวจ', 'value' => $stats['pending_payments'], 'hint' => 'มีสลิปแล้ว', 'icon' => 'receipt', 'tone' => 'red'],
                         ['label' => 'ข้อความใหม่', 'value' => $stats['contact_new'], 'hint' => 'จากหน้าติดต่อ', 'icon' => 'inbox', 'tone' => 'amber'],
                         ['label' => 'รายได้รวม', 'value' => formatMoney($stats['revenue']), 'hint' => 'อนุมัติแล้ว', 'icon' => 'cash-coin', 'tone' => 'green'],
@@ -163,6 +167,11 @@ require_once __DIR__ . '/../includes/header.php';
                                     <i class="bi bi-receipt"></i>
                                     <span>สลิปรอตรวจ</span>
                                     <strong><?= e((string) $stats['pending_payments']) ?></strong>
+                                </a>
+                                <a href="<?= e(url('/admin/bookings.php')) ?>">
+                                    <i class="bi bi-calendar2-check"></i>
+                                    <span>Booking รอทนาย</span>
+                                    <strong><?= e((string) $stats['pending_booking_responses']) ?></strong>
                                 </a>
                                 <a href="<?= e(url('/admin/cases.php')) ?>">
                                     <i class="bi bi-person-check"></i>

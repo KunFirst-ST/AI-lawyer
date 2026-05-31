@@ -131,11 +131,40 @@ CREATE TABLE IF NOT EXISTS bookings (
     consultation_type TEXT,
     price NUMERIC,
     status TEXT DEFAULT 'pending',
+    lawyer_response_status TEXT DEFAULT 'pending',
+    lawyer_note TEXT NULL,
+    responded_at TEXT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (case_id) REFERENCES cases(id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (lawyer_id) REFERENCES lawyers(id)
 );
+
+CREATE TABLE IF NOT EXISTS case_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id INTEGER NOT NULL,
+    actor_user_id INTEGER NULL,
+    event_type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    details TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (case_id) REFERENCES cases(id),
+    FOREIGN KEY (actor_user_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_case_events_case_created ON case_events (case_id, created_at);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    actor_user_id INTEGER NULL,
+    action TEXT NOT NULL,
+    entity_type TEXT NOT NULL,
+    entity_id INTEGER NULL,
+    details TEXT,
+    ip_address TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (actor_user_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON audit_logs (created_at);
 
 CREATE TABLE IF NOT EXISTS payments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
