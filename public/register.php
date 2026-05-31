@@ -101,7 +101,6 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="auth-switch mb-4" aria-label="เลือกประเภทสมัคร">
                             <a class="active" href="<?= e(url('/public/register.php')) ?>"><i class="bi bi-person-plus"></i> สมัครผู้ใช้</a>
                             <a href="<?= e(url('/lawyer/register-lawyer.php')) ?>"><i class="bi bi-person-badge"></i> สมัครทนาย</a>
-                            <a href="<?= e(url('/admin/login.php')) ?>"><i class="bi bi-shield-lock"></i> แอดมิน</a>
                         </div>
 
                         <div class="mb-4">

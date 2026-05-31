@@ -27,15 +27,6 @@ $portals = [
         'register_label' => 'สมัครเป็นทนาย',
         'requirements' => ['ใบอนุญาตทนาย', 'เอกสารยืนยันตัวตน', 'หมวดกฎหมายและค่าปรึกษา'],
     ],
-    [
-        'title' => 'แอดมิน',
-        'text' => 'ดูแลผู้ใช้ อนุมัติทนาย เคส Payment Commission รายงาน ข้อความติดต่อ และตั้งค่าระบบ',
-        'icon' => 'shield-lock',
-        'login' => url('/admin/login.php'),
-        'register' => null,
-        'register_label' => '',
-        'requirements' => ['บัญชีที่ผู้ดูแลสร้างให้', 'สิทธิ์ role แอดมิน', 'ไม่มีหน้าสมัครสาธารณะ'],
-    ],
 ];
 ?>
 <section class="section-band">
@@ -44,12 +35,12 @@ $portals = [
             <div class="col-lg-7">
                 <span class="legal-badge mb-3"><i class="bi bi-grid"></i> Portal Selection</span>
                 <h1 class="fw-bold">เลือกพอร์ทัลสำหรับเข้าใช้งาน</h1>
-                <p class="text-muted mb-0">ระบบแยกพื้นที่ทำงานของผู้ใช้ ทนาย และแอดมิน เพื่อให้ข้อมูล สิทธิ์ และขั้นตอนการทำงานไม่ปนกัน</p>
+                <p class="text-muted mb-0">เลือกระหว่างพื้นที่สำหรับผู้ใช้บริการและพื้นที่ทำงานของทนาย เพื่อให้ข้อมูล สิทธิ์ และขั้นตอนการทำงานไม่ปนกัน</p>
             </div>
         </div>
         <div class="row g-3">
             <?php foreach ($portals as $portal): ?>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="app-card portal-card p-4 h-100">
                         <div class="portal-icon mb-3"><i class="bi bi-<?= e($portal['icon']) ?>"></i></div>
                         <h2 class="h4 fw-bold"><?= e($portal['title']) ?></h2>

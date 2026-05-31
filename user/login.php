@@ -87,13 +87,12 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="auth-switch mb-4" aria-label="เลือกประเภทบัญชี">
                             <a class="active" href="<?= e(url('/user/login.php')) ?>"><i class="bi bi-person"></i> ผู้ใช้</a>
                             <a href="<?= e(url('/lawyer/login.php')) ?>"><i class="bi bi-person-badge"></i> ทนาย</a>
-                            <a href="<?= e(url('/admin/login.php')) ?>"><i class="bi bi-shield-lock"></i> แอดมิน</a>
                         </div>
 
                         <div class="mb-4">
                             <span class="auth-eyebrow">Login</span>
                             <h2 class="h3 fw-bold mb-2">เข้าสู่ระบบผู้ใช้</h2>
-                            <p class="text-muted mb-0">ใช้บัญชีผู้ใช้ทั่วไปเท่านั้น หากเป็นทนายหรือแอดมินให้เลือกพอร์ทัลด้านบน</p>
+                            <p class="text-muted mb-0">ใช้บัญชีผู้ใช้ทั่วไปเท่านั้น หากเป็นทนายให้เลือกพอร์ทัลทนายด้านบน</p>
                         </div>
 
                         <?php require __DIR__ . '/../includes/social-auth-buttons.php'; ?>

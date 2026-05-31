@@ -83,7 +83,6 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="auth-switch mb-4" aria-label="เลือกประเภทบัญชี">
                             <a href="<?= e(url('/user/login.php')) ?>"><i class="bi bi-person"></i> ผู้ใช้</a>
                             <a class="active" href="<?= e(url('/lawyer/login.php')) ?>"><i class="bi bi-person-badge"></i> ทนาย</a>
-                            <a href="<?= e(url('/admin/login.php')) ?>"><i class="bi bi-shield-lock"></i> แอดมิน</a>
                         </div>
 
                         <div class="mb-4">
