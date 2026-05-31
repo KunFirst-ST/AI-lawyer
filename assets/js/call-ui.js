@@ -6,6 +6,13 @@
     const roomName = room.dataset.callRoom || '';
     const isInitiator = room.dataset.callInitiator === '1';
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    const iceServers = (() => {
+        try {
+            return JSON.parse(room.dataset.iceServers || '[]');
+        } catch (error) {
+            return [{ urls: 'stun:stun.l.google.com:19302' }];
+        }
+    })();
     const localPreview = room.querySelector('[data-call-preview]');
     const remotePreview = room.querySelector('[data-call-remote]');
     const status = room.querySelector('[data-call-status]');
@@ -84,7 +91,7 @@
     const createPeer = () => {
         if (peer) return peer;
         peer = new RTCPeerConnection({
-            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+            iceServers,
         });
         localStream?.getTracks().forEach((track) => peer.addTrack(track, localStream));
         remoteStream = new MediaStream();

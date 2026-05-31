@@ -17,13 +17,22 @@ try {
     exit('Forbidden');
 }
 $type = $call['call_type'] === 'video' ? 'video' : 'audio';
+$webrtcConfig = app_config('webrtc', []);
+$iceServers = [['urls' => 'stun:stun.l.google.com:19302']];
+if (!empty($webrtcConfig['turn_url'])) {
+    $iceServers[] = [
+        'urls' => (string) $webrtcConfig['turn_url'],
+        'username' => (string) ($webrtcConfig['turn_username'] ?? ''),
+        'credential' => (string) ($webrtcConfig['turn_credential'] ?? ''),
+    ];
+}
 
 $pageTitle = $type === 'video' ? 'วิดีโอคอล' : 'โทรเสียง';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="call-room-section">
     <div class="container">
-        <div class="call-room" data-call-type="<?= e($type) ?>" data-call-room="<?= e($room) ?>" data-call-initiator="<?= $call['is_initiator'] ? '1' : '0' ?>">
+        <div class="call-room" data-call-type="<?= e($type) ?>" data-call-room="<?= e($room) ?>" data-call-initiator="<?= $call['is_initiator'] ? '1' : '0' ?>" data-ice-servers="<?= e(json_encode($iceServers, JSON_UNESCAPED_SLASHES)) ?>">
             <div class="call-room-main">
                 <span class="call-room-badge"><i class="bi bi-<?= e(callTypeIcon($type)) ?>"></i> <?= e(callTypeLabel($type)) ?></span>
                 <h1>ห้องสนทนา <?= e($room) ?></h1>

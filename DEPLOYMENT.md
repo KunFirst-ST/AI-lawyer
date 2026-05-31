@@ -26,6 +26,9 @@ DB_USERNAME=your_db_user
 DB_PASSWORD=your_strong_password
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
+TURN_URL=turn:turn.example.com:3478
+TURN_USERNAME=your_turn_username
+TURN_CREDENTIAL=your_turn_password
 ```
 
 อย่า commit `.env` ขึ้น Git
@@ -75,7 +78,11 @@ AI ถูกออกแบบให้:
 
 ถ้าไม่มี `OPENAI_API_KEY` ระบบจะใช้ fallback analyzer แบบ rule-based เพื่อให้ระบบยังใช้งานได้ใน demo/local
 
-## 7. Health Check
+## 7. WebRTC Calls
+
+สำหรับโทรเสียงและวิดีโอ ระบบใช้ WebRTC พร้อม STUN เป็นค่าเริ่มต้น หากเปิดใช้งานจริงกับผู้ใช้นอกเครือข่ายเดียวกัน ควรตั้งค่า TURN server ผ่าน `TURN_URL`, `TURN_USERNAME`, `TURN_CREDENTIAL` เพื่อรองรับเครือข่ายที่เชื่อมต่อแบบ peer-to-peer โดยตรงไม่ได้
+
+## 8. Health Check
 
 เปิด:
 
@@ -85,7 +92,7 @@ AI ถูกออกแบบให้:
 
 ควรได้สถานะ `200` และ `database`, `uploads_writable`, `sessions_writable` เป็น `true`
 
-## 8. Production Checklist
+## 9. Production Checklist
 
 - เปลี่ยนรหัสผ่าน demo accounts ทั้งหมด
 - เปิด HTTPS

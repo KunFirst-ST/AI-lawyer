@@ -23,6 +23,11 @@ return [
             'client_secret' => envValue('GOOGLE_CLIENT_SECRET', ''),
         ],
     ],
+    'webrtc' => [
+        'turn_url' => envValue('TURN_URL', ''),
+        'turn_username' => envValue('TURN_USERNAME', ''),
+        'turn_credential' => envValue('TURN_CREDENTIAL', ''),
+    ],
     'upload_max_bytes' => 15 * 1024 * 1024,
     'allowed_upload_mimes' => [
         'application/pdf',
