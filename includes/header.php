@@ -1,8 +1,5 @@
 <?php
 require_once __DIR__ . '/auth.php';
-if (!headers_sent()) {
-    header('Permissions-Policy: microphone=(self), camera=(self)');
-}
 $pageTitle = $pageTitle ?? app_config('app_name');
 $user = currentUser();
 $currentPath = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);

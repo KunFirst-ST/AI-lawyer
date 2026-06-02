@@ -7,6 +7,7 @@ if (currentUser()) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
+    rateLimit('login_lawyer', 8, 300);
     $account = authenticateAccount((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''), 'lawyer');
     if ($account) {
         loginUser($account);

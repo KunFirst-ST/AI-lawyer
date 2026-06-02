@@ -92,9 +92,12 @@ if (!$uploadsRoot || !$absolutePath || !str_starts_with($absolutePath, $uploadsR
 }
 
 $mime = (new finfo(FILEINFO_MIME_TYPE))->file($absolutePath) ?: 'application/octet-stream';
+$downloadName = trim(str_replace(["\r", "\n"], '', basename((string) $originalName))) ?: basename($absolutePath);
+$asciiName = preg_replace('/[^A-Za-z0-9._-]/', '_', $downloadName) ?: 'file';
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . filesize($absolutePath));
-header('Content-Disposition: inline; filename="' . rawurlencode((string) $originalName) . '"');
+header('Content-Disposition: inline; filename="' . $asciiName . '"; filename*=UTF-8\'\'' . rawurlencode($downloadName));
+header('Cache-Control: private, max-age=3600');
 header('X-Content-Type-Options: nosniff');
 readfile($absolutePath);
 exit;

@@ -9,6 +9,7 @@
 /yarn-error.log*
 
 /storage/sessions/sess_*
+/storage/rate_limits/*.json
 /storage/logs/*.log
 /storage/*.png
 /storage/*.jpg

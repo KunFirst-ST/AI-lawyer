@@ -7,6 +7,7 @@ if (currentUser()) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
+    rateLimit('login_admin', 6, 300);
     $admin = authenticateAccount((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''), 'admin');
     if ($admin) {
         loginUser($admin);

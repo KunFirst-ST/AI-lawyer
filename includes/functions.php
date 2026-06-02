@@ -1,8 +1,16 @@
 <?php
 
-if (session_status() === PHP_SESSION_NONE) {
-    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+function request_is_https(): bool
+{
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+
+    $isHttps = request_is_https();
     session_name('AILAWYERSESSID');
     session_set_cookie_params([
         'lifetime' => 0,
@@ -24,6 +32,24 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 date_default_timezone_set('Asia/Bangkok');
+
+function send_security_headers(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: microphone=(self), camera=(self)');
+    header('X-Permitted-Cross-Domain-Policies: none');
+    if (request_is_https()) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    }
+}
+
+send_security_headers();
 
 function app_config(?string $key = null, mixed $default = null): mixed
 {
@@ -86,11 +112,35 @@ function csrf_token(): string
     return $_SESSION['csrf_token'];
 }
 
+function request_wants_json(): bool
+{
+    $accept = strtolower((string) ($_SERVER['HTTP_ACCEPT'] ?? ''));
+    $contentType = strtolower((string) ($_SERVER['CONTENT_TYPE'] ?? ''));
+    $path = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+
+    return str_starts_with($path, '/api/')
+        || str_contains($accept, 'application/json')
+        || str_contains($contentType, 'application/json');
+}
+
 function verify_csrf(?string $token = null): void
 {
     $token = $token ?? ($_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ''));
-    if (!hash_equals($_SESSION['csrf_token'] ?? '', (string) $token)) {
+    $sessionToken = (string) ($_SESSION['csrf_token'] ?? '');
+    $requestToken = (string) $token;
+    if ($sessionToken === '' || $requestToken === '' || !hash_equals($sessionToken, $requestToken)) {
         http_response_code(419);
+        if (request_wants_json()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'message' => 'เซสชันหมดอายุ กรุณารีเฟรชหน้าแล้วลองใหม่',
+                'data' => [],
+                'errors' => ['csrf' => 'invalid'],
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
         exit('Invalid CSRF token');
     }
 }
@@ -134,14 +184,32 @@ function uploadFile(array $file, string $folder): ?string
     }
 
     $tmpName = $file['tmp_name'] ?? '';
+    if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+        throw new RuntimeException('ไฟล์อัปโหลดไม่ถูกต้อง');
+    }
+
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime = $finfo->file($tmpName);
-    if (!in_array($mime, app_config('allowed_upload_mimes', []), true)) {
+    $mimeExtensions = [
+        'application/pdf' => 'pdf',
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'audio/mpeg' => 'mp3',
+        'audio/mp4' => 'm4a',
+        'audio/ogg' => 'ogg',
+        'audio/wav' => 'wav',
+        'audio/x-wav' => 'wav',
+        'audio/webm' => 'webm',
+        'video/webm' => 'webm',
+        'application/msword' => 'doc',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
+    ];
+    if (!in_array($mime, app_config('allowed_upload_mimes', []), true) || !isset($mimeExtensions[$mime])) {
         throw new RuntimeException('ชนิดไฟล์ไม่รองรับ');
     }
 
-    $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
-    $safeExtension = preg_replace('/[^a-z0-9]/', '', $extension) ?: 'bin';
+    $safeExtension = $mimeExtensions[$mime];
     $relativeDir = 'uploads/' . $folder;
     $targetDir = dirname(__DIR__) . '/' . $relativeDir;
     if (!is_dir($targetDir) && !mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
@@ -230,18 +298,132 @@ function uploadMimeKind(?string $path): string
 
 function rateLimit(string $key, int $limit, int $seconds): void
 {
+    if ($limit <= 0 || $seconds <= 0) {
+        return;
+    }
+
+    $identity = !empty($_SESSION['user_id'])
+        ? 'user:' . (int) $_SESSION['user_id']
+        : 'session:' . (session_id() ?: 'anonymous');
+    $ipLimit = max($limit * 5, $limit + 20);
+    $allowed = consumeRateLimit($key . '|ip:' . clientIp(), $ipLimit, $seconds)
+        && consumeRateLimit($key . '|' . $identity, $limit, $seconds);
+
+    if (!$allowed) {
+        $message = 'ระบบได้รับคำขอถี่เกินไป กรุณารอสักครู่แล้วลองใหม่';
+        if (request_wants_json()) {
+            jsonResponse(false, $message, [], ['rate_limit' => 'too_many_requests'], 429);
+        }
+
+        http_response_code(429);
+        flash('danger', $message);
+        redirect((string) ($_SERVER['REQUEST_URI'] ?? url('/public/login.php')));
+    }
+}
+
+function clientIp(): string
+{
+    foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'] as $key) {
+        $value = $_SERVER[$key] ?? '';
+        if (filter_var($value, FILTER_VALIDATE_IP)) {
+            return $value;
+        }
+    }
+
+    $forwardedFor = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '');
+    foreach (array_map('trim', explode(',', $forwardedFor)) as $candidate) {
+        if (filter_var($candidate, FILTER_VALIDATE_IP)) {
+            return $candidate;
+        }
+    }
+
+    return 'unknown';
+}
+
+function consumeRateLimit(string $bucket, int $limit, int $seconds): bool
+{
+    $directory = dirname(__DIR__) . '/storage/rate_limits';
+    if (!is_dir($directory)) {
+        @mkdir($directory, 0755, true);
+    }
+
+    if (!is_dir($directory) || !is_writable($directory)) {
+        return consumeSessionRateLimit($bucket, $limit, $seconds);
+    }
+
+    if (random_int(1, 100) === 1) {
+        cleanupRateLimitFiles($directory);
+    }
+
+    $now = time();
+    $file = $directory . '/' . hash('sha256', $bucket) . '.json';
+    $handle = @fopen($file, 'c+');
+    if (!$handle) {
+        return consumeSessionRateLimit($bucket, $limit, $seconds);
+    }
+
+    try {
+        if (!flock($handle, LOCK_EX)) {
+            return consumeSessionRateLimit($bucket, $limit, $seconds);
+        }
+
+        $raw = stream_get_contents($handle);
+        $timestamps = json_decode((string) $raw, true);
+        if (!is_array($timestamps)) {
+            $timestamps = [];
+        }
+
+        $timestamps = array_values(array_filter(
+            array_map('intval', $timestamps),
+            fn (int $timestamp): bool => $timestamp > ($now - $seconds)
+        ));
+
+        if (count($timestamps) >= $limit) {
+            rewind($handle);
+            ftruncate($handle, 0);
+            fwrite($handle, json_encode($timestamps));
+            fflush($handle);
+            return false;
+        }
+
+        $timestamps[] = $now;
+        rewind($handle);
+        ftruncate($handle, 0);
+        fwrite($handle, json_encode($timestamps));
+        fflush($handle);
+
+        return true;
+    } finally {
+        flock($handle, LOCK_UN);
+        fclose($handle);
+    }
+}
+
+function consumeSessionRateLimit(string $bucket, int $limit, int $seconds): bool
+{
     $now = time();
     $_SESSION['rate_limits'] ??= [];
-    $_SESSION['rate_limits'][$key] = array_values(array_filter(
-        $_SESSION['rate_limits'][$key] ?? [],
+    $_SESSION['rate_limits'][$bucket] = array_values(array_filter(
+        $_SESSION['rate_limits'][$bucket] ?? [],
         fn (int $timestamp): bool => $timestamp > ($now - $seconds)
     ));
 
-    if (count($_SESSION['rate_limits'][$key]) >= $limit) {
-        jsonResponse(false, 'ระบบได้รับคำขอถี่เกินไป กรุณารอสักครู่แล้วลองใหม่', [], ['rate_limit' => 'too_many_requests'], 429);
+    if (count($_SESSION['rate_limits'][$bucket]) >= $limit) {
+        return false;
     }
 
-    $_SESSION['rate_limits'][$key][] = $now;
+    $_SESSION['rate_limits'][$bucket][] = $now;
+    return true;
+}
+
+function cleanupRateLimitFiles(string $directory): void
+{
+    $threshold = time() - 86400;
+    foreach (glob($directory . '/*.json') ?: [] as $file) {
+        if (is_file($file) && (int) @filemtime($file) < $threshold) {
+            @unlink($file);
+        }
+    }
 }
 
 function formatMoney(float|int|string|null $amount): string

@@ -11,6 +11,7 @@ if (isset($_GET['registered'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
+    rateLimit('login_user', 8, 300);
     $account = authenticateAccount((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''), 'user');
     if ($account) {
         loginUser($account);
