@@ -165,6 +165,8 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     FOREIGN KEY (actor_user_id) REFERENCES users(id)
 );
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON audit_logs (created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_action_created ON audit_logs (action, created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_actor_created ON audit_logs (actor_user_id, created_at);
 
 CREATE TABLE IF NOT EXISTS payments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

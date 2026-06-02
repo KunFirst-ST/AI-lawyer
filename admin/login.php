@@ -8,11 +8,17 @@ if (currentUser()) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     rateLimit('login_admin', 6, 300);
-    $admin = authenticateAccount((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''), 'admin');
+    $email = strtolower(trim((string) ($_POST['email'] ?? '')));
+    $admin = authenticateAccount($email, (string) ($_POST['password'] ?? ''), 'admin');
     if ($admin) {
         loginUser($admin);
         redirect(url('/admin/dashboard.php'));
     }
+    auditSecurityEvent(null, 'auth.login_failed', [
+        'role' => 'admin',
+        'email_hash' => hash('sha256', $email),
+        'path' => (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
+    ]);
     flash('danger', 'อีเมลหรือรหัสผ่านแอดมินไม่ถูกต้อง');
 }
 

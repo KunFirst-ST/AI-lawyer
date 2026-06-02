@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../services/ActivityService.php';
 
 function currentUser(): ?array
 {
@@ -51,16 +52,35 @@ function loginUser(array $user): void
 {
     session_regenerate_id(true);
     $_SESSION['user_id'] = (int) $user['id'];
+    auditSecurityEvent((int) $user['id'], 'auth.login_success', [
+        'role' => (string) ($user['role'] ?? ''),
+        'path' => (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
+        'user_agent_hash' => hash('sha256', (string) ($_SERVER['HTTP_USER_AGENT'] ?? '')),
+    ]);
 }
 
 function logoutUser(): void
 {
+    $userId = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : null;
+    auditSecurityEvent($userId, 'auth.logout', [
+        'path' => (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
+    ]);
+
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
         $params = session_get_cookie_params();
         setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
     }
     session_destroy();
+}
+
+function auditSecurityEvent(?int $actorUserId, string $action, array $details = []): void
+{
+    try {
+        (new ActivityService())->audit($actorUserId, $action, 'auth', $actorUserId, $details);
+    } catch (Throwable $exception) {
+        error_log('Audit event failed: ' . $exception->getMessage());
+    }
 }
 
 function dashboardPathForRole(string $role): string

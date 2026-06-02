@@ -12,11 +12,17 @@ if (isset($_GET['registered'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     rateLimit('login_user', 8, 300);
-    $account = authenticateAccount((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''), 'user');
+    $email = strtolower(trim((string) ($_POST['email'] ?? '')));
+    $account = authenticateAccount($email, (string) ($_POST['password'] ?? ''), 'user');
     if ($account) {
         loginUser($account);
         redirect(url('/user/ai-chat.php'));
     }
+    auditSecurityEvent(null, 'auth.login_failed', [
+        'role' => 'user',
+        'email_hash' => hash('sha256', $email),
+        'path' => (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
+    ]);
     flash('danger', 'อีเมลหรือรหัสผ่านผู้ใช้ไม่ถูกต้อง');
 }
 

@@ -176,7 +176,9 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     ip_address VARCHAR(64),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (actor_user_id) REFERENCES users(id),
-    KEY idx_audit_logs_created (created_at)
+    KEY idx_audit_logs_created (created_at),
+    KEY idx_audit_logs_action_created (action, created_at),
+    KEY idx_audit_logs_actor_created (actor_user_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS payments (

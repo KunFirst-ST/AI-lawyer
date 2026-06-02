@@ -8,11 +8,17 @@ if (currentUser()) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     rateLimit('login_lawyer', 8, 300);
-    $account = authenticateAccount((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''), 'lawyer');
+    $email = strtolower(trim((string) ($_POST['email'] ?? '')));
+    $account = authenticateAccount($email, (string) ($_POST['password'] ?? ''), 'lawyer');
     if ($account) {
         loginUser($account);
         redirect(url('/lawyer/dashboard.php'));
     }
+    auditSecurityEvent(null, 'auth.login_failed', [
+        'role' => 'lawyer',
+        'email_hash' => hash('sha256', $email),
+        'path' => (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH),
+    ]);
     flash('danger', 'อีเมลหรือรหัสผ่านทนายไม่ถูกต้อง หรือบัญชียังไม่ใช่บัญชีทนาย');
 }
 

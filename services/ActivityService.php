@@ -41,6 +41,8 @@ final class ActivityService
                 )'
             );
             db()->exec('CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON audit_logs (created_at)');
+            db()->exec('CREATE INDEX IF NOT EXISTS idx_audit_logs_action_created ON audit_logs (action, created_at)');
+            db()->exec('CREATE INDEX IF NOT EXISTS idx_audit_logs_actor_created ON audit_logs (actor_user_id, created_at)');
             return;
         }
 
@@ -69,9 +71,13 @@ final class ActivityService
                 ip_address VARCHAR(64),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (actor_user_id) REFERENCES users(id),
-                KEY idx_audit_logs_created (created_at)
+                KEY idx_audit_logs_created (created_at),
+                KEY idx_audit_logs_action_created (action, created_at),
+                KEY idx_audit_logs_actor_created (actor_user_id, created_at)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
         );
+        $this->ensureMysqlIndex('audit_logs', 'idx_audit_logs_action_created', 'CREATE INDEX idx_audit_logs_action_created ON audit_logs (action, created_at)');
+        $this->ensureMysqlIndex('audit_logs', 'idx_audit_logs_actor_created', 'CREATE INDEX idx_audit_logs_actor_created ON audit_logs (actor_user_id, created_at)');
     }
 
     public function caseEvent(int $caseId, ?int $actorUserId, string $type, string $title, array $details = []): void
@@ -97,8 +103,51 @@ final class ActivityService
             $entityType,
             $entityId,
             $this->encode($details),
-            substr((string) ($_SERVER['REMOTE_ADDR'] ?? 'system'), 0, 64),
+            substr(function_exists('clientIp') ? clientIp() : (string) ($_SERVER['REMOTE_ADDR'] ?? 'system'), 0, 64),
         ]);
+    }
+
+    public function recentAuditLogs(int $limit = 20): array
+    {
+        $this->ensureSchema();
+        $limit = max(1, min($limit, 100));
+        return db()->query(
+            'SELECT al.*, u.name AS actor_name, u.email AS actor_email
+             FROM audit_logs al
+             LEFT JOIN users u ON u.id = al.actor_user_id
+             ORDER BY al.created_at DESC, al.id DESC
+             LIMIT ' . $limit
+        )->fetchAll();
+    }
+
+    public function auditSummary(int $minutes = 60): array
+    {
+        $this->ensureSchema();
+        $cutoff = date('Y-m-d H:i:s', time() - max(1, min($minutes, 1440)) * 60);
+        $stmt = db()->prepare(
+            'SELECT action, COUNT(*) AS total
+             FROM audit_logs
+             WHERE created_at >= ?
+             GROUP BY action
+             ORDER BY total DESC, action ASC'
+        );
+        $stmt->execute([$cutoff]);
+
+        $summary = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $summary[(string) $row['action']] = (int) $row['total'];
+        }
+
+        return $summary;
+    }
+
+    public function countRecentAction(string $action, int $minutes = 60): int
+    {
+        $this->ensureSchema();
+        $cutoff = date('Y-m-d H:i:s', time() - max(1, min($minutes, 1440)) * 60);
+        $stmt = db()->prepare('SELECT COUNT(*) FROM audit_logs WHERE action = ? AND created_at >= ?');
+        $stmt->execute([$action, $cutoff]);
+        return (int) $stmt->fetchColumn();
     }
 
     public function caseTimeline(int $caseId, int $limit = 100): array
@@ -123,5 +172,24 @@ final class ActivityService
         }
         $encoded = json_encode($details, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         return $encoded === false ? null : $encoded;
+    }
+
+    private function ensureMysqlIndex(string $table, string $index, string $sql): void
+    {
+        try {
+            $stmt = db()->prepare(
+                'SELECT COUNT(*)
+                 FROM information_schema.statistics
+                 WHERE table_schema = DATABASE()
+                   AND table_name = ?
+                   AND index_name = ?'
+            );
+            $stmt->execute([$table, $index]);
+            if ((int) $stmt->fetchColumn() === 0) {
+                db()->exec($sql);
+            }
+        } catch (Throwable) {
+            // Index creation is an optimization; the audit table remains usable without it.
+        }
     }
 }
