@@ -29,7 +29,7 @@ final class SocialAuthService
                 'class' => $meta['class'],
                 'configured' => self::isConfigured($provider),
                 'start_url' => url('/public/oauth-start.php?provider=' . rawurlencode($provider)),
-                'callback_url' => url('/public/oauth-callback.php?provider=' . rawurlencode($provider)),
+                'callback_url' => url('/public/oauth-callback.php'),
             ];
         }
 
@@ -64,8 +64,10 @@ final class SocialAuthService
         $this->ensureConfigured($provider);
 
         $state = bin2hex(random_bytes(32));
+        $redirectUri = $this->redirectUri($provider);
         $_SESSION['oauth_states'][$state] = [
             'provider' => $provider,
+            'redirect_uri' => $redirectUri,
             'expires_at' => time() + 600,
         ];
 
@@ -73,7 +75,7 @@ final class SocialAuthService
         $meta = self::PROVIDERS[$provider];
         $query = [
             'client_id' => (string) $config['client_id'],
-            'redirect_uri' => $this->redirectUri($provider),
+            'redirect_uri' => $redirectUri,
             'response_type' => 'code',
             'scope' => $meta['scope'],
             'state' => $state,
@@ -84,6 +86,21 @@ final class SocialAuthService
         }
 
         return $this->withQuery($this->providerEndpoint($provider, 'auth_url'), $query);
+    }
+
+    public function providerFromState(string $state): ?string
+    {
+        if ($state === '') {
+            return null;
+        }
+
+        $match = ($_SESSION['oauth_states'] ?? [])[$state] ?? null;
+        $provider = (string) ($match['provider'] ?? '');
+        if (!$match || (int) ($match['expires_at'] ?? 0) < time() || !isset(self::PROVIDERS[$provider])) {
+            return null;
+        }
+
+        return $provider;
     }
 
     public function handleCallback(string $provider, array $params): array
@@ -133,7 +150,7 @@ final class SocialAuthService
 
     private function redirectUri(string $provider): string
     {
-        return url('/public/oauth-callback.php?provider=' . rawurlencode($provider));
+        return url('/public/oauth-callback.php');
     }
 
     private function consumeState(string $provider, string $state): void

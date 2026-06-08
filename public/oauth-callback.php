@@ -7,8 +7,13 @@ if (currentUser()) {
 }
 
 try {
+    $service = new SocialAuthService();
     $provider = (string) ($_GET['provider'] ?? '');
-    $user = (new SocialAuthService())->handleCallback($provider, $_GET);
+    if ($provider === '') {
+        $provider = (string) $service->providerFromState((string) ($_GET['state'] ?? ''));
+    }
+
+    $user = $service->handleCallback($provider, $_GET);
     loginUser($user);
     flash('success', 'เข้าสู่ระบบสำเร็จ');
     redirect(dashboardPathForRole((string) $user['role']));
