@@ -11,7 +11,7 @@ if ($caseId) {
 }
 
 $stmt = db()->prepare(
-    "SELECT cm.*, c.title AS case_title, l.province, l.consultation_fee, l.verified, l.is_available, u.name,
+    "SELECT cm.*, c.title AS case_title, l.province, l.consultation_fee, l.verified, l.is_available, u.name, u.profile_image,
             (SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.lawyer_id = l.id) AS avg_rating
      FROM case_matches cm
      JOIN cases c ON c.id = cm.case_id
@@ -42,7 +42,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="col-md-6">
                             <div class="app-card p-3 h-100">
                                 <div class="d-flex gap-3">
-                                    <div class="profile-avatar"><i class="bi bi-person-badge"></i></div>
+                                    <?= avatarHtml($match['profile_image'] ?? null, 'person-badge') ?>
                                     <div>
                                         <h2 class="h6 fw-bold mb-1"><?= e($match['name']) ?></h2>
                                         <div class="small-muted"><?= e($match['province']) ?> · <?= e(formatMoney($match['consultation_fee'])) ?></div>

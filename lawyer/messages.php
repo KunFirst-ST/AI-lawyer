@@ -102,7 +102,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 $active = $peerId === $activePeerId;
                                 ?>
                                 <a class="chat-contact <?= $active ? 'active' : '' ?>" href="<?= e(url('/lawyer/messages.php?peer_id=' . $peerId)) ?>">
-                                    <span class="chat-avatar"><i class="bi bi-person"></i></span>
+                                    <?= avatarHtml($contact['profile_image'] ?? null, 'person', 'chat-avatar') ?>
                                     <span class="min-w-0">
                                         <strong><?= e($contact['name']) ?></strong>
                                         <small><?= e($latest['message'] ?? ($contact['phone'] ?: $contact['email'])) ?></small>
@@ -117,7 +117,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                     <section class="app-card chat-room-panel">
                         <header class="chat-room-header">
-                            <div class="chat-avatar lg"><i class="bi bi-person"></i></div>
+                            <?= avatarHtml($activeContact['profile_image'] ?? null, 'person', 'chat-avatar lg') ?>
                             <div>
                                 <h2><?= e($activeContact['name'] ?? 'เลือกลูกความเพื่อเริ่มสนทนา') ?></h2>
                                 <p><?= $activeContact ? e($activeContact['email']) . ($activeContact['phone'] ? ' · ' . e($activeContact['phone']) : '') : 'เลือกคู่สนทนาจากรายชื่อด้านซ้าย' ?></p>

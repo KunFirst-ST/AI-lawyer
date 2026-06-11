@@ -4429,6 +4429,47 @@ textarea.form-control {
     border-radius: 8px;
 }
 
+.profile-avatar.has-image,
+.chat-avatar.has-image {
+    overflow: hidden;
+    padding: 0;
+    background: #fff;
+    color: transparent;
+}
+
+.profile-avatar img,
+.chat-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: inherit;
+}
+
+.profile-avatar-xl {
+    width: 96px;
+    height: 96px;
+    flex: 0 0 auto;
+    font-size: 2rem;
+}
+
+.profile-upload-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(36, 87, 166, .14);
+    border-radius: 8px;
+    background: linear-gradient(135deg, #f8fbff, #f5fbf8);
+}
+
+@media (max-width: 575.98px) {
+    .profile-upload-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
 .site-footer {
     margin-top: 0 !important;
     padding-block: 1.35rem !important;

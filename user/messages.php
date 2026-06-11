@@ -110,7 +110,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 $active = $peerId === $activePeerId;
                                 ?>
                                 <a class="chat-contact <?= $active ? 'active' : '' ?>" href="<?= e(url('/user/messages.php?peer_id=' . $peerId . ($caseId ? '&case_id=' . $caseId : ''))) ?>">
-                                    <span class="chat-avatar"><i class="bi bi-person-badge"></i></span>
+                                    <?= avatarHtml($contact['profile_image'] ?? null, 'person-badge', 'chat-avatar') ?>
                                     <span class="min-w-0">
                                         <strong><?= e($contact['name']) ?></strong>
                                     <small><?= e($latest['message'] ?? ($contact['province'] ?: 'พร้อมให้คุยในแชต')) ?></small>
@@ -125,7 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                     <section class="app-card chat-room-panel">
                         <header class="chat-room-header">
-                            <div class="chat-avatar lg"><i class="bi bi-person-badge"></i></div>
+                            <?= avatarHtml($activeContact['profile_image'] ?? null, 'person-badge', 'chat-avatar lg') ?>
                             <div>
                                 <h2><?= e($activeContact['name'] ?? 'เลือกทนายเพื่อเริ่มสนทนา') ?></h2>
                                 <p><?= $activeContact ? 'ค่าปรึกษา ' . e(formatMoney($activeContact['consultation_fee'])) . ' · ' . e($activeContact['province'] ?: '-') : 'เลือกคู่สนทนาจากรายชื่อด้านซ้าย' ?></p>

@@ -19,7 +19,7 @@ if ($province !== '') {
 }
 
 $stmt = db()->prepare(
-    "SELECT l.*, u.name,
+    "SELECT l.*, u.name, u.profile_image,
             (SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.lawyer_id = l.id) AS avg_rating
      FROM lawyers l
      JOIN users u ON u.id = l.user_id
@@ -63,7 +63,7 @@ $categories = db()->query('SELECT name, slug FROM legal_categories ORDER BY name
                 <div class="col-md-6 col-xl-4">
                     <div class="app-card p-3 h-100">
                         <div class="d-flex gap-3">
-                            <div class="profile-avatar"><i class="bi bi-person-badge"></i></div>
+                            <?= avatarHtml($lawyer['profile_image'] ?? null, 'person-badge') ?>
                             <div class="flex-grow-1">
                                 <h2 class="h6 fw-bold mb-1"><?= e($lawyer['name']) ?></h2>
                                 <div class="small-muted"><?= e($lawyer['province']) ?> · <?= e(formatMoney($lawyer['consultation_fee'])) ?></div>

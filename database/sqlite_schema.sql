@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     phone TEXT,
+    profile_image TEXT,
     password TEXT NOT NULL,
     role TEXT DEFAULT 'user',
     status TEXT DEFAULT 'active',

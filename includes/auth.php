@@ -14,11 +14,12 @@ function currentUser(): ?array
     }
 
     $loaded = true;
+    ensureUserProfileImageColumn();
     if (empty($_SESSION['user_id'])) {
         return null;
     }
 
-    $stmt = db()->prepare('SELECT id, name, email, phone, role, status, created_at FROM users WHERE id = ? LIMIT 1');
+    $stmt = db()->prepare('SELECT id, name, email, phone, profile_image, role, status, created_at FROM users WHERE id = ? LIMIT 1');
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch() ?: null;
 

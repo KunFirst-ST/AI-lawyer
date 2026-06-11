@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 $lawyerId = (int) ($_GET['id'] ?? 0);
 $stmt = db()->prepare(
-    'SELECT l.*, u.name, u.email, u.phone,
+    'SELECT l.*, u.name, u.email, u.phone, u.profile_image,
             (SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.lawyer_id = l.id) AS avg_rating,
             (SELECT COUNT(*) FROM reviews r WHERE r.lawyer_id = l.id) AS review_count
      FROM lawyers l
@@ -40,7 +40,7 @@ $reviews = $reviewStmt->fetchAll();
         <div class="app-card p-4 mb-3">
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div class="profile-avatar mb-3"><i class="bi bi-person-badge"></i></div>
+                    <?= avatarHtml($lawyer['profile_image'] ?? null, 'person-badge', 'profile-avatar mb-3') ?>
                     <h1 class="h3 fw-bold"><?= e($lawyer['name']) ?></h1>
                     <div class="small-muted mb-2"><?= e($lawyer['province']) ?></div>
                     <?= (int) $lawyer['verified'] === 1 ? '<span class="badge text-bg-success">Verified</span>' : '' ?>

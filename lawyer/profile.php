@@ -19,6 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = db();
     $pdo->beginTransaction();
     try {
+        $profileImage = (string) ($user['profile_image'] ?? '');
+        if (isset($_FILES['profile_image']) && ($_FILES['profile_image']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            $newProfileImage = uploadProfileImage($_FILES['profile_image']);
+            if ($newProfileImage) {
+                deleteUploadedFile($profileImage);
+                $profileImage = $newProfileImage;
+            }
+        }
+
+        $userStmt = $pdo->prepare('UPDATE users SET profile_image = ? WHERE id = ?');
+        $userStmt->execute([$profileImage ?: null, $user['id']]);
+
         $stmt = $pdo->prepare('UPDATE lawyers SET license_number = ?, province = ?, bio = ?, experience_years = ?, consultation_fee = ?, complex_case_experience = ? WHERE id = ? AND user_id = ?');
         $stmt->execute([
             trim($_POST['license_number'] ?? ''),
@@ -45,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'โปรไฟล์ทนาย';
+$profileImageUrl = profileImageUrl($user['profile_image'] ?? null);
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -54,8 +67,24 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="app-card p-4">
                     <h1 class="h3 fw-bold mb-3">โปรไฟล์ทนาย</h1>
-                    <form method="post" class="row g-3">
+                    <form method="post" class="row g-3" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                        <div class="col-12">
+                            <div class="profile-upload-card">
+                                <div class="profile-avatar profile-avatar-xl <?= $profileImageUrl ? 'has-image' : '' ?>">
+                                    <?php if ($profileImageUrl): ?>
+                                        <img src="<?= e($profileImageUrl) ?>" alt="Profile image">
+                                    <?php else: ?>
+                                        <i class="bi bi-person-badge"></i>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <label class="form-label">รูปโปรไฟล์ทนาย</label>
+                                    <input class="form-control" type="file" name="profile_image" accept="image/jpeg,image/png,image/webp">
+                                    <div class="form-text">รูปนี้จะแสดงในรายชื่อทนาย โปรไฟล์ และแชต</div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-6"><label class="form-label">เลขใบอนุญาตทนาย</label><input class="form-control" name="license_number" value="<?= e($lawyer['license_number']) ?>" required></div>
                         <div class="col-md-6"><label class="form-label">จังหวัด</label><input class="form-control" name="province" value="<?= e($lawyer['province']) ?>" required></div>
                         <div class="col-md-4"><label class="form-label">ประสบการณ์</label><input class="form-control" type="number" name="experience_years" value="<?= e($lawyer['experience_years']) ?>"></div>

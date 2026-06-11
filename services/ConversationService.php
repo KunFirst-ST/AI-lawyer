@@ -49,7 +49,7 @@ final class ConversationService
     public function contactsForUser(int $userId): array
     {
         $stmt = db()->prepare(
-            'SELECT DISTINCT l.id AS lawyer_id, l.user_id, l.province, l.consultation_fee, u.name, u.email,
+            'SELECT DISTINCT l.id AS lawyer_id, l.user_id, l.province, l.consultation_fee, u.name, u.email, u.profile_image,
                     (SELECT COUNT(*) FROM messages m WHERE m.sender_id = l.user_id AND m.receiver_id = ? AND m.is_read = 0) AS unread_count
              FROM lawyers l
              JOIN users u ON u.id = l.user_id AND u.status = "active"
@@ -76,7 +76,7 @@ final class ConversationService
         }
 
         $stmt = db()->prepare(
-            'SELECT DISTINCT u.id AS user_id, u.name, u.email, u.phone,
+            'SELECT DISTINCT u.id AS user_id, u.name, u.email, u.phone, u.profile_image,
                     (SELECT COUNT(*) FROM messages m WHERE m.sender_id = u.id AND m.receiver_id = ? AND m.is_read = 0) AS unread_count
              FROM users u
              WHERE u.role = "user" AND u.status = "active"

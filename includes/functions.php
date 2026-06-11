@@ -162,7 +162,7 @@ function jsonResponse(bool $success, string $message = '', array $data = [], arr
     exit;
 }
 
-function uploadFile(array $file, string $folder): ?string
+function uploadFile(array $file, string $folder, ?array $allowedMimes = null): ?string
 {
     $allowedFolders = ['slips', 'lawyer_documents', 'case_documents', 'profile_images', 'message_media'];
     $folder = trim($folder, '/');
@@ -205,7 +205,8 @@ function uploadFile(array $file, string $folder): ?string
         'application/msword' => 'doc',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
     ];
-    if (!in_array($mime, app_config('allowed_upload_mimes', []), true) || !isset($mimeExtensions[$mime])) {
+    $allowedMimes = $allowedMimes ?? app_config('allowed_upload_mimes', []);
+    if (!in_array($mime, $allowedMimes, true) || !isset($mimeExtensions[$mime])) {
         throw new RuntimeException('ชนิดไฟล์ไม่รองรับ');
     }
 
@@ -223,6 +224,75 @@ function uploadFile(array $file, string $folder): ?string
     }
 
     return $relativeDir . '/' . $filename;
+}
+
+function ensureUserProfileImageColumn(): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+
+    try {
+        if (db_driver() === 'sqlite') {
+            $columns = db()->query('PRAGMA table_info(users)')->fetchAll();
+            $existing = array_column($columns, 'name');
+            if (!in_array('profile_image', $existing, true)) {
+                db()->exec('ALTER TABLE users ADD COLUMN profile_image TEXT NULL');
+            }
+            return;
+        }
+
+        $columns = db()->query('SHOW COLUMNS FROM users')->fetchAll();
+        $existing = array_column($columns, 'Field');
+        if (!in_array('profile_image', $existing, true)) {
+            db()->exec('ALTER TABLE users ADD COLUMN profile_image VARCHAR(255) NULL AFTER phone');
+        }
+    } catch (Throwable) {
+        // Profile image upload is optional; pages can still render with icon avatars.
+    }
+}
+
+function profileImageUrl(?string $path): ?string
+{
+    $path = str_replace('\\', '/', trim((string) $path));
+    if ($path === '' || !str_starts_with($path, 'uploads/profile_images/')) {
+        return null;
+    }
+
+    return url('/' . ltrim($path, '/'));
+}
+
+function deleteUploadedFile(?string $path): void
+{
+    $path = str_replace('\\', '/', trim((string) $path));
+    if ($path === '' || !str_starts_with($path, 'uploads/')) {
+        return;
+    }
+
+    $absolute = dirname(__DIR__) . '/' . ltrim($path, '/');
+    if (is_file($absolute)) {
+        @unlink($absolute);
+    }
+}
+
+function uploadProfileImage(array $file): ?string
+{
+    return uploadFile($file, 'profile_images', ['image/jpeg', 'image/png', 'image/webp']);
+}
+
+function avatarHtml(?string $path, string $icon = 'person', string $class = 'profile-avatar', string $alt = 'Profile image'): string
+{
+    $icon = preg_replace('/[^a-z0-9-]/i', '', $icon) ?: 'person';
+    $imageUrl = profileImageUrl($path);
+    $classes = trim($class . ($imageUrl ? ' has-image' : ''));
+
+    if ($imageUrl) {
+        return '<span class="' . e($classes) . '"><img src="' . e($imageUrl) . '" alt="' . e($alt) . '"></span>';
+    }
+
+    return '<span class="' . e($classes) . '"><i class="bi bi-' . e($icon) . '"></i></span>';
 }
 
 function ensureMessageMediaColumns(): void

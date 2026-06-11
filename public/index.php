@@ -7,7 +7,7 @@ $featuredLawyers = [];
 try {
     $categories = db()->query('SELECT name, slug, description FROM legal_categories ORDER BY id LIMIT 8')->fetchAll();
     $featuredLawyers = db()->query(
-        'SELECT l.id, l.province, l.consultation_fee, l.verified, u.name,
+        'SELECT l.id, l.province, l.consultation_fee, l.verified, u.name, u.profile_image,
                 (SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.lawyer_id = l.id) AS avg_rating
          FROM lawyers l
          JOIN users u ON u.id = l.user_id
@@ -125,7 +125,7 @@ $categoryIcons = [
             <?php foreach ($featuredLawyers as $lawyer): ?>
                 <article class="lawyer-showcase-card">
                     <div class="lawyer-showcase-head">
-                        <div class="profile-avatar"><i class="bi bi-person-badge"></i></div>
+                        <?= avatarHtml($lawyer['profile_image'] ?? null, 'person-badge') ?>
                         <span class="verified-pill"><i class="bi bi-patch-check-fill"></i> ยืนยันแล้ว</span>
                     </div>
                     <h3><?= e($lawyer['name']) ?></h3>
