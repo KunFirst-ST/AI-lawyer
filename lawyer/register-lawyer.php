@@ -245,12 +245,12 @@ require_once __DIR__ . '/../includes/header.php';
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">อัปโหลดใบอนุญาตทนาย</label>
-                                    <input class="form-control auth-file-input" id="licenseDocument" type="file" name="license_document" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                                    <input class="form-control auth-file-input" id="licenseDocument" type="file" name="license_document" accept=".pdf,image/*">
                                     <div class="auth-file-hint" data-file-name="licenseDocument">ยังไม่ได้เลือกไฟล์</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">อัปโหลดเอกสารยืนยันตัวตน</label>
-                                    <input class="form-control auth-file-input" id="idCardDocument" type="file" name="id_card" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                                    <input class="form-control auth-file-input" id="idCardDocument" type="file" name="id_card" accept=".pdf,image/*">
                                     <div class="auth-file-hint" data-file-name="idCardDocument">ยังไม่ได้เลือกไฟล์</div>
                                 </div>
                                 <div class="col-12">

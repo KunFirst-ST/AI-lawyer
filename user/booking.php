@@ -72,7 +72,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <option value="onsite">พบตัวจริง</option>
                             </select>
                         </div>
-                        <div class="col-12"><label class="form-label">แนบเอกสารคดี</label><input class="form-control" type="file" name="case_document" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"></div>
+                        <div class="col-12"><label class="form-label">แนบเอกสารคดี</label><input class="form-control" type="file" name="case_document" accept=".pdf,image/*,.doc,.docx"></div>
                         <div class="col-12"><button class="btn btn-primary" <?= $cases && $lawyers ? '' : 'disabled' ?>>สร้าง Booking</button></div>
                     </form>
                     <?php if (!$cases): ?><div class="alert alert-info mt-3 mb-0">ยังไม่มีเคสที่พร้อมจอง กรุณาเลือกทนายจากหน้าผล Match ก่อน</div><?php endif; ?>

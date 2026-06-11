@@ -117,7 +117,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <textarea id="messageInput" class="form-control" name="message" rows="1" placeholder="เล่าเรื่องที่เกิดขึ้น หรือถามสิ่งที่กังวลได้เลย..." autocomplete="off" required></textarea>
                             <label class="ai-attach-button" title="แนบเอกสารหรือไฟล์เสียง">
                                 <i class="bi bi-paperclip"></i>
-                                <input id="caseDocument" class="d-none" type="file" name="case_document" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,audio/*,.webm">
+                                <input id="caseDocument" class="d-none" type="file" name="case_document" accept=".pdf,image/*,.doc,.docx,audio/*,.webm">
                             </label>
                             <button class="ai-attach-button ai-voice-button" type="button" data-ai-speech-text title="พูดเป็นข้อความ">
                                 <i class="bi bi-mic"></i>

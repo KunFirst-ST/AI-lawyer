@@ -59,7 +59,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <form id="paymentForm" enctype="multipart/form-data" class="row g-3">
                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                         <input type="hidden" name="booking_id" value="<?= e($booking['id']) ?>">
-                        <div class="col-12"><label class="form-label">อัปโหลดสลิป</label><input class="form-control" type="file" name="slip_image" accept=".jpg,.jpeg,.png,.webp,.pdf" required></div>
+                        <div class="col-12"><label class="form-label">อัปโหลดสลิป</label><input class="form-control" type="file" name="slip_image" accept="image/*,.pdf" required></div>
                         <div class="col-12"><button class="btn btn-primary">ส่งสลิปให้แอดมินตรวจสอบ</button></div>
                     </form>
                     <?php else: ?>

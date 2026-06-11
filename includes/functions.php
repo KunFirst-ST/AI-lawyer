@@ -196,6 +196,17 @@ function uploadFile(array $file, string $folder, ?array $allowedMimes = null): ?
         'image/png' => 'png',
         'image/webp' => 'webp',
         'image/gif' => 'gif',
+        'image/avif' => 'avif',
+        'image/bmp' => 'bmp',
+        'image/x-bmp' => 'bmp',
+        'image/x-ms-bmp' => 'bmp',
+        'image/tiff' => 'tif',
+        'image/heic' => 'heic',
+        'image/heif' => 'heif',
+        'image/heic-sequence' => 'heic',
+        'image/heif-sequence' => 'heif',
+        'image/x-icon' => 'ico',
+        'image/vnd.microsoft.icon' => 'ico',
         'audio/mpeg' => 'mp3',
         'audio/mp4' => 'm4a',
         'audio/ogg' => 'ogg',
@@ -280,7 +291,104 @@ function deleteUploadedFile(?string $path): void
 
 function uploadProfileImage(array $file): ?string
 {
-    return uploadFile($file, 'profile_images', ['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('อัปโหลดไฟล์ไม่สำเร็จ');
+    }
+
+    $maxBytes = (int) app_config('upload_max_bytes', 5 * 1024 * 1024);
+    if (($file['size'] ?? 0) > $maxBytes) {
+        throw new RuntimeException('ไฟล์มีขนาดใหญ่เกินกำหนด');
+    }
+
+    $tmpName = $file['tmp_name'] ?? '';
+    if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+        throw new RuntimeException('ไฟล์อัปโหลดไม่ถูกต้อง');
+    }
+
+    $mime = strtolower((string) (new finfo(FILEINFO_MIME_TYPE))->file($tmpName));
+    $extension = profileImageExtension($mime, (string) ($file['name'] ?? ''), $tmpName);
+    if ($extension === null) {
+        throw new RuntimeException('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
+    }
+
+    if ($extension === 'svg' && !safeSvgUpload($tmpName)) {
+        throw new RuntimeException('ไฟล์ SVG นี้ไม่ปลอดภัย กรุณาใช้ไฟล์รูปภาพอื่น');
+    }
+
+    $relativeDir = 'uploads/profile_images';
+    $targetDir = dirname(__DIR__) . '/' . $relativeDir;
+    if (!is_dir($targetDir) && !mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
+        throw new RuntimeException('ไม่สามารถสร้างโฟลเดอร์อัปโหลดได้');
+    }
+
+    $filename = bin2hex(random_bytes(20)) . '.' . $extension;
+    $target = $targetDir . '/' . $filename;
+    if (!move_uploaded_file($tmpName, $target)) {
+        throw new RuntimeException('ไม่สามารถบันทึกไฟล์ได้');
+    }
+
+    return $relativeDir . '/' . $filename;
+}
+
+function profileImageExtension(string $mime, string $originalName, string $tmpName): ?string
+{
+    $mime = strtolower(trim(strtok($mime, ';') ?: $mime));
+    $mimeMap = [
+        'image/jpeg' => 'jpg',
+        'image/pjpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/x-png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif',
+        'image/avif' => 'avif',
+        'image/bmp' => 'bmp',
+        'image/x-bmp' => 'bmp',
+        'image/x-ms-bmp' => 'bmp',
+        'image/tiff' => 'tif',
+        'image/heic' => 'heic',
+        'image/heif' => 'heif',
+        'image/heic-sequence' => 'heic',
+        'image/heif-sequence' => 'heif',
+        'image/svg+xml' => 'svg',
+        'image/x-icon' => 'ico',
+        'image/vnd.microsoft.icon' => 'ico',
+    ];
+
+    if (isset($mimeMap[$mime])) {
+        return $mimeMap[$mime];
+    }
+
+    $imageInfo = @getimagesize($tmpName);
+    if (is_array($imageInfo) && isset($imageInfo[2])) {
+        $detected = image_type_to_extension((int) $imageInfo[2], false);
+        return $detected === 'jpeg' ? 'jpg' : strtolower((string) $detected);
+    }
+
+    if (str_starts_with($mime, 'image/')) {
+        $subtype = preg_replace('/[^a-z0-9]+/', '', substr($mime, 6));
+        return $subtype ? substr($subtype, 0, 12) : 'img';
+    }
+
+    $extension = strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
+    $knownImageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'bmp', 'dib', 'tif', 'tiff', 'heic', 'heif', 'ico', 'svg'];
+    if (in_array($extension, $knownImageExtensions, true) && in_array($mime, ['application/octet-stream', 'binary/octet-stream', ''], true)) {
+        return $extension === 'jpeg' ? 'jpg' : ($extension === 'tiff' ? 'tif' : $extension);
+    }
+
+    return null;
+}
+
+function safeSvgUpload(string $tmpName): bool
+{
+    $contents = (string) file_get_contents($tmpName, false, null, 0, 1024 * 1024);
+    $lower = strtolower($contents);
+
+    return str_contains($lower, '<svg')
+        && !preg_match('/<\s*script\b|on[a-z]+\s*=|javascript\s*:|<\s*foreignobject\b/i', $contents);
 }
 
 function avatarHtml(?string $path, string $icon = 'person', string $class = 'profile-avatar', string $alt = 'Profile image'): string

@@ -75,14 +75,14 @@ require_once __DIR__ . '/../includes/header.php';
                                         <label class="btn btn-primary profile-photo-button">
                                             <i class="bi bi-image"></i>
                                             <span>เลือกรูป</span>
-                                            <input class="visually-hidden" type="file" name="profile_image" accept="image/jpeg,image/png,image/webp,image/gif" data-profile-input>
+                                            <input class="visually-hidden" type="file" name="profile_image" accept="image/*" data-profile-input>
                                         </label>
                                         <button class="btn btn-outline-danger profile-photo-button" type="submit" name="remove_profile_image" value="1" <?= $profileImageUrl ? '' : 'disabled' ?>>
                                             <i class="bi bi-trash"></i>
                                             <span>ลบรูป</span>
                                         </button>
                                     </div>
-                                    <div class="profile-photo-meta" data-profile-meta>JPG, PNG, WebP, GIF</div>
+                                    <div class="profile-photo-meta" data-profile-meta>รองรับไฟล์รูปภาพทุกชนิดที่เบราว์เซอร์และเซิร์ฟเวอร์อ่านได้</div>
                                 </div>
                             </div>
                         </div>
