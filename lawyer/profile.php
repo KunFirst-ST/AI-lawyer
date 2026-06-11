@@ -20,6 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->beginTransaction();
     try {
         $profileImage = (string) ($user['profile_image'] ?? '');
+        $removeProfileImage = (string) ($_POST['remove_profile_image'] ?? '') === '1';
+        if ($removeProfileImage) {
+            deleteUploadedFile($profileImage);
+            $profileImage = '';
+        }
+
         if (isset($_FILES['profile_image']) && ($_FILES['profile_image']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
             $newProfileImage = uploadProfileImage($_FILES['profile_image']);
             if ($newProfileImage) {
@@ -70,18 +76,33 @@ require_once __DIR__ . '/../includes/header.php';
                     <form method="post" class="row g-3" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                         <div class="col-12">
-                            <div class="profile-upload-card">
-                                <div class="profile-avatar profile-avatar-xl <?= $profileImageUrl ? 'has-image' : '' ?>">
-                                    <?php if ($profileImageUrl): ?>
-                                        <img src="<?= e($profileImageUrl) ?>" alt="Profile image">
-                                    <?php else: ?>
-                                        <i class="bi bi-person-badge"></i>
-                                    <?php endif; ?>
+                            <div class="profile-photo-card" data-profile-uploader>
+                                <div class="profile-photo-preview">
+                                    <div class="profile-photo-frame <?= $profileImageUrl ? 'has-image' : '' ?>" data-profile-preview>
+                                        <?php if ($profileImageUrl): ?>
+                                            <img src="<?= e($profileImageUrl) ?>" alt="Profile image">
+                                        <?php else: ?>
+                                            <i class="bi bi-person-badge"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                    <span class="profile-photo-status"><?= $profileImageUrl ? 'มีรูปโปรไฟล์แล้ว' : 'ยังไม่มีรูปโปรไฟล์' ?></span>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <label class="form-label">รูปโปรไฟล์ทนาย</label>
-                                    <input class="form-control" type="file" name="profile_image" accept="image/jpeg,image/png,image/webp">
-                                    <div class="form-text">รูปนี้จะแสดงในรายชื่อทนาย โปรไฟล์ และแชต</div>
+                                <div class="profile-photo-body">
+                                    <span class="profile-photo-kicker">พอร์ทัลทนาย</span>
+                                    <h2>รูปโปรไฟล์ทนาย</h2>
+                                    <p><?= e($user['name']) ?> · <?= e($user['email']) ?></p>
+                                    <div class="profile-photo-actions">
+                                        <label class="btn btn-primary profile-photo-button">
+                                            <i class="bi bi-image"></i>
+                                            <span>เลือกรูป</span>
+                                            <input class="visually-hidden" type="file" name="profile_image" accept="image/jpeg,image/png,image/webp,image/gif" data-profile-input>
+                                        </label>
+                                        <button class="btn btn-outline-danger profile-photo-button" type="submit" name="remove_profile_image" value="1" <?= $profileImageUrl ? '' : 'disabled' ?>>
+                                            <i class="bi bi-trash"></i>
+                                            <span>ลบรูป</span>
+                                        </button>
+                                    </div>
+                                    <div class="profile-photo-meta" data-profile-meta>JPG, PNG, WebP, GIF</div>
                                 </div>
                             </div>
                         </div>

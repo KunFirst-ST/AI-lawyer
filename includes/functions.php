@@ -195,6 +195,7 @@ function uploadFile(array $file, string $folder, ?array $allowedMimes = null): ?
         'image/jpeg' => 'jpg',
         'image/png' => 'png',
         'image/webp' => 'webp',
+        'image/gif' => 'gif',
         'audio/mpeg' => 'mp3',
         'audio/mp4' => 'm4a',
         'audio/ogg' => 'ogg',
@@ -279,7 +280,7 @@ function deleteUploadedFile(?string $path): void
 
 function uploadProfileImage(array $file): ?string
 {
-    return uploadFile($file, 'profile_images', ['image/jpeg', 'image/png', 'image/webp']);
+    return uploadFile($file, 'profile_images', ['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 }
 
 function avatarHtml(?string $path, string $icon = 'person', string $class = 'profile-avatar', string $alt = 'Profile image'): string
