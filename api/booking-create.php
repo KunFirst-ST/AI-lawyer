@@ -31,7 +31,7 @@ try {
         }
     }
 
-    jsonResponse(true, 'สร้าง Booking แล้ว กรุณาชำระเงินและอัปโหลดสลิป', [
+    jsonResponse(true, 'ส่งคำขอนัดหมายแล้ว กรุณารอทนายตอบรับก่อนชำระเงิน', [
         'booking_id' => $bookingId,
         'redirect' => url('/user/bookings.php'),
     ]);

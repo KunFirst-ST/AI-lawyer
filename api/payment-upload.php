@@ -13,21 +13,39 @@ try {
     $user = currentUser();
     (new BookingWorkflowService())->ensureSchema();
     $bookingId = (int) ($_POST['booking_id'] ?? 0);
-    $stmt = db()->prepare('SELECT b.id, b.case_id, b.status AS booking_status, b.lawyer_response_status, p.id AS payment_id, p.status AS payment_status FROM bookings b JOIN payments p ON p.booking_id = b.id WHERE b.id = ? AND b.user_id = ? LIMIT 1');
+    $stmt = db()->prepare('SELECT b.id, b.case_id, b.status AS booking_status, b.lawyer_response_status, p.id AS payment_id, p.status AS payment_status, p.slip_image FROM bookings b JOIN payments p ON p.booking_id = b.id WHERE b.id = ? AND b.user_id = ? LIMIT 1');
     $stmt->execute([$bookingId, (int) $user['id']]);
     $booking = $stmt->fetch();
     if (!$booking) {
         jsonResponse(false, 'ไม่พบรายการชำระเงิน', [], [], 404);
     }
-    if ($booking['booking_status'] !== 'pending' || $booking['lawyer_response_status'] !== 'accepted' || !in_array($booking['payment_status'], ['pending', 'rejected'], true)) {
-        jsonResponse(false, 'รายการนี้ไม่สามารถอัปโหลดสลิปเพิ่มได้', [], ['payment' => 'locked'], 422);
+    $workflow = paymentWorkflowState($booking);
+    if (!$workflow['can_upload']) {
+        jsonResponse(false, $workflow['description'], [], ['payment' => 'locked'], 422);
     }
 
     if (empty($_FILES['slip_image'])) {
         jsonResponse(false, 'กรุณาอัปโหลดสลิป', [], [], 422);
     }
 
-    $path = uploadFile($_FILES['slip_image'], 'slips');
+    $path = uploadFile($_FILES['slip_image'], 'slips', [
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/gif',
+        'image/avif',
+        'image/bmp',
+        'image/x-bmp',
+        'image/x-ms-bmp',
+        'image/tiff',
+        'image/heic',
+        'image/heif',
+        'image/heic-sequence',
+        'image/heif-sequence',
+        'image/x-icon',
+        'image/vnd.microsoft.icon',
+    ]);
     $update = db()->prepare('UPDATE payments SET slip_image = ?, status = "pending" WHERE id = ?');
     $update->execute([$path, (int) $booking['payment_id']]);
 
@@ -43,7 +61,7 @@ try {
         $notify->create((int) $admin['id'], 'มีสลิปรอตรวจสอบ', $user['name'] . ' อัปโหลดสลิปสำหรับ Booking #' . $bookingId, 'payment');
     }
 
-    jsonResponse(true, 'อัปโหลดสลิปแล้ว รอแอดมินตรวจสอบ', [
+    jsonResponse(true, 'ส่งสลิปแล้ว รอแอดมินตรวจสอบเพื่อยืนยันนัดหมาย', [
         'redirect' => url('/user/bookings.php'),
     ]);
 } catch (Throwable $exception) {

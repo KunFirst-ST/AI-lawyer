@@ -140,7 +140,7 @@ final class BookingWorkflowService
     {
         $this->ensureSchema();
         $stmt = db()->prepare(
-            'SELECT b.*, p.status AS payment_status, l.user_id AS lawyer_user_id
+            'SELECT b.*, p.status AS payment_status, p.slip_image, l.user_id AS lawyer_user_id
              FROM bookings b
              JOIN lawyers l ON l.id = b.lawyer_id
              LEFT JOIN payments p ON p.booking_id = b.id
@@ -149,7 +149,7 @@ final class BookingWorkflowService
         );
         $stmt->execute([$bookingId, $userId]);
         $booking = $stmt->fetch();
-        if (!$booking || $booking['status'] !== 'pending' || ($booking['payment_status'] ?? '') === 'approved') {
+        if (!$booking || $booking['status'] !== 'pending' || ($booking['payment_status'] ?? '') === 'approved' || (!empty($booking['slip_image']) && ($booking['payment_status'] ?? '') !== 'rejected')) {
             throw new DomainException('Booking นี้ไม่สามารถยกเลิกเองได้ กรุณาติดต่อผู้ดูแลระบบ');
         }
 

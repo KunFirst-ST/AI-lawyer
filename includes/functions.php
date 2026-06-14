@@ -624,6 +624,173 @@ function formatDateThai(?string $date): string
     return date('d/m/', $timestamp) . (date('Y', $timestamp) + 543);
 }
 
+function bookingStatusLabel(?string $status): string
+{
+    return [
+        'pending' => 'รอดำเนินการ',
+        'confirmed' => 'ยืนยันนัดแล้ว',
+        'completed' => 'เสร็จสิ้น',
+        'cancelled' => 'ยกเลิก',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function lawyerResponseStatusLabel(?string $status): string
+{
+    return [
+        'pending' => 'รอทนายตอบรับ',
+        'accepted' => 'ทนายรับงานแล้ว',
+        'rejected' => 'ทนายปฏิเสธ',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function paymentStatusLabel(?string $status, bool $hasSlip = false, ?string $lawyerResponseStatus = null, ?string $bookingStatus = null): string
+{
+    if ($bookingStatus === 'cancelled' || $lawyerResponseStatus === 'rejected') {
+        return 'ยกเลิก';
+    }
+
+    if ($status === 'pending' && !$hasSlip && $lawyerResponseStatus !== 'accepted') {
+        return 'ยังไม่เปิดชำระ';
+    }
+
+    if ($status === 'pending' && !$hasSlip) {
+        return 'รอชำระ';
+    }
+
+    if ($status === 'pending' && $hasSlip) {
+        return 'รอตรวจสลิป';
+    }
+
+    return [
+        'approved' => 'ชำระแล้ว',
+        'rejected' => 'สลิปไม่ผ่าน',
+        'refunded' => 'คืนเงินแล้ว',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function paymentWorkflowState(array $booking): array
+{
+    $bookingStatus = (string) ($booking['booking_status'] ?? $booking['status'] ?? '');
+    $lawyerStatus = (string) ($booking['lawyer_response_status'] ?? 'pending');
+    $paymentStatus = (string) (
+        $booking['payment_status']
+        ?? (array_key_exists('booking_status', $booking) ? ($booking['status'] ?? 'pending') : 'pending')
+    );
+    $hasSlip = !empty($booking['slip_image']);
+
+    $stage = 'waiting_lawyer';
+    $title = 'รอทนายตอบรับ';
+    $description = 'ระบบส่งคำขอนัดหมายให้ทนายแล้ว เมื่อทนายรับงานจึงค่อยชำระเงิน';
+    $tone = 'warning';
+    $icon = 'hourglass-split';
+
+    if ($bookingStatus === 'cancelled' || $lawyerStatus === 'rejected') {
+        $stage = 'cancelled';
+        $title = $lawyerStatus === 'rejected' ? 'ทนายไม่สะดวกรับงาน' : 'ยกเลิกนัดหมาย';
+        $description = $lawyerStatus === 'rejected'
+            ? 'รายการนี้ปิดแล้ว คุณสามารถเลือกทนายคนอื่นจากผล Match ได้'
+            : 'รายการนี้ถูกยกเลิกแล้ว';
+        $tone = 'danger';
+        $icon = 'x-circle';
+    } elseif ($bookingStatus === 'completed') {
+        $stage = 'completed';
+        $title = 'ปรึกษาเสร็จสิ้น';
+        $description = 'การให้คำปรึกษารายการนี้เสร็จแล้ว สามารถให้รีวิวทนายได้';
+        $tone = 'success';
+        $icon = 'check2-circle';
+    } elseif ($paymentStatus === 'approved' || $bookingStatus === 'confirmed') {
+        $stage = 'confirmed';
+        $title = 'ยืนยันนัดแล้ว';
+        $description = 'แอดมินตรวจสลิปเรียบร้อย นัดหมายนี้พร้อมเข้ารับคำปรึกษา';
+        $tone = 'success';
+        $icon = 'calendar-check';
+    } elseif ($lawyerStatus === 'accepted' && $paymentStatus === 'rejected') {
+        $stage = 'slip_rejected';
+        $title = 'สลิปไม่ผ่าน';
+        $description = 'กรุณาตรวจยอด วันเวลา หรือรูปสลิป แล้วอัปโหลดใหม่';
+        $tone = 'danger';
+        $icon = 'exclamation-triangle';
+    } elseif ($lawyerStatus === 'accepted' && $hasSlip && $paymentStatus === 'pending') {
+        $stage = 'waiting_admin';
+        $title = 'รอแอดมินตรวจสลิป';
+        $description = 'ได้รับสลิปแล้ว แอดมินกำลังตรวจสอบเพื่อยืนยันนัดหมาย';
+        $tone = 'info';
+        $icon = 'receipt-cutoff';
+    } elseif ($lawyerStatus === 'accepted') {
+        $stage = 'ready_to_pay';
+        $title = 'พร้อมชำระเงิน';
+        $description = 'ทนายรับงานแล้ว กรุณาโอนเงินและอัปโหลดสลิปเพื่อยืนยันนัดหมาย';
+        $tone = 'primary';
+        $icon = 'credit-card';
+    }
+
+    $stepStates = [
+        'lawyer' => 'pending',
+        'payment' => 'pending',
+        'admin' => 'pending',
+        'confirm' => 'pending',
+    ];
+
+    if ($stage === 'cancelled') {
+        $stepStates['lawyer'] = $lawyerStatus === 'rejected' ? 'danger' : 'pending';
+    } elseif (in_array($stage, ['confirmed', 'completed'], true)) {
+        $stepStates = [
+            'lawyer' => 'done',
+            'payment' => 'done',
+            'admin' => 'done',
+            'confirm' => 'done',
+        ];
+    } elseif ($stage === 'waiting_lawyer') {
+        $stepStates['lawyer'] = 'active';
+    } elseif ($stage === 'ready_to_pay') {
+        $stepStates['lawyer'] = 'done';
+        $stepStates['payment'] = 'active';
+    } elseif ($stage === 'waiting_admin') {
+        $stepStates['lawyer'] = 'done';
+        $stepStates['payment'] = 'done';
+        $stepStates['admin'] = 'active';
+    } elseif ($stage === 'slip_rejected') {
+        $stepStates['lawyer'] = 'done';
+        $stepStates['payment'] = 'danger';
+        $stepStates['admin'] = 'danger';
+    }
+
+    $steps = [
+        ['key' => 'lawyer', 'label' => 'ทนายรับงาน', 'hint' => 'รอทนายยืนยันเวลานัด', 'icon' => 'person-check'],
+        ['key' => 'payment', 'label' => 'ชำระเงิน', 'hint' => 'โอนเงินและส่งสลิป', 'icon' => 'wallet2'],
+        ['key' => 'admin', 'label' => 'ตรวจสลิป', 'hint' => 'แอดมินตรวจยอดชำระ', 'icon' => 'shield-check'],
+        ['key' => 'confirm', 'label' => 'ยืนยันนัด', 'hint' => 'พร้อมคุยกับทนาย', 'icon' => 'calendar2-check'],
+    ];
+
+    foreach ($steps as &$step) {
+        $step['state'] = $stepStates[$step['key']] ?? 'pending';
+    }
+    unset($step);
+
+    $canUpload = $bookingStatus === 'pending'
+        && $lawyerStatus === 'accepted'
+        && (
+            $paymentStatus === 'rejected'
+            || ($paymentStatus === 'pending' && !$hasSlip)
+        );
+
+    $canCancel = $bookingStatus === 'pending'
+        && $paymentStatus !== 'approved'
+        && (!$hasSlip || $paymentStatus === 'rejected');
+
+    return [
+        'stage' => $stage,
+        'title' => $title,
+        'description' => $description,
+        'tone' => $tone,
+        'icon' => $icon,
+        'can_upload' => $canUpload,
+        'can_cancel' => $canCancel,
+        'has_slip' => $hasSlip,
+        'steps' => $steps,
+    ];
+}
+
 function setting(string $key, ?string $default = null): ?string
 {
     require_once __DIR__ . '/../config/database.php';
