@@ -96,7 +96,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="app-card p-4 mt-3">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                         <div>
-                            <h2 class="h5 fw-bold mb-1">บัญชี Social Login</h2>
+                            <h2 class="h5 fw-bold mb-1">บัญชี Google</h2>
                             <p class="small-muted mb-0">สถานะบัญชี Google และ Facebook สำหรับการเข้าสู่ระบบผู้ใช้</p>
                         </div>
                         <i class="bi bi-shield-check text-primary fs-4"></i>

@@ -57,7 +57,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="d-flex gap-2">
                         <a class="btn btn-primary" href="<?= e(url('/user/ai-chat.php')) ?>">คุยกับ AI ต่อ</a>
-                        <a class="btn btn-outline-primary" href="<?= e(url('/user/matches.php?case_id=' . $caseId)) ?>">ดูทนายที่ Match</a>
+                        <a class="btn btn-outline-primary" href="<?= e(url('/user/matches.php?case_id=' . $caseId)) ?>">ดูทนายที่แนะนำ</a>
                     </div>
                 </div>
                 <div class="row g-3">

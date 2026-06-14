@@ -49,7 +49,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <h1 class="h3 fw-bold mb-1">แจ้งเตือน</h1>
-                        <p class="text-muted mb-0">รายการอัปเดตจากระบบ Booking, Payment, Match และข้อความติดต่อ</p>
+                        <p class="text-muted mb-0">รายการอัปเดตจากการจอง การชำระเงิน การจับคู่ทนาย และข้อความติดต่อ</p>
                     </div>
                     <?php if ($unread > 0): ?>
                         <form method="post">

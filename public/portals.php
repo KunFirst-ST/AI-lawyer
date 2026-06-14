@@ -5,14 +5,14 @@ if (currentUser()) {
     redirect(dashboardPathForRole(currentUser()['role']));
 }
 
-$pageTitle = 'เลือกพอร์ทัล';
+$pageTitle = 'เลือกพื้นที่ใช้งาน';
 require_once __DIR__ . '/../includes/header.php';
 
 $portals = [
     [
         'title' => 'ผู้ใช้',
         'tone' => 'member',
-        'text' => 'ถาม AI บันทึกเคส Match ทนาย จองปรึกษา ชำระเงิน และรีวิวหลังปิดงาน',
+        'text' => 'เล่าเรื่องให้ผู้ช่วย AI จัดประเด็น บันทึกเคส ค้นหาทนาย จองปรึกษา ชำระเงิน และติดตามงานจนจบ',
         'icon' => 'person',
         'login' => url('/user/login.php'),
         'register' => url('/public/register.php'),
@@ -22,7 +22,7 @@ $portals = [
     [
         'title' => 'ทนาย',
         'tone' => 'lawyer',
-        'text' => 'จัดการโปรไฟล์ ความเชี่ยวชาญ เคสที่ถูกเสนอ Booking แชต รายได้ และรีวิว',
+        'text' => 'ดูแลโปรไฟล์ รับคำขอนัดหมาย แชตกับลูกความ ติดตามรายได้ และจัดการรีวิวหลังให้คำปรึกษา',
         'icon' => 'person-badge',
         'login' => url('/lawyer/login.php'),
         'register' => url('/lawyer/register-lawyer.php'),
@@ -35,9 +35,9 @@ $portals = [
     <div class="container">
         <div class="row justify-content-center text-center mb-4">
             <div class="col-lg-7">
-                <span class="legal-badge mb-3"><i class="bi bi-grid"></i> Portal Selection</span>
-                <h1 class="fw-bold">เลือกพอร์ทัลสำหรับเข้าใช้งาน</h1>
-                <p class="text-muted mb-0">เลือกระหว่างพื้นที่สำหรับผู้ใช้บริการและพื้นที่ทำงานของทนาย เพื่อให้ข้อมูล สิทธิ์ และขั้นตอนการทำงานไม่ปนกัน</p>
+                <span class="legal-badge mb-3"><i class="bi bi-grid"></i> เลือกพื้นที่ใช้งาน</span>
+                <h1 class="fw-bold">เข้าสู่ระบบตามบทบาทของคุณ</h1>
+                <p class="text-muted mb-0">ผู้ใช้และทนายมีขั้นตอนทำงานต่างกัน ระบบจึงแยกพื้นที่ใช้งานให้ชัดเจน เพื่อให้ข้อมูลและสิทธิ์เข้าถึงถูกต้อง</p>
             </div>
         </div>
         <div class="row g-3 portal-grid">
@@ -54,7 +54,7 @@ $portals = [
                             <?php endforeach; ?>
                         </div>
                         <div class="d-grid gap-2 mt-auto">
-                            <a class="btn btn-primary" href="<?= e($portal['login']) ?>">เข้าสู่พอร์ทัล<?= e($portal['title']) ?></a>
+                            <a class="btn btn-primary" href="<?= e($portal['login']) ?>">เข้าสู่ระบบ<?= e($portal['title']) ?></a>
                             <?php if ($portal['register']): ?>
                                 <a class="btn btn-outline-primary" href="<?= e($portal['register']) ?>"><?= e($portal['register_label']) ?></a>
                             <?php endif; ?>

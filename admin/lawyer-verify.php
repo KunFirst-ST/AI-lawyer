@@ -79,7 +79,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <form method="post" class="d-flex flex-wrap gap-2 mt-4">
                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                         <input type="hidden" name="lawyer_id" value="<?= e($lawyer['id']) ?>">
-                        <button name="action" value="approve" class="btn btn-success">อนุมัติและ Verified</button>
+                        <button name="action" value="approve" class="btn btn-success">อนุมัติและยืนยันโปรไฟล์</button>
                         <button name="action" value="reject" class="btn btn-outline-danger">ปฏิเสธ</button>
                         <button name="action" value="suspend" class="btn btn-outline-secondary">ระงับ</button>
                     </form>

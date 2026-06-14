@@ -35,13 +35,13 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="row g-0 align-items-stretch">
                 <div class="col-lg-6 order-2 order-lg-1">
                     <div class="auth-side h-100">
-                        <span class="legal-badge auth-badge mb-3"><i class="bi bi-person"></i> User Portal</span>
+                        <span class="legal-badge auth-badge mb-3"><i class="bi bi-person"></i> สำหรับผู้ใช้บริการ</span>
                         <h1 class="auth-title">พื้นที่สำหรับผู้ใช้ที่ต้องการเริ่มเคสกฎหมาย</h1>
                         <p class="auth-copy">เข้าสู่ระบบเพื่อคุยกับ AI, บันทึกเคส, ค้นหาทนายที่เหมาะกับปัญหา และติดตามงานทั้งหมดในที่เดียว</p>
 
                         <div class="auth-stage">
                             <div class="auth-stage-top">
-                                <span>Case Flow</span>
+                                <span>ขั้นตอนการใช้บริการ</span>
                                 <strong>พร้อมเริ่ม</strong>
                             </div>
                             <div class="auth-stage-row is-active">
@@ -54,8 +54,8 @@ require_once __DIR__ . '/../includes/header.php';
                             <div class="auth-stage-row">
                                 <i class="bi bi-person-check"></i>
                                 <div>
-                                    <strong>Match ทนาย</strong>
-                                    <span>เทียบหมวดกฎหมาย จังหวัด และประสบการณ์</span>
+                                    <strong>ค้นหาทนายที่เหมาะกับเรื่อง</strong>
+                                    <span>พิจารณาจากหมวดกฎหมาย จังหวัด และประสบการณ์</span>
                                 </div>
                             </div>
                             <div class="auth-stage-row">
@@ -82,7 +82,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <h2>สิ่งที่ผู้ใช้ทำได้</h2>
                             <ul class="auth-check-list">
                                 <li><i class="bi bi-check2-circle"></i> ถาม AI เพื่อประเมินปัญหาเบื้องต้น</li>
-                                <li><i class="bi bi-check2-circle"></i> สร้างเคสและรับการ Match ทนาย</li>
+                                <li><i class="bi bi-check2-circle"></i> สร้างเคสและรับรายชื่อทนายที่เหมาะสม</li>
                                 <li><i class="bi bi-check2-circle"></i> จองนัดหมาย อัปโหลดสลิป และติดตามสถานะ</li>
                                 <li><i class="bi bi-check2-circle"></i> แชตกับทนายและรีวิวหลังจบงาน</li>
                             </ul>
@@ -136,11 +136,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <div>
                                 <i class="bi bi-key"></i>
                                 <span>
-                                    <strong>บัญชีตัวอย่าง</strong>
+                                    <strong>บัญชีทดสอบระบบ</strong>
                                     <small>user@example.com / User@1234</small>
                                 </span>
                             </div>
-                            <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="user@example.com" data-demo-password="User@1234">เติมข้อมูล</button>
+                            <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="user@example.com" data-demo-password="User@1234">ใช้ข้อมูลทดสอบ</button>
                         </div>
                         <?php endif; ?>
                     </div>

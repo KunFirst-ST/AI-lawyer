@@ -23,7 +23,7 @@ $stmt = db()->prepare(
 $stmt->execute($params);
 $matches = $stmt->fetchAll();
 
-$pageTitle = 'ทนายที่ Match';
+$pageTitle = 'ทนายที่แนะนำ';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -31,7 +31,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="row g-4">
             <div class="col-lg-3"><?php require __DIR__ . '/../includes/user-sidebar.php'; ?></div>
             <div class="col-lg-9">
-                <h1 class="h3 fw-bold mb-3">ทนายที่ Match</h1>
+                <h1 class="h3 fw-bold mb-3">ทนายที่แนะนำ</h1>
                 <div class="row g-3">
                     <?php foreach ($matches as $match): ?>
                         <?php
@@ -46,7 +46,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div>
                                         <h2 class="h6 fw-bold mb-1"><?= e($match['name']) ?></h2>
                                         <div class="small-muted"><?= e($match['province']) ?> · <?= e(formatMoney($match['consultation_fee'])) ?></div>
-                                        <div class="mt-2"><span class="badge text-bg-primary">Match <?= e((string) round($match['match_score'])) ?> คะแนน</span> <?= (int) $match['verified'] === 1 ? '<span class="badge text-bg-success">Verified</span>' : '' ?></div>
+                                        <div class="mt-2"><span class="badge text-bg-primary">คะแนนความเหมาะสม <?= e((string) round($match['match_score'])) ?></span> <?= (int) $match['verified'] === 1 ? '<span class="badge text-bg-success">ยืนยันแล้ว</span>' : '' ?></div>
                                     </div>
                                 </div>
                                 <div class="small-muted mt-3">เคส: <?= e($match['case_title']) ?></div>
@@ -63,7 +63,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     <?php endforeach; ?>
                     <?php if (!$matches): ?>
-                        <div class="col-12"><div class="alert alert-info">ยังไม่มีรายการ Match ทนาย</div></div>
+                        <div class="col-12"><div class="alert alert-info">ยังไม่มีรายการทนายที่แนะนำ</div></div>
                     <?php endif; ?>
                 </div>
             </div>

@@ -68,7 +68,7 @@ $categories = db()->query('SELECT name, slug FROM legal_categories ORDER BY name
                                 <h2 class="h6 fw-bold mb-1"><?= e($lawyer['name']) ?></h2>
                                 <div class="small-muted"><?= e($lawyer['province']) ?> · <?= e(formatMoney($lawyer['consultation_fee'])) ?></div>
                                 <div class="mt-2">
-                                    <?= (int) $lawyer['verified'] === 1 ? '<span class="badge text-bg-success">Verified</span>' : '' ?>
+                                    <?= (int) $lawyer['verified'] === 1 ? '<span class="badge text-bg-success">ยืนยันแล้ว</span>' : '' ?>
                                     <span class="badge text-bg-light text-dark">รีวิว <?= e(number_format((float) $lawyer['avg_rating'], 1)) ?></span>
                                 </div>
                             </div>

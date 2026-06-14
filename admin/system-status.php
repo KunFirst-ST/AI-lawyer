@@ -24,7 +24,7 @@ $checksBySeverity = [
     'info' => array_values(array_filter($checks, static fn (array $check): bool => ($check['severity'] ?? '') === 'info')),
 ];
 
-$pageTitle = 'System Status';
+$pageTitle = 'สถานะระบบ';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -34,11 +34,11 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-3">
                     <div>
-                        <h1 class="h3 fw-bold mb-1">System Status</h1>
-                        <div class="small-muted">ศูนย์ตรวจสุขภาพระบบ, ความพร้อม production และเหตุการณ์ความปลอดภัยล่าสุด</div>
+                        <h1 class="h3 fw-bold mb-1">สถานะระบบ</h1>
+                        <div class="small-muted">ตรวจความพร้อมของบริการ ฐานข้อมูล ไฟล์อัปโหลด และเหตุการณ์ความปลอดภัยล่าสุด</div>
                     </div>
                     <span class="admin-status-badge <?= e($summary['ok'] ? 'success' : 'danger') ?>">
-                        <?= e($summary['ok'] ? 'Core healthy' : 'Needs attention') ?>
+                        <?= e($summary['ok'] ? 'ระบบหลักพร้อมใช้งาน' : 'ต้องตรวจสอบ') ?>
                     </span>
                 </div>
 
@@ -46,7 +46,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="col-md-4">
                         <div class="admin-stat-card tone-<?= e($summary['score'] >= 85 ? 'green' : ($summary['score'] >= 65 ? 'amber' : 'red')) ?>">
                             <div>
-                                <span>Readiness score</span>
+                                <span>คะแนนความพร้อม</span>
                                 <strong><?= e((string) $summary['score']) ?>%</strong>
                                 <small><?= e((string) $summary['environment']) ?> · PHP <?= e((string) $summary['php_version']) ?></small>
                             </div>
@@ -58,7 +58,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <div>
                                 <span>Audit 60 นาที</span>
                                 <strong><?= e((string) $metrics['audit_events_60m']) ?></strong>
-                                <small>failed login <?= e((string) $metrics['failed_logins_60m']) ?></small>
+                                <small>เข้าสู่ระบบไม่สำเร็จ <?= e((string) $metrics['failed_logins_60m']) ?></small>
                             </div>
                             <i class="bi bi-journal-check"></i>
                         </div>
@@ -68,7 +68,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <div>
                                 <span>งานรอตรวจ</span>
                                 <strong><?= e((string) ((int) $metrics['pending_lawyer_reviews'] + (int) $metrics['pending_payments'])) ?></strong>
-                                <small>lawyers <?= e((string) $metrics['pending_lawyer_reviews']) ?> · payments <?= e((string) $metrics['pending_payments']) ?></small>
+                                <small>ทนาย <?= e((string) $metrics['pending_lawyer_reviews']) ?> · สลิป <?= e((string) $metrics['pending_payments']) ?></small>
                             </div>
                             <i class="bi bi-clipboard2-check"></i>
                         </div>

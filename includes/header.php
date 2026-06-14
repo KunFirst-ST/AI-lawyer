@@ -55,7 +55,7 @@ if ($user) {
     <div class="container">
         <a class="navbar-brand" href="<?= e(url('/public/index.php')) ?>" aria-label="ทนายคู่ดี หน้าแรก">
             <img class="brand-mark" src="<?= e(url('/assets/images/thanai-khu-dee-mark.svg')) ?>" alt="">
-            <span class="brand-wordmark"><strong>ทนายคู่ดี</strong><small>LEGAL CARE PLATFORM</small></span>
+            <span class="brand-wordmark"><strong>ทนายคู่ดี</strong><small>แพลตฟอร์มปรึกษากฎหมาย</small></span>
         </a>
         <div class="navbar-quick-actions">
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="สลับโหมดกลางวันกลางคืน" title="สลับโหมดกลางวัน/กลางคืน">
@@ -70,7 +70,7 @@ if ($user) {
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/lawyers.php' ? 'active' : '' ?>" href="<?= e(url('/public/lawyers.php')) ?>">ค้นหาทนาย</a></li>
                 <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/about.php' ? 'active' : '' ?>" href="<?= e(url('/public/about.php')) ?>">เกี่ยวกับระบบ</a></li>
-                <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/faq.php' ? 'active' : '' ?>" href="<?= e(url('/public/faq.php')) ?>">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/faq.php' ? 'active' : '' ?>" href="<?= e(url('/public/faq.php')) ?>">คำถามที่พบบ่อย</a></li>
                 <li class="nav-item"><a class="nav-link <?= $currentPath === '/public/contact.php' ? 'active' : '' ?>" href="<?= e(url('/public/contact.php')) ?>">ติดต่อ</a></li>
             </ul>
             <div class="d-flex flex-wrap gap-2 align-items-center">

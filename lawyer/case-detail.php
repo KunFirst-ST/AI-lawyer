@@ -38,12 +38,12 @@ require_once __DIR__ . '/../includes/header.php';
                     <h1 class="h3 fw-bold"><?= e($case['title']) ?></h1>
                     <div class="small-muted mb-3">ลูกค้า: <?= e($case['user_name']) ?> · <?= e($case['phone']) ?></div>
                     <div class="row g-3 mb-3">
-                        <div class="col-md-3"><div class="stat-card"><div class="small-muted">Match Score</div><div class="fw-bold"><?= e((string) round($case['match_score'])) ?></div></div></div>
+                        <div class="col-md-3"><div class="stat-card"><div class="small-muted">คะแนนความเหมาะสม</div><div class="fw-bold"><?= e((string) round($case['match_score'])) ?></div></div></div>
                         <div class="col-md-3"><div class="stat-card"><div class="small-muted">หมวด</div><div class="fw-bold"><?= e($case['category_name'] ?? '-') ?></div></div></div>
                         <div class="col-md-3"><div class="stat-card"><div class="small-muted">ซับซ้อน</div><div class="fw-bold"><?= e(levelLabel($case['complexity_level'])) ?></div></div></div>
                         <div class="col-md-3"><div class="stat-card"><div class="small-muted">เร่งด่วน</div><div class="fw-bold"><?= e(levelLabel($case['urgency'])) ?></div></div></div>
                     </div>
-                    <h2 class="h6 fw-bold">เหตุผลที่ Match</h2>
+                    <h2 class="h6 fw-bold">เหตุผลที่ระบบแนะนำ</h2>
                     <p><?= e($case['match_reason']) ?></p>
                     <h2 class="h6 fw-bold">สรุปเคสจาก AI</h2>
                     <p><?= nl2br(e($case['ai_summary'])) ?></p>

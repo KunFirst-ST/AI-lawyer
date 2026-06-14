@@ -14,7 +14,7 @@ $bookings = db()->query(
      ORDER BY b.created_at DESC'
 )->fetchAll();
 
-$pageTitle = 'จัดการ Booking';
+$pageTitle = 'จัดการการจอง';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -24,8 +24,8 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="page-heading-row mb-3">
                     <div>
-                        <span class="page-kicker">Booking Monitor</span>
-                        <h1 class="h3 fw-bold mb-1">Booking</h1>
+                        <span class="page-kicker">ติดตามการจอง</span>
+                        <h1 class="h3 fw-bold mb-1">รายการจอง</h1>
                         <p class="text-muted mb-0">ติดตามนัดหมายและขั้นตอนชำระเงินของทุกเคส</p>
                     </div>
                 </div>
@@ -39,7 +39,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <th>วันเวลา</th>
                                 <th>ราคา</th>
                                 <th>การตอบรับ</th>
-                                <th>Payment</th>
+                                <th>การชำระเงิน</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -73,7 +73,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td><?= e(bookingStatusLabel($booking['booking_status'] ?? null)) ?></td>
                             </tr>
                         <?php endforeach; ?>
-                        <?php if (!$bookings): ?><tr><td colspan="7" class="text-muted">ยังไม่มี Booking</td></tr><?php endif; ?>
+                        <?php if (!$bookings): ?><tr><td colspan="7" class="text-muted">ยังไม่มีรายการจอง</td></tr><?php endif; ?>
                         </tbody>
                     </table>
                 </div>

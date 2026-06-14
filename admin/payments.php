@@ -63,7 +63,7 @@ foreach ($payments as $payment) {
     }
 }
 
-$pageTitle = 'ตรวจสอบ Payment';
+$pageTitle = 'ตรวจสอบการชำระเงิน';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -73,7 +73,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="page-heading-row mb-3">
                     <div>
-                        <span class="page-kicker">Payment Control</span>
+                        <span class="page-kicker">ตรวจสอบการชำระเงิน</span>
                         <h1 class="h3 fw-bold mb-1">ตรวจสอบสลิป</h1>
                         <p class="text-muted mb-0">อนุมัติเมื่อยอดและหลักฐานถูกต้อง ระบบจะยืนยันนัดหมายและสร้างคอมมิชชันทันที</p>
                     </div>
@@ -90,7 +90,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Booking</th>
+                                <th>รายการจอง</th>
                                 <th>ลูกความ / ทนาย</th>
                                 <th>ยอด</th>
                                 <th>สลิป</th>

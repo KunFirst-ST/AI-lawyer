@@ -15,24 +15,24 @@ $adminNav = [
     ['file' => 'users.php', 'label' => 'ผู้ใช้', 'icon' => 'people'],
     ['file' => 'lawyers.php', 'label' => 'ทนาย', 'icon' => 'person-badge', 'badge' => $adminBadge('SELECT COUNT(*) FROM lawyers WHERE status = "pending"')],
     ['file' => 'cases.php', 'label' => 'เคส', 'icon' => 'folder2-open', 'badge' => $adminBadge('SELECT COUNT(*) FROM cases WHERE match_status = "requested_by_user"')],
-    ['file' => 'bookings.php', 'label' => 'Booking', 'icon' => 'calendar-check', 'badge' => $adminBadge('SELECT COUNT(*) FROM bookings WHERE status = "pending" AND lawyer_response_status = "pending"')],
-    ['file' => 'payments.php', 'label' => 'Payment', 'icon' => 'receipt', 'badge' => $adminBadge('SELECT COUNT(*) FROM payments WHERE status = "pending" AND slip_image IS NOT NULL')],
+    ['file' => 'bookings.php', 'label' => 'การจอง', 'icon' => 'calendar-check', 'badge' => $adminBadge('SELECT COUNT(*) FROM bookings WHERE status = "pending" AND lawyer_response_status = "pending"')],
+    ['file' => 'payments.php', 'label' => 'ชำระเงิน', 'icon' => 'receipt', 'badge' => $adminBadge('SELECT COUNT(*) FROM payments WHERE status = "pending" AND slip_image IS NOT NULL')],
     ['file' => 'categories.php', 'label' => 'หมวดกฎหมาย', 'icon' => 'tags'],
     ['file' => 'contact-messages.php', 'label' => 'ข้อความติดต่อ', 'icon' => 'inbox', 'badge' => $adminBadge('SELECT COUNT(*) FROM contact_messages WHERE status = "new"')],
-    ['file' => 'commissions.php', 'label' => 'Commission', 'icon' => 'percent'],
-    ['file' => 'ai-settings.php', 'label' => 'AI Settings', 'icon' => 'cpu'],
-    ['file' => 'social-login.php', 'label' => 'Social Login', 'icon' => 'shield-check'],
-    ['file' => 'email-notifications.php', 'label' => 'Gmail Alerts', 'icon' => 'envelope-check', 'badge' => $adminBadge('SELECT COUNT(*) FROM email_notifications WHERE status = "failed"')],
-    ['file' => 'system-status.php', 'label' => 'System Status', 'icon' => 'activity'],
-    ['file' => 'reports.php', 'label' => 'Reports', 'icon' => 'bar-chart'],
-    ['file' => 'audit-logs.php', 'label' => 'Audit Logs', 'icon' => 'journal-text'],
+    ['file' => 'commissions.php', 'label' => 'ค่าคอมมิชชั่น', 'icon' => 'percent'],
+    ['file' => 'ai-settings.php', 'label' => 'ตั้งค่า AI', 'icon' => 'cpu'],
+    ['file' => 'social-login.php', 'label' => 'เข้าสู่ระบบภายนอก', 'icon' => 'shield-check'],
+    ['file' => 'email-notifications.php', 'label' => 'แจ้งเตือน Gmail', 'icon' => 'envelope-check', 'badge' => $adminBadge('SELECT COUNT(*) FROM email_notifications WHERE status = "failed"')],
+    ['file' => 'system-status.php', 'label' => 'สถานะระบบ', 'icon' => 'activity'],
+    ['file' => 'reports.php', 'label' => 'รายงาน', 'icon' => 'bar-chart'],
+    ['file' => 'audit-logs.php', 'label' => 'บันทึกความปลอดภัย', 'icon' => 'journal-text'],
 ];
 ?>
 <aside class="admin-sidebar app-sidebar">
     <div class="admin-profile-card">
         <div class="admin-avatar"><i class="bi bi-shield-lock"></i></div>
         <div class="min-w-0">
-            <div class="admin-profile-label">Admin only</div>
+            <div class="admin-profile-label">ผู้ดูแลระบบเท่านั้น</div>
             <div class="admin-profile-name"><?= e($adminUser['name'] ?? 'Administrator') ?></div>
             <div class="admin-profile-email"><?= e($adminUser['email'] ?? '') ?></div>
         </div>

@@ -143,7 +143,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         <div class="app-card p-3 mt-3">
                             <h2 class="h6 fw-bold">ข้อควรทราบ</h2>
-                            <p class="small-muted mb-0">AI วิเคราะห์เบื้องต้น ไม่ใช่คำปรึกษาจากทนายโดยตรง ระบบจะถามก่อนเสมอก่อนเริ่ม Match ทนาย</p>
+                            <p class="small-muted mb-0">AI วิเคราะห์เบื้องต้น ไม่ใช่คำปรึกษาจากทนายโดยตรง ระบบจะถามก่อนเสมอก่อนเริ่มจับคู่ทนาย</p>
                         </div>
                     </aside>
                 </div>

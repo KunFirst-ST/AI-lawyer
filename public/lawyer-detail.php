@@ -43,7 +43,7 @@ $reviews = $reviewStmt->fetchAll();
                     <?= avatarHtml($lawyer['profile_image'] ?? null, 'person-badge', 'profile-avatar mb-3') ?>
                     <h1 class="h3 fw-bold"><?= e($lawyer['name']) ?></h1>
                     <div class="small-muted mb-2"><?= e($lawyer['province']) ?></div>
-                    <?= (int) $lawyer['verified'] === 1 ? '<span class="badge text-bg-success">Verified</span>' : '' ?>
+                    <?= (int) $lawyer['verified'] === 1 ? '<span class="badge text-bg-success">ยืนยันแล้ว</span>' : '' ?>
                     <span class="badge text-bg-light text-dark">รีวิว <?= e(number_format((float) $lawyer['avg_rating'], 1)) ?> (<?= e($lawyer['review_count']) ?>)</span>
                 </div>
                 <div class="col-md-8">

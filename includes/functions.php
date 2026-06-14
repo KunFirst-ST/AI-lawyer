@@ -688,7 +688,7 @@ function paymentWorkflowState(array $booking): array
         $stage = 'cancelled';
         $title = $lawyerStatus === 'rejected' ? 'ทนายไม่สะดวกรับงาน' : 'ยกเลิกนัดหมาย';
         $description = $lawyerStatus === 'rejected'
-            ? 'รายการนี้ปิดแล้ว คุณสามารถเลือกทนายคนอื่นจากผล Match ได้'
+            ? 'รายการนี้ปิดแล้ว คุณสามารถเลือกทนายคนอื่นจากผลจับคู่ได้'
             : 'รายการนี้ถูกยกเลิกแล้ว';
         $tone = 'danger';
         $icon = 'x-circle';

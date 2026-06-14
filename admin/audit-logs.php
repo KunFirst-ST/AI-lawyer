@@ -13,7 +13,7 @@ $logs = db()->query(
      LIMIT 300'
 )->fetchAll();
 
-$pageTitle = 'Audit Logs';
+$pageTitle = 'บันทึกความปลอดภัย';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -23,7 +23,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                     <div>
-                        <h1 class="h3 fw-bold mb-1">Audit Logs</h1>
+                        <h1 class="h3 fw-bold mb-1">บันทึกความปลอดภัย</h1>
                         <div class="small-muted">ประวัติการทำรายการสำคัญล่าสุดของระบบ</div>
                     </div>
                     <span class="badge text-bg-light text-dark"><?= e((string) count($logs)) ?> รายการ</span>
@@ -31,7 +31,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="app-card p-3 table-responsive">
                     <table class="table align-middle">
                         <thead>
-                        <tr><th>เวลา</th><th>ผู้ดำเนินการ</th><th>Action</th><th>รายการ</th><th>IP</th><th>รายละเอียด</th></tr>
+                        <tr><th>เวลา</th><th>ผู้ดำเนินการ</th><th>การทำรายการ</th><th>รายการ</th><th>IP</th><th>รายละเอียด</th></tr>
                         </thead>
                         <tbody>
                         <?php foreach ($logs as $log): ?>
@@ -51,7 +51,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td><small><?= e($details) ?></small></td>
                             </tr>
                         <?php endforeach; ?>
-                        <?php if (!$logs): ?><tr><td colspan="6" class="text-muted">ยังไม่มี audit log</td></tr><?php endif; ?>
+                        <?php if (!$logs): ?><tr><td colspan="6" class="text-muted">ยังไม่มีบันทึกความปลอดภัย</td></tr><?php endif; ?>
                         </tbody>
                     </table>
                 </div>

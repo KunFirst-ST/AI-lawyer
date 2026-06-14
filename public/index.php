@@ -60,7 +60,7 @@ $categoryIcons = [
             <div><i class="bi bi-person-check"></i><span><strong>ทนายผ่านการตรวจสอบ</strong><small>โปรไฟล์พร้อมข้อมูลสำคัญ</small></span></div>
             <div><i class="bi bi-stars"></i><span><strong>AI ช่วยจัดประเด็น</strong><small>เริ่มต้นได้แม้ยังไม่รู้หมวดกฎหมาย</small></span></div>
             <div><i class="bi bi-chat-square-text"></i><span><strong>คุยต่อเนื่องในระบบ</strong><small>แชต เสียง ไฟล์ และวิดีโอคอล</small></span></div>
-            <div><i class="bi bi-shield-lock"></i><span><strong>ควบคุมการส่งต่อข้อมูล</strong><small>ยินยอมก่อน Match ทนายเสมอ</small></span></div>
+            <div><i class="bi bi-shield-lock"></i><span><strong>ควบคุมการส่งต่อข้อมูล</strong><small>ยินยอมก่อนส่งต่อเคสให้ทนายเสมอ</small></span></div>
         </div>
     </div>
 </section>

@@ -9,11 +9,11 @@ $byCategory = db()->query(
      ORDER BY total DESC'
 )->fetchAll();
 $byStatus = db()->query('SELECT status, COUNT(*) AS total FROM cases GROUP BY status')->fetchAll();
-$pageTitle = 'Reports';
+$pageTitle = 'รายงาน';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell"><div class="container"><div class="row g-4"><div class="col-lg-3"><?php require __DIR__ . '/../includes/admin-sidebar.php'; ?></div><div class="col-lg-9">
-<h1 class="h3 fw-bold mb-3">Reports</h1>
+<h1 class="h3 fw-bold mb-3">รายงานภาพรวม</h1>
 <div class="row g-3">
 <div class="col-md-6"><div class="app-card p-3"><h2 class="h6 fw-bold">เคสตามหมวดกฎหมาย</h2><?php foreach ($byCategory as $row): ?><div class="d-flex justify-content-between border-bottom py-2"><span><?= e($row['name']) ?></span><strong><?= e($row['total']) ?></strong></div><?php endforeach; ?></div></div>
 <div class="col-md-6"><div class="app-card p-3"><h2 class="h6 fw-bold">เคสตามสถานะ</h2><?php foreach ($byStatus as $row): ?><div class="d-flex justify-content-between border-bottom py-2"><span><?= e($row['status']) ?></span><strong><?= e($row['total']) ?></strong></div><?php endforeach; ?></div></div>

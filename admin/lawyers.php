@@ -21,7 +21,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <h1 class="h3 fw-bold mb-3">จัดการทนาย</h1>
                 <div class="app-card p-3 table-responsive">
                     <table class="table">
-                        <thead><tr><th>ทนาย</th><th>จังหวัด</th><th>ใบอนุญาต</th><th>Status</th><th>Verified</th><th></th></tr></thead>
+                        <thead><tr><th>ทนาย</th><th>จังหวัด</th><th>ใบอนุญาต</th><th>สถานะ</th><th>ยืนยันโปรไฟล์</th><th></th></tr></thead>
                         <tbody>
                         <?php foreach ($lawyers as $lawyer): ?>
                             <tr>

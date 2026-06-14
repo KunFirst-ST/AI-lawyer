@@ -31,13 +31,13 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="row g-0 align-items-stretch">
                 <div class="col-lg-6 order-2 order-lg-1">
                     <div class="auth-side h-100">
-                        <span class="legal-badge auth-badge mb-3"><i class="bi bi-person-badge"></i> Lawyer Portal</span>
+                        <span class="legal-badge auth-badge mb-3"><i class="bi bi-person-badge"></i> สำหรับทนาย</span>
                         <h1 class="auth-title">พื้นที่ทำงานสำหรับทนายที่รับเคสผ่านระบบ</h1>
                         <p class="auth-copy">เข้าสู่ระบบเพื่อจัดการโปรไฟล์ ความเชี่ยวชาญ เคสที่ถูกเสนอ นัดหมาย แชต รายได้ และรีวิวจากลูกความ</p>
 
                         <div class="auth-stage">
                             <div class="auth-stage-top">
-                                <span>Work Queue</span>
+                                <span>งานที่ต้องดูแล</span>
                                 <strong>จัดการงาน</strong>
                             </div>
                             <div class="auth-stage-row is-active">
@@ -117,7 +117,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <div class="auth-caps-warning" data-caps-warning="lawyerPassword" hidden><i class="bi bi-exclamation-triangle"></i> Caps Lock เปิดอยู่</div>
                             </div>
                             <button class="btn btn-primary btn-lg w-100 auth-submit" type="submit">
-                                <i class="bi bi-briefcase me-2"></i>เข้าสู่พอร์ทัลทนาย
+                                <i class="bi bi-briefcase me-2"></i>เข้าสู่ระบบทนาย
                             </button>
                         </form>
 
@@ -130,11 +130,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <div>
                                 <i class="bi bi-key"></i>
                                 <span>
-                                    <strong>บัญชีตัวอย่าง</strong>
+                                    <strong>บัญชีทดสอบระบบ</strong>
                                     <small>criminal.lawyer@example.com / Lawyer@1234</small>
                                 </span>
                             </div>
-                            <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="criminal.lawyer@example.com" data-demo-password="Lawyer@1234">เติมข้อมูล</button>
+                            <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="criminal.lawyer@example.com" data-demo-password="Lawyer@1234">ใช้ข้อมูลทดสอบ</button>
                         </div>
                         <?php endif; ?>
                     </div>

@@ -56,7 +56,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <i class="bi bi-chat-square-text"></i>
                                 <div>
                                     <strong>เล่าเรื่องเคส</strong>
-                                    <span>ให้ AI ช่วยจัดประเด็นเบื้องต้น</span>
+                                    <span>ให้ผู้ช่วย AI ช่วยจัดประเด็นเบื้องต้น</span>
                                 </div>
                             </div>
                             <div class="auth-stage-row">

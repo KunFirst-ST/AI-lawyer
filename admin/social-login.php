@@ -4,7 +4,7 @@ require_once __DIR__ . '/../services/SocialAuthService.php';
 requireRole('admin');
 
 $socialProviders = SocialAuthService::providerSummaries();
-$pageTitle = 'Social Login';
+$pageTitle = 'เข้าสู่ระบบด้วย Google';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -14,10 +14,10 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                     <div>
-                        <h1 class="h3 fw-bold mb-1">Social Login</h1>
+                        <h1 class="h3 fw-bold mb-1">เข้าสู่ระบบด้วย Google</h1>
                         <p class="small-muted mb-0">สถานะ OAuth สำหรับบัญชีผู้ใช้ทั่วไป</p>
                     </div>
-                    <span class="legal-badge"><i class="bi bi-shield-lock"></i> Environment Secrets</span>
+                    <span class="legal-badge"><i class="bi bi-shield-lock"></i> ตั้งค่าจากไฟล์ .env</span>
                 </div>
 
                 <div class="social-admin-grid mb-3">
@@ -38,7 +38,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <div class="app-card p-4">
-                    <h2 class="h5 fw-bold mb-3">Environment Variables</h2>
+                    <h2 class="h5 fw-bold mb-3">ค่าที่ต้องตั้งในระบบ</h2>
                     <div class="social-env-list">
                         <code>GOOGLE_LOGIN_ENABLED=true</code>
                         <code>GOOGLE_CLIENT_ID=...</code>

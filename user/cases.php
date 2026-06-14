@@ -26,7 +26,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="app-card p-3">
                     <div class="table-responsive">
                         <table class="table">
-                            <thead><tr><th>เคส</th><th>หมวดหลัก</th><th>ซับซ้อน</th><th>เร่งด่วน</th><th>Match</th><th></th></tr></thead>
+                            <thead><tr><th>เคส</th><th>หมวดหลัก</th><th>ซับซ้อน</th><th>เร่งด่วน</th><th>การจับคู่</th><th></th></tr></thead>
                             <tbody>
                             <?php foreach ($cases as $case): ?>
                                 <tr>

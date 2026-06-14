@@ -79,7 +79,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="admin-hero mb-4">
                     <div>
-                        <span class="admin-eyebrow"><i class="bi bi-shield-check"></i> Admin Control Center</span>
+                        <span class="admin-eyebrow"><i class="bi bi-shield-check"></i> ศูนย์ดูแลระบบ</span>
                         <h1>แดชบอร์ดสำหรับแอดมินเท่านั้น</h1>
                         <p>ควบคุมผู้ใช้ ทนาย เคส การจอง การชำระเงิน ค่าคอมมิชชั่น และข้อความติดต่อจากศูนย์เดียว</p>
                         <div class="admin-hero-actions">
@@ -103,12 +103,12 @@ require_once __DIR__ . '/../includes/header.php';
                         ['label' => 'ทนายทั้งหมด', 'value' => $stats['lawyers'], 'hint' => 'approved ' . $stats['approved_lawyers'], 'icon' => 'person-badge', 'tone' => 'green'],
                         ['label' => 'ทนายรอตรวจ', 'value' => $stats['pending_lawyers'], 'hint' => 'ต้องอนุมัติ', 'icon' => 'hourglass-split', 'tone' => 'amber'],
                         ['label' => 'เคสทั้งหมด', 'value' => $stats['cases'], 'hint' => 'ขอ match ' . $stats['requested_matches'], 'icon' => 'folder2-open', 'tone' => 'blue'],
-                        ['label' => 'Booking', 'value' => $stats['bookings'], 'hint' => 'การนัดหมาย', 'icon' => 'calendar-check', 'tone' => 'green'],
-                        ['label' => 'Booking รอทนาย', 'value' => $stats['pending_booking_responses'], 'hint' => 'รอตอบรับนัดหมาย', 'icon' => 'calendar2-check', 'tone' => 'amber'],
-                        ['label' => 'Payment รอตรวจ', 'value' => $stats['pending_payments'], 'hint' => 'มีสลิปแล้ว', 'icon' => 'receipt', 'tone' => 'red'],
+                        ['label' => 'รายการจอง', 'value' => $stats['bookings'], 'hint' => 'การนัดหมาย', 'icon' => 'calendar-check', 'tone' => 'green'],
+                        ['label' => 'จองรอทนาย', 'value' => $stats['pending_booking_responses'], 'hint' => 'รอตอบรับนัดหมาย', 'icon' => 'calendar2-check', 'tone' => 'amber'],
+                        ['label' => 'สลิปรอตรวจ', 'value' => $stats['pending_payments'], 'hint' => 'มีสลิปแล้ว', 'icon' => 'receipt', 'tone' => 'red'],
                         ['label' => 'ข้อความใหม่', 'value' => $stats['contact_new'], 'hint' => 'จากหน้าติดต่อ', 'icon' => 'inbox', 'tone' => 'amber'],
                         ['label' => 'รายได้รวม', 'value' => formatMoney($stats['revenue']), 'hint' => 'อนุมัติแล้ว', 'icon' => 'cash-coin', 'tone' => 'green'],
-                        ['label' => 'Commission รวม', 'value' => formatMoney($stats['commissions']), 'hint' => 'รวมทุกทนาย', 'icon' => 'percent', 'tone' => 'blue'],
+                        ['label' => 'ค่าคอมมิชชั่นรวม', 'value' => formatMoney($stats['commissions']), 'hint' => 'รวมทุกทนาย', 'icon' => 'percent', 'tone' => 'blue'],
                     ] as $item): ?>
                         <div class="col-md-6 col-xl-4">
                             <div class="admin-stat-card tone-<?= e($item['tone']) ?>">
@@ -170,12 +170,12 @@ require_once __DIR__ . '/../includes/header.php';
                                 </a>
                                 <a href="<?= e(url('/admin/bookings.php')) ?>">
                                     <i class="bi bi-calendar2-check"></i>
-                                    <span>Booking รอทนาย</span>
+                                    <span>จองรอทนาย</span>
                                     <strong><?= e((string) $stats['pending_booking_responses']) ?></strong>
                                 </a>
                                 <a href="<?= e(url('/admin/cases.php')) ?>">
                                     <i class="bi bi-person-check"></i>
-                                    <span>เคสขอ Match</span>
+                                    <span>เคสขอจับคู่</span>
                                     <strong><?= e((string) $stats['requested_matches']) ?></strong>
                                 </a>
                                 <a href="<?= e(url('/admin/contact-messages.php')) ?>">
@@ -241,7 +241,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="app-card p-3 table-responsive">
                             <table class="table">
                                 <thead>
-                                <tr><th>เคสล่าสุด</th><th>ผู้ใช้</th><th>Match</th><th>Status</th><th>สร้างเมื่อ</th></tr>
+                                <tr><th>เคสล่าสุด</th><th>ผู้ใช้</th><th>การจับคู่</th><th>สถานะ</th><th>สร้างเมื่อ</th></tr>
                                 </thead>
                                 <tbody>
                                 <?php foreach ($recentCases as $case): ?>

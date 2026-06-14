@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $mailStatus = $emailService->status();
 $summary = $emailService->summary();
 $recentEmails = $emailService->recent();
-$pageTitle = 'Gmail Alerts';
+$pageTitle = 'แจ้งเตือน Gmail';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -42,7 +42,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-3">
                     <div>
-                        <h1 class="h3 fw-bold mb-1">Gmail Alerts</h1>
+                        <h1 class="h3 fw-bold mb-1">แจ้งเตือน Gmail</h1>
                         <p class="text-muted mb-0">ติดตามการส่งอีเมลแจ้งเตือนของระบบผ่าน Gmail SMTP</p>
                     </div>
                     <span class="badge <?= $mailStatus['configured'] ? 'text-bg-success' : 'text-bg-warning' ?> align-self-start">
@@ -59,7 +59,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="app-card p-4 mb-3">
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
                         <div>
-                            <h2 class="h5 fw-bold">SMTP Configuration</h2>
+                            <h2 class="h5 fw-bold">การตั้งค่า SMTP</h2>
                             <div class="small-muted">Host: <?= e($mailStatus['host']) ?>:<?= e((string) $mailStatus['port']) ?></div>
                             <div class="small-muted">From: <?= e($mailStatus['from_address'] ?: '-') ?></div>
                             <div class="small-muted">ประเภทแจ้งเตือน: <?= e(implode(', ', $mailStatus['notify_types'])) ?></div>

@@ -47,8 +47,8 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="page-heading-row mb-3">
                     <div>
-                        <span class="page-kicker">Secure Payment</span>
-                        <h1 class="h3 fw-bold mb-1">ชำระเงิน Booking #<?= e((string) $booking['id']) ?></h1>
+                        <span class="page-kicker">ชำระเงินอย่างปลอดภัย</span>
+                        <h1 class="h3 fw-bold mb-1">ชำระเงินรายการจอง #<?= e((string) $booking['id']) ?></h1>
                         <p class="text-muted mb-0">โอนเงินหลังทนายรับงาน แล้วส่งสลิปให้แอดมินตรวจเพื่อยืนยันนัดหมาย</p>
                     </div>
                     <a class="btn btn-outline-secondary" href="<?= e(url('/user/bookings.php')) ?>"><i class="bi bi-arrow-left me-1"></i>กลับรายการจอง</a>

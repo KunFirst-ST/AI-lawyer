@@ -11,17 +11,17 @@ $callVersion = (string) (@filemtime(dirname(__DIR__) . '/assets/js/call-ui.js') 
             <div>
                 <a class="footer-brand" href="<?= e(url('/public/index.php')) ?>">
                     <img src="<?= e(url('/assets/images/thanai-khu-dee-mark.svg')) ?>" alt="">
-                    <span><strong>ทนายคู่ดี</strong><small>&copy; <?= e((string) $year) ?> Legal Care Platform</small></span>
+                    <span><strong>ทนายคู่ดี</strong><small>&copy; <?= e((string) $year) ?> แพลตฟอร์มปรึกษากฎหมาย</small></span>
                 </a>
                 <div>AI วิเคราะห์เบื้องต้น ไม่ใช่คำปรึกษาทางกฎหมายจากทนายโดยตรง</div>
             </div>
             <div class="footer-links d-flex flex-wrap gap-3">
                 <a href="<?= e(url('/public/lawyers.php')) ?>">ค้นหาทนาย</a>
-                <a href="<?= e(url('/public/faq.php')) ?>">FAQ</a>
+                <a href="<?= e(url('/public/faq.php')) ?>">คำถามที่พบบ่อย</a>
                 <a href="<?= e(url('/public/contact.php')) ?>">ติดต่อ</a>
                 <a href="<?= e(url('/public/privacy.php')) ?>">ความเป็นส่วนตัว</a>
                 <a href="<?= e(url('/public/terms.php')) ?>">เงื่อนไข</a>
-                <a href="<?= e(url('/public/health.php')) ?>">Health</a>
+                <a href="<?= e(url('/public/health.php')) ?>">สถานะระบบ</a>
             </div>
         </div>
     </div>

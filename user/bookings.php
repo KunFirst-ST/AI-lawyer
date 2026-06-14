@@ -36,14 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'revie
     $booking = $stmt->fetch();
 
     if (!$booking || $booking['status'] !== 'completed') {
-        flash('danger', 'รีวิวได้หลัง Booking เสร็จสิ้นเท่านั้น');
+        flash('danger', 'รีวิวได้หลังรายการจองเสร็จสิ้นเท่านั้น');
     } elseif ($rating < 1 || $rating > 5) {
         flash('danger', 'กรุณาให้คะแนน 1-5');
     } else {
         $exists = db()->prepare('SELECT id FROM reviews WHERE booking_id = ? LIMIT 1');
         $exists->execute([$bookingId]);
         if ($exists->fetch()) {
-            flash('warning', 'Booking นี้มีรีวิวแล้ว');
+            flash('warning', 'รายการจองนี้มีรีวิวแล้ว');
         } else {
             $insert = db()->prepare('INSERT INTO reviews (booking_id, user_id, lawyer_id, rating, comment) VALUES (?, ?, ?, ?, ?)');
             $insert->execute([$bookingId, (int) $user['id'], (int) $booking['lawyer_id'], $rating, $comment]);
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'revie
             (new NotificationService())->create(
                 (int) $booking['lawyer_user_id'],
                 'มีรีวิวใหม่',
-                $user['name'] . ' ให้คะแนน ' . $rating . '/5 สำหรับ Booking #' . $bookingId,
+                $user['name'] . ' ให้คะแนน ' . $rating . '/5 สำหรับรายการจอง #' . $bookingId,
                 'review'
             );
             flash('success', 'ส่งรีวิวเรียบร้อย');
@@ -85,7 +85,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="page-heading-row mb-3">
                     <div>
-                        <span class="page-kicker">Payment Workflow</span>
+                        <span class="page-kicker">ขั้นตอนชำระเงิน</span>
                         <h1 class="h3 fw-bold mb-1">การจองและชำระเงิน</h1>
                         <p class="text-muted mb-0">ดูขั้นตอนตั้งแต่ทนายรับงาน ไปจนถึงแอดมินยืนยันสลิป</p>
                     </div>
@@ -114,7 +114,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <article class="booking-card">
                                 <div class="booking-card-head">
                                     <div class="booking-title">
-                                        <span class="booking-id">Booking #<?= e((string) $booking['id']) ?></span>
+                                        <span class="booking-id">รายการจอง #<?= e((string) $booking['id']) ?></span>
                                         <h2><?= e($booking['lawyer_name']) ?></h2>
                                         <p>
                                             <i class="bi bi-calendar-event"></i>

@@ -31,14 +31,14 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="row g-0 align-items-stretch">
                 <div class="col-lg-6 order-2 order-lg-1">
                     <div class="auth-side h-100">
-                        <span class="legal-badge auth-badge mb-3"><i class="bi bi-shield-lock"></i> Admin Portal</span>
+                        <span class="legal-badge auth-badge mb-3"><i class="bi bi-shield-lock"></i> สำหรับผู้ดูแลระบบ</span>
                         <h1 class="auth-title">ศูนย์ควบคุมระบบสำหรับผู้ดูแลเท่านั้น</h1>
                         <p class="auth-copy">พอร์ทัลนี้ใช้ตรวจสอบทนาย จัดการผู้ใช้ เคส การชำระเงิน ค่าคอมมิชชั่น รายงาน และตั้งค่าระบบ AI</p>
 
                         <div class="auth-stage">
                             <div class="auth-stage-top">
-                                <span>Control Center</span>
-                                <strong>ระบบรวมศูนย์</strong>
+                                <span>ศูนย์ดูแลระบบ</span>
+                                <strong>จัดการข้อมูลสำคัญ</strong>
                             </div>
                             <div class="auth-stage-row is-active">
                                 <i class="bi bi-person-vcard"></i>
@@ -94,9 +94,9 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
 
                         <div class="mb-4">
-                            <span class="auth-eyebrow">Secure Login</span>
+                            <span class="auth-eyebrow">เข้าสู่ระบบอย่างปลอดภัย</span>
                             <h2 class="h3 fw-bold mb-2">เข้าสู่ระบบแอดมิน</h2>
-                            <p class="text-muted mb-0">เฉพาะบัญชี role แอดมินเท่านั้น ระบบจะแยกออกจากบัญชีผู้ใช้และทนายโดยสมบูรณ์</p>
+                            <p class="text-muted mb-0">เฉพาะบัญชีผู้ดูแลระบบเท่านั้น ใช้สำหรับตรวจสอบข้อมูลสำคัญและดูแลการให้บริการ</p>
                         </div>
 
                         <div class="auth-lock-note mb-3">
@@ -135,11 +135,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <div>
                                 <i class="bi bi-key"></i>
                                 <span>
-                                    <strong>บัญชีตัวอย่าง</strong>
+                                    <strong>บัญชีทดสอบระบบ</strong>
                                     <small>admin@example.com / Admin@1234</small>
                                 </span>
                             </div>
-                            <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="admin@example.com" data-demo-password="Admin@1234">เติมข้อมูล</button>
+                            <button class="btn btn-outline-primary btn-sm" type="button" data-demo-fill data-demo-email="admin@example.com" data-demo-password="Admin@1234">ใช้ข้อมูลทดสอบ</button>
                         </div>
                         <?php endif; ?>
                     </div>

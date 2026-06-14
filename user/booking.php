@@ -73,9 +73,9 @@ require_once __DIR__ . '/../includes/header.php';
                             </select>
                         </div>
                         <div class="col-12"><label class="form-label">แนบเอกสารคดี</label><input class="form-control" type="file" name="case_document" accept=".pdf,image/*,.doc,.docx"></div>
-                        <div class="col-12"><button class="btn btn-primary" <?= $cases && $lawyers ? '' : 'disabled' ?>>สร้าง Booking</button></div>
+                        <div class="col-12"><button class="btn btn-primary" <?= $cases && $lawyers ? '' : 'disabled' ?>>ส่งคำขอนัดหมาย</button></div>
                     </form>
-                    <?php if (!$cases): ?><div class="alert alert-info mt-3 mb-0">ยังไม่มีเคสที่พร้อมจอง กรุณาเลือกทนายจากหน้าผล Match ก่อน</div><?php endif; ?>
+                    <?php if (!$cases): ?><div class="alert alert-info mt-3 mb-0">ยังไม่มีเคสที่พร้อมจอง กรุณาเลือกทนายจากหน้าผลจับคู่ก่อน</div><?php endif; ?>
                     <div id="bookingResult" class="mt-3"></div>
                 </div>
             </div>

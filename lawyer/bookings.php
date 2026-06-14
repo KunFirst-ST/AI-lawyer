@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (DomainException $exception) {
         flash('danger', $exception->getMessage());
     } catch (Throwable $exception) {
-        flash('danger', 'ไม่สามารถอัปเดต Booking ได้');
+        flash('danger', 'ไม่สามารถอัปเดตรายการจองได้');
     }
 
     redirect(url('/lawyer/bookings.php'));
@@ -44,7 +44,7 @@ $stmt = db()->prepare(
 $stmt->execute([$lawyerId]);
 $bookings = $stmt->fetchAll();
 
-$pageTitle = 'Booking ทนาย';
+$pageTitle = 'การจองของทนาย';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="dashboard-shell">
@@ -54,8 +54,8 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="page-heading-row mb-3">
                     <div>
-                        <span class="page-kicker">Lawyer Schedule</span>
-                        <h1 class="h3 fw-bold mb-1">Booking</h1>
+                        <span class="page-kicker">ตารางนัดหมาย</span>
+                        <h1 class="h3 fw-bold mb-1">การจองของลูกความ</h1>
                         <p class="text-muted mb-0">ตอบรับนัดหมายก่อน แล้วระบบจะเปิดให้ลูกความชำระเงิน</p>
                     </div>
                 </div>
@@ -79,7 +79,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <tr>
                                 <td>
                                     <strong><?= e($booking['user_name']) ?></strong>
-                                    <div class="small text-muted">Booking #<?= e((string) $booking['id']) ?></div>
+                                    <div class="small text-muted">รายการจอง #<?= e((string) $booking['id']) ?></div>
                                 </td>
                                 <td><?= e($booking['case_title']) ?></td>
                                 <td><?= e(formatDateThai($booking['booking_date'])) ?> <?= e(substr((string) $booking['booking_time'], 0, 5)) ?></td>
@@ -126,7 +126,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-                        <?php if (!$bookings): ?><tr><td colspan="7" class="text-muted">ยังไม่มี Booking</td></tr><?php endif; ?>
+                        <?php if (!$bookings): ?><tr><td colspan="7" class="text-muted">ยังไม่มีรายการจอง</td></tr><?php endif; ?>
                         </tbody>
                     </table>
                 </div>
