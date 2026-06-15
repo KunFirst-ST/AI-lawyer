@@ -1,0 +1,215 @@
+{
+  "name": "Thanai Khu Dee - Payment Slip Verification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "payment-slip-verify",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "payment-webhook",
+      "name": "รับสลิปจากทนายคู่ดี",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const headerSecret = ($json.headers?.['x-n8n-payment-secret'] || $json.headers?.['X-N8N-Payment-Secret'] || '').trim();\nconst expectedSecret = ($env.N8N_PAYMENT_WEBHOOK_SECRET || '').trim();\nif (!expectedSecret || headerSecret !== expectedSecret) {\n  return [{ json: { ok: false, stop: true, httpStatus: 401, message: 'secret ไม่ถูกต้อง' } }];\n}\nconst body = $json.body || $json;\nif (!body.payment?.id || !body.payment?.amount || !body.slip?.base64 || !body.callback?.url || !body.callback?.secret) {\n  return [{ json: { ok: false, stop: true, httpStatus: 422, message: 'ข้อมูลสลิปไม่ครบ' } }];\n}\nreturn [{ json: { ok: true, stop: false, payment: body.payment, slip: body.slip, callback: body.callback, customer: body.customer, lawyer: body.lawyer } }];"
+      },
+      "id": "validate-payload",
+      "name": "ตรวจ secret และข้อมูล",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.stop }}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "should-stop",
+      "name": "ข้อมูลไม่ผ่านหรือไม่",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        760,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// จุดนี้สามารถต่อ OCR/AI Vision เพิ่มได้\n// ให้ใส่ผล OCR เป็นตัวแปร slipText แล้วเปรียบเทียบยอดกับ payment.amount\nconst payment = $json.payment;\nconst hasSlip = Boolean($json.slip?.base64);\nlet decision = 'manual_review';\nlet confidence = 0.65;\nlet note = 'n8n รับสลิปแล้ว แต่ยังไม่ได้ต่อ OCR/AI จึงส่งให้แอดมินตรวจต่อ';\n\n// ตัวอย่าง logic หลังต่อ OCR แล้ว:\n// if (amountFromSlip === payment.amount && confidenceFromOcr >= 0.9) decision = 'approved';\n// if (amountFromSlip !== payment.amount && confidenceFromOcr >= 0.85) decision = 'rejected';\n\nif (!hasSlip) {\n  decision = 'rejected';\n  confidence = 0.9;\n  note = 'ไม่พบไฟล์สลิปใน payload';\n}\n\nreturn [{ json: { payment_id: payment.id, decision, confidence, note, callback: $json.callback } }];"
+      },
+      "id": "verify-slip",
+      "name": "ตัดสินใจผลตรวจ",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callback.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-N8N-Payment-Secret",
+              "value": "={{ $json.callback.secret }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "payment_id",
+              "value": "={{ $json.payment_id }}"
+            },
+            {
+              "name": "decision",
+              "value": "={{ $json.decision }}"
+            },
+            {
+              "name": "confidence",
+              "value": "={{ $json.confidence }}"
+            },
+            {
+              "name": "note",
+              "value": "={{ $json.note }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "callback-to-app",
+      "name": "ส่งผลกลับเว็บ",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, message: 'รับสลิปแล้วและส่งผลกลับเว็บแล้ว', callback: $json } }}",
+        "options": {}
+      },
+      "id": "respond-success",
+      "name": "ตอบกลับสำเร็จ",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1580,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": "={{ $json.httpStatus || 400 }}",
+        "responseBody": "={{ { ok: false, message: $json.message || 'ข้อมูลไม่ถูกต้อง' } }}",
+        "options": {}
+      },
+      "id": "respond-error",
+      "name": "ตอบกลับไม่สำเร็จ",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "รับสลิปจากทนายคู่ดี": {
+      "main": [
+        [
+          {
+            "node": "ตรวจ secret และข้อมูล",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ตรวจ secret และข้อมูล": {
+      "main": [
+        [
+          {
+            "node": "ข้อมูลไม่ผ่านหรือไม่",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ข้อมูลไม่ผ่านหรือไม่": {
+      "main": [
+        [
+          {
+            "node": "ตอบกลับไม่สำเร็จ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ตัดสินใจผลตรวจ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ตัดสินใจผลตรวจ": {
+      "main": [
+        [
+          {
+            "node": "ส่งผลกลับเว็บ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ส่งผลกลับเว็บ": {
+      "main": [
+        [
+          {
+            "node": "ตอบกลับสำเร็จ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
