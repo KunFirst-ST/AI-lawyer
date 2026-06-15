@@ -48,7 +48,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <div>
                                 <span>คะแนนความพร้อม</span>
                                 <strong><?= e((string) $summary['score']) ?>%</strong>
-                                <small><?= e((string) $summary['environment']) ?> · PHP <?= e((string) $summary['php_version']) ?></small>
+                                <small><?= e(appEnvironmentLabel((string) $summary['environment'])) ?> · PHP <?= e((string) $summary['php_version']) ?></small>
                             </div>
                             <i class="bi bi-shield-check"></i>
                         </div>
@@ -56,7 +56,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="col-md-4">
                         <div class="admin-stat-card tone-blue">
                             <div>
-                                <span>Audit 60 นาที</span>
+                                <span>ตรวจความปลอดภัย 60 นาที</span>
                                 <strong><?= e((string) $metrics['audit_events_60m']) ?></strong>
                                 <small>เข้าสู่ระบบไม่สำเร็จ <?= e((string) $metrics['failed_logins_60m']) ?></small>
                             </div>
@@ -78,19 +78,19 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="app-card admin-panel-card mb-3">
                     <div class="admin-card-heading">
                         <div>
-                            <h2>Core Production Checks</h2>
+                            <h2>รายการตรวจหลัก</h2>
                             <p>รายการนี้ควรเป็นสีเขียวทั้งหมดก่อนใช้งานจริง</p>
                         </div>
                         <i class="bi bi-hdd-network"></i>
                     </div>
                     <div class="table-responsive">
                         <table class="table align-middle mb-0">
-                            <thead><tr><th>Check</th><th>Status</th><th>Detail</th></tr></thead>
+                            <thead><tr><th>รายการตรวจ</th><th>สถานะ</th><th>รายละเอียด</th></tr></thead>
                             <tbody>
                             <?php foreach ($checksBySeverity['required'] as $check): ?>
                                 <tr>
                                     <td class="fw-semibold"><?= e((string) $check['label']) ?></td>
-                                    <td><span class="admin-status-badge <?= e($statusClass((string) $check['status'])) ?>"><?= e((string) $check['status']) ?></span></td>
+                                    <td><span class="admin-status-badge <?= e($statusClass((string) $check['status'])) ?>"><?= e(systemHealthStatusLabel((string) $check['status'])) ?></span></td>
                                     <td class="small-muted"><?= e((string) $check['message']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -104,7 +104,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="app-card admin-panel-card h-100">
                             <div class="admin-card-heading">
                                 <div>
-                                    <h2>Optional Services</h2>
+                                    <h2>บริการเสริม</h2>
                                     <p>บริการเสริมที่ทำให้ระบบพร้อมใช้งานจริงมากขึ้น</p>
                                 </div>
                                 <i class="bi bi-puzzle"></i>
@@ -112,7 +112,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <div class="admin-feed-list">
                                 <?php foreach ($checksBySeverity['optional'] as $check): ?>
                                     <div class="d-flex align-items-center gap-3 py-2 border-bottom">
-                                        <span class="admin-status-badge <?= e($statusClass((string) $check['status'])) ?>"><?= e((string) $check['status']) ?></span>
+                                        <span class="admin-status-badge <?= e($statusClass((string) $check['status'])) ?>"><?= e(systemHealthStatusLabel((string) $check['status'])) ?></span>
                                         <span>
                                             <strong><?= e((string) $check['label']) ?></strong>
                                             <small class="d-block small-muted"><?= e((string) $check['message']) ?></small>
@@ -126,7 +126,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="app-card admin-panel-card h-100">
                             <div class="admin-card-heading">
                                 <div>
-                                    <h2>Operational Metrics</h2>
+                                    <h2>ตัวชี้วัดการใช้งาน</h2>
                                     <p>ตัวเลขที่ควรดูเป็นประจำระหว่างใช้งานจริง</p>
                                 </div>
                                 <i class="bi bi-graph-up"></i>
@@ -136,7 +136,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <tbody>
                                     <?php foreach ($metrics as $key => $value): ?>
                                         <tr>
-                                            <td class="small-muted"><?= e((string) str_replace('_', ' ', $key)) ?></td>
+                                            <td class="small-muted"><?= e(systemMetricLabel((string) $key)) ?></td>
                                             <td class="fw-semibold text-end"><?= e((string) $value) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -150,14 +150,14 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="app-card admin-panel-card">
                     <div class="admin-card-heading">
                         <div>
-                            <h2>Recent Security Events</h2>
-                            <p>เหตุการณ์ audit ล่าสุดสำหรับตรวจพฤติกรรมผิดปกติ</p>
+                            <h2>เหตุการณ์ความปลอดภัยล่าสุด</h2>
+                            <p>บันทึกล่าสุดสำหรับติดตามพฤติกรรมผิดปกติ</p>
                         </div>
-                        <a href="<?= e(url('/admin/audit-logs.php')) ?>">ดู audit ทั้งหมด</a>
+                        <a href="<?= e(url('/admin/audit-logs.php')) ?>">ดูบันทึกทั้งหมด</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table align-middle mb-0">
-                            <thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>Action</th><th>IP</th><th>Details</th></tr></thead>
+                            <thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>การทำรายการ</th><th>IP</th><th>รายละเอียด</th></tr></thead>
                             <tbody>
                             <?php foreach ($recentAuditLogs as $log): ?>
                                 <?php
@@ -167,15 +167,15 @@ require_once __DIR__ . '/../includes/header.php';
                                 <tr>
                                     <td class="text-nowrap"><?= e((string) $log['created_at']) ?></td>
                                     <td>
-                                        <div class="fw-semibold"><?= e((string) ($log['actor_name'] ?: 'system')) ?></div>
+                                        <div class="fw-semibold"><?= e((string) ($log['actor_name'] ?: 'ระบบ')) ?></div>
                                         <small class="small-muted"><?= e((string) ($log['actor_email'] ?: '-')) ?></small>
                                     </td>
-                                    <td><span class="badge text-bg-light text-dark"><?= e((string) $log['action']) ?></span></td>
+                                    <td><span class="badge text-bg-light text-dark"><?= e(auditActionLabel((string) $log['action'])) ?></span></td>
                                     <td><?= e((string) ($log['ip_address'] ?: '-')) ?></td>
                                     <td><small><?= e($details) ?></small></td>
                                 </tr>
                             <?php endforeach; ?>
-                            <?php if (!$recentAuditLogs): ?><tr><td colspan="5" class="text-muted">ยังไม่มี security event ล่าสุด</td></tr><?php endif; ?>
+                            <?php if (!$recentAuditLogs): ?><tr><td colspan="5" class="text-muted">ยังไม่มีเหตุการณ์ความปลอดภัยล่าสุด</td></tr><?php endif; ?>
                             </tbody>
                         </table>
                     </div>

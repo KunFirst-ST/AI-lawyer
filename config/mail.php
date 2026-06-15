@@ -17,7 +17,7 @@ return [
     'username' => $username,
     'password' => (string) envValue('MAIL_PASSWORD', ''),
     'from_address' => $fromAddress,
-    'from_name' => trim((string) envValue('MAIL_FROM_NAME', 'Thanai Khu Dee')),
+    'from_name' => trim((string) envValue('MAIL_FROM_NAME', 'ทนายคู่ดี')),
     'timeout' => max(3, (int) envValue('MAIL_TIMEOUT', 10)),
     'send_immediately' => envBool('MAIL_SEND_IMMEDIATELY', true),
     'notify_types' => $notifyTypes,

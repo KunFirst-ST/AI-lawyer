@@ -16,7 +16,7 @@ require_once __DIR__ . '/../includes/header.php';
 <h1 class="h3 fw-bold mb-3">รายงานภาพรวม</h1>
 <div class="row g-3">
 <div class="col-md-6"><div class="app-card p-3"><h2 class="h6 fw-bold">เคสตามหมวดกฎหมาย</h2><?php foreach ($byCategory as $row): ?><div class="d-flex justify-content-between border-bottom py-2"><span><?= e($row['name']) ?></span><strong><?= e($row['total']) ?></strong></div><?php endforeach; ?></div></div>
-<div class="col-md-6"><div class="app-card p-3"><h2 class="h6 fw-bold">เคสตามสถานะ</h2><?php foreach ($byStatus as $row): ?><div class="d-flex justify-content-between border-bottom py-2"><span><?= e($row['status']) ?></span><strong><?= e($row['total']) ?></strong></div><?php endforeach; ?></div></div>
+<div class="col-md-6"><div class="app-card p-3"><h2 class="h6 fw-bold">เคสตามสถานะ</h2><?php foreach ($byStatus as $row): ?><div class="d-flex justify-content-between border-bottom py-2"><span><?= e(caseStatusLabel($row['status'])) ?></span><strong><?= e($row['total']) ?></strong></div><?php endforeach; ?></div></div>
 </div>
 </div></div></div></section>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

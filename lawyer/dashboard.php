@@ -50,7 +50,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
                             <h1 class="h3 fw-bold mb-1">แดชบอร์ดทนาย</h1>
-                            <p class="text-muted mb-0">สถานะโปรไฟล์: <span class="badge text-bg-light text-dark"><?= e($lawyer['status']) ?></span> <?= (int) $lawyer['verified'] ? '<span class="badge text-bg-success">ยืนยันแล้ว</span>' : '' ?></p>
+                            <p class="text-muted mb-0">สถานะโปรไฟล์: <span class="badge text-bg-light text-dark"><?= e(lawyerStatusLabel($lawyer['status'])) ?></span> <?= (int) $lawyer['verified'] ? '<span class="badge text-bg-success">ยืนยันแล้ว</span>' : '' ?></p>
                         </div>
                         <form method="post">
                             <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">

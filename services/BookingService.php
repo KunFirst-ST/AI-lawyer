@@ -38,7 +38,7 @@ final class BookingService
             );
             $caseStmt->execute([$caseId, $userId]);
             if (!$caseStmt->fetchColumn()) {
-                throw new DomainException('เคสนี้ยังไม่พร้อมจอง กรุณาเลือกทนายจากผล Match ของเคส');
+                throw new DomainException('เคสนี้ยังไม่พร้อมจอง กรุณาเลือกทนายจากรายการแนะนำของเคส');
             }
 
             $lawyerStmt = $pdo->prepare(
@@ -62,7 +62,7 @@ final class BookingService
             );
             $matchStmt->execute([$caseId, $lawyerId]);
             if (!$matchStmt->fetchColumn()) {
-                throw new DomainException('กรุณาเลือกทนายจากผล Match ของเคสนี้');
+                throw new DomainException('กรุณาเลือกทนายจากรายการแนะนำของเคสนี้');
             }
 
             $existingStmt = $pdo->prepare(
@@ -72,7 +72,7 @@ final class BookingService
             );
             $existingStmt->execute([$caseId, $userId]);
             if ((int) $existingStmt->fetchColumn() > 0) {
-                throw new DomainException('เคสนี้มี Booking อยู่แล้ว');
+                throw new DomainException('เคสนี้มีคำขอนัดหมายอยู่แล้ว');
             }
 
             $conflictStmt = $pdo->prepare(
@@ -126,18 +126,18 @@ final class BookingService
     private function notifyAfterCreate(int $bookingId, int $userId, int $lawyerId): void
     {
         $notify = new NotificationService();
-        $notify->create($userId, 'ส่งคำขอนัดหมายแล้ว', 'ระบบส่ง Booking #' . $bookingId . ' ให้ทนายแล้ว กรุณารอทนายตอบรับก่อนชำระเงิน', 'booking');
+        $notify->create($userId, 'ส่งคำขอนัดหมายแล้ว', 'ระบบส่งคำขอนัดหมาย #' . $bookingId . ' ให้ทนายแล้ว กรุณารอทนายตอบรับก่อนชำระเงิน', 'booking');
 
         $admins = db()->query('SELECT id FROM users WHERE role = "admin" AND status = "active"')->fetchAll();
         foreach ($admins as $admin) {
-            $notify->create((int) $admin['id'], 'มี Booking ใหม่', 'ผู้ใช้สร้าง Booking #' . $bookingId . ' และกำลังรอทนายตอบรับ', 'booking');
+            $notify->create((int) $admin['id'], 'มีคำขอนัดหมายใหม่', 'ผู้ใช้สร้างคำขอนัดหมาย #' . $bookingId . ' และกำลังรอทนายตอบรับ', 'booking');
         }
 
         $lawyerStmt = db()->prepare('SELECT user_id FROM lawyers WHERE id = ? LIMIT 1');
         $lawyerStmt->execute([$lawyerId]);
         $lawyerUserId = $lawyerStmt->fetchColumn();
         if ($lawyerUserId !== false) {
-            $notify->create((int) $lawyerUserId, 'มีคำขอ Booking ใหม่', 'ลูกความเลือกคุณสำหรับ Booking #' . $bookingId . ' กรุณาตรวจสอบและตอบรับนัดหมาย', 'booking');
+            $notify->create((int) $lawyerUserId, 'มีคำขอนัดหมายใหม่', 'ลูกความเลือกคุณสำหรับคำขอนัดหมาย #' . $bookingId . ' กรุณาตรวจสอบและตอบรับนัดหมาย', 'booking');
         }
     }
 }

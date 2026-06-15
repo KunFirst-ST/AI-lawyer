@@ -28,7 +28,7 @@ final class ConversationService
         $lawyerUserId = $current['role'] === 'lawyer' ? $currentUserId : $peerId;
         $lawyerId = $this->lawyerIdForUser($lawyerUserId);
         if (!$lawyerId || !$this->hasRelationship($userId, $lawyerId)) {
-            throw new DomainException('คุณยังไม่มีเคสหรือ Booking ที่เชื่อมกับคู่สนทนานี้');
+            throw new DomainException('คุณยังไม่มีเคสหรือนัดหมายที่เชื่อมกับคู่สนทนานี้');
         }
 
         if ($caseId !== null && !$this->caseBelongsToRelationship($caseId, $userId, $lawyerId)) {
@@ -36,7 +36,7 @@ final class ConversationService
         }
 
         if ($bookingId !== null && !$this->bookingBelongsToRelationship($bookingId, $userId, $lawyerId)) {
-            throw new DomainException('Booking นี้ไม่เชื่อมกับคู่สนทนาที่เลือก');
+            throw new DomainException('นัดหมายนี้ไม่เชื่อมกับคู่สนทนาที่เลือก');
         }
 
         return [

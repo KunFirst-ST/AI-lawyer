@@ -853,3 +853,183 @@ function levelLabel(?string $level): string
         'critical' => 'วิกฤต',
     ][$level ?? ''] ?? '-';
 }
+
+function caseStatusLabel(?string $status): string
+{
+    return [
+        'ai_consulting' => 'กำลังปรึกษา AI',
+        'waiting_match' => 'รอจับคู่ทนาย',
+        'matched' => 'พบทนายที่เหมาะสม',
+        'booked' => 'จองทนายแล้ว',
+        'in_progress' => 'อยู่ระหว่างให้คำปรึกษา',
+        'closed' => 'ปิดเคสแล้ว',
+        'pending' => 'รอดำเนินการ',
+        'confirmed' => 'ยืนยันแล้ว',
+        'cancelled' => 'ยกเลิก',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function matchStatusLabel(?string $status): string
+{
+    return [
+        'not_asked' => 'ยังไม่ได้ขอจับคู่',
+        'asked' => 'รอผู้ใช้ยืนยัน',
+        'requested_by_user' => 'ขอให้ระบบช่วยจับคู่',
+        'declined_by_user' => 'ยังไม่ต้องการทนาย',
+        'waiting_match' => 'กำลังค้นหาทนาย',
+        'matched' => 'มีทนายแนะนำแล้ว',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function consultationTypeLabel(?string $type): string
+{
+    return [
+        'chat' => 'แชตออนไลน์',
+        'phone' => 'โทรศัพท์',
+        'video' => 'วิดีโอคอล',
+        'onsite' => 'พบที่สำนักงาน',
+    ][$type ?? ''] ?? ($type ?: '-');
+}
+
+function lawyerStatusLabel(?string $status): string
+{
+    return [
+        'pending' => 'รอตรวจสอบ',
+        'approved' => 'อนุมัติแล้ว',
+        'rejected' => 'ไม่ผ่านการตรวจ',
+        'suspended' => 'ระงับชั่วคราว',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function accountRoleLabel(?string $role): string
+{
+    return [
+        'user' => 'ผู้ใช้',
+        'lawyer' => 'ทนาย',
+        'admin' => 'แอดมิน',
+    ][$role ?? ''] ?? ($role ?: '-');
+}
+
+function accountStatusLabel(?string $status): string
+{
+    return [
+        'active' => 'ใช้งานอยู่',
+        'inactive' => 'ปิดใช้งาน',
+        'banned' => 'ถูกระงับ',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function commissionStatusLabel(?string $status): string
+{
+    return [
+        'pending' => 'รอปิดรอบ',
+        'available' => 'พร้อมเบิก',
+        'paid' => 'จ่ายแล้ว',
+        'cancelled' => 'ยกเลิก',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function emailStatusLabel(?string $status): string
+{
+    return [
+        'queued' => 'รอส่ง',
+        'sent' => 'ส่งแล้ว',
+        'failed' => 'ส่งไม่สำเร็จ',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function emailNotificationTypeLabel(?string $type): string
+{
+    return [
+        'account' => 'บัญชีสมาชิก',
+        'booking' => 'การจอง',
+        'payment' => 'การชำระเงิน',
+        'match' => 'การจับคู่ทนาย',
+        'lawyer_status' => 'สถานะทนาย',
+        'contact' => 'ข้อความติดต่อ',
+        'message' => 'ข้อความแชต',
+        'member_registered' => 'สมาชิกใหม่',
+        'lawyer_registered' => 'ทนายสมัครใหม่',
+        'booking_created' => 'มีการจองใหม่',
+        'booking_accepted' => 'ทนายรับงาน',
+        'booking_rejected' => 'ทนายปฏิเสธงาน',
+        'payment_uploaded' => 'มีสลิปใหม่',
+        'payment_approved' => 'อนุมัติชำระเงิน',
+        'payment_rejected' => 'สลิปไม่ผ่าน',
+        'contact_message' => 'ข้อความติดต่อ',
+        'test' => 'ทดสอบระบบ',
+    ][$type ?? ''] ?? ($type ?: '-');
+}
+
+function appEnvironmentLabel(?string $environment): string
+{
+    return [
+        'production' => 'ระบบจริง',
+        'staging' => 'ระบบทดสอบก่อนใช้งานจริง',
+        'local' => 'เครื่องพัฒนา',
+        'development' => 'เครื่องพัฒนา',
+    ][$environment ?? ''] ?? ($environment ?: '-');
+}
+
+function systemHealthStatusLabel(?string $status): string
+{
+    return [
+        'ok' => 'พร้อม',
+        'warn' => 'ควรตรวจสอบ',
+        'error' => 'ต้องแก้ไข',
+    ][$status ?? ''] ?? ($status ?: '-');
+}
+
+function systemMetricLabel(?string $metric): string
+{
+    return [
+        'disk_free' => 'พื้นที่ว่างบนเซิร์ฟเวอร์',
+        'disk_total' => 'พื้นที่ทั้งหมดบนเซิร์ฟเวอร์',
+        'uploads_size' => 'ขนาดไฟล์อัปโหลด',
+        'audit_events_60m' => 'เหตุการณ์ความปลอดภัย 60 นาที',
+        'failed_logins_60m' => 'เข้าสู่ระบบไม่สำเร็จ 60 นาที',
+        'failed_email_notifications' => 'อีเมลส่งไม่สำเร็จ',
+        'queued_email_notifications' => 'อีเมลรอส่ง',
+        'pending_lawyer_reviews' => 'ทนายรอตรวจสอบ',
+        'pending_payments' => 'สลิปรอตรวจ',
+        'requested_matches' => 'เคสขอจับคู่ทนาย',
+    ][$metric ?? ''] ?? str_replace('_', ' ', (string) $metric);
+}
+
+function auditActionLabel(?string $action): string
+{
+    return [
+        'auth.login_success' => 'เข้าสู่ระบบสำเร็จ',
+        'auth.login_failed' => 'เข้าสู่ระบบไม่สำเร็จ',
+        'auth.logout' => 'ออกจากระบบ',
+        'case.create' => 'สร้างเคส',
+        'case.match' => 'ระบบจับคู่ทนาย',
+        'case.request_lawyer' => 'ขอให้หาทนาย',
+        'case.decline_lawyer' => 'ยังไม่ต้องการทนาย',
+        'booking.create' => 'จองปรึกษา',
+        'booking.accept' => 'ทนายรับงาน',
+        'booking.reject' => 'ทนายปฏิเสธงาน',
+        'booking.complete' => 'ปิดงานปรึกษา',
+        'booking.cancel' => 'ยกเลิกการจอง',
+        'payment.upload_slip' => 'อัปโหลดสลิป',
+        'payment.n8n_dispatched' => 'ส่งสลิปให้ n8n',
+        'payment.n8n_manual_review' => 'n8n ขอให้ตรวจเพิ่ม',
+        'payment.approve' => 'อนุมัติสลิป',
+        'payment.reject' => 'ปฏิเสธสลิป',
+        'lawyer.approved' => 'อนุมัติทนาย',
+        'lawyer.rejected' => 'ปฏิเสธทนาย',
+        'lawyer.suspended' => 'ระงับทนาย',
+    ][$action ?? ''] ?? ($action ?: '-');
+}
+
+function auditEntityLabel(?string $entity): string
+{
+    return [
+        'auth' => 'บัญชี',
+        'case' => 'เคส',
+        'booking' => 'การจอง',
+        'payment' => 'การชำระเงิน',
+        'lawyer' => 'ทนาย',
+        'user' => 'ผู้ใช้',
+    ][$entity ?? ''] ?? ($entity ?: '-');
+}

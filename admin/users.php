@@ -26,17 +26,21 @@ require_once __DIR__ . '/../includes/header.php';
                 <h1 class="h3 fw-bold mb-3">ผู้ใช้</h1>
                 <div class="app-card p-3 table-responsive">
                     <table class="table">
-                        <thead><tr><th>ชื่อ</th><th>อีเมล</th><th>Role</th><th>Status</th><th>จัดการ</th></tr></thead>
+                        <thead><tr><th>ชื่อ</th><th>อีเมล</th><th>บทบาท</th><th>สถานะบัญชี</th><th>จัดการ</th></tr></thead>
                         <tbody>
                         <?php foreach ($users as $account): ?>
                             <tr>
-                                <td><?= e($account['name']) ?></td><td><?= e($account['email']) ?></td><td><?= e($account['role']) ?></td><td><?= e($account['status']) ?></td>
+                                <td><?= e($account['name']) ?></td><td><?= e($account['email']) ?></td><td><?= e(accountRoleLabel($account['role'])) ?></td><td><?= e(accountStatusLabel($account['status'])) ?></td>
                                 <td>
                                     <?php if ($account['role'] !== 'admin'): ?>
                                         <form method="post" class="d-flex gap-2">
                                             <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                             <input type="hidden" name="user_id" value="<?= e($account['id']) ?>">
-                                            <select class="form-select form-select-sm" name="status"><option value="active">active</option><option value="inactive">inactive</option><option value="banned">banned</option></select>
+                                            <select class="form-select form-select-sm" name="status">
+                                                <option value="active" <?= $account['status'] === 'active' ? 'selected' : '' ?>>ใช้งานอยู่</option>
+                                                <option value="inactive" <?= $account['status'] === 'inactive' ? 'selected' : '' ?>>ปิดใช้งาน</option>
+                                                <option value="banned" <?= $account['status'] === 'banned' ? 'selected' : '' ?>>ระงับบัญชี</option>
+                                            </select>
                                             <button class="btn btn-sm btn-outline-primary">บันทึก</button>
                                         </form>
                                     <?php endif; ?>

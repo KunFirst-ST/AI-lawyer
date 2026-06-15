@@ -21,7 +21,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="col-lg-9">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h1 class="h3 fw-bold mb-0">เคสของฉัน</h1>
-                    <a class="btn btn-primary" href="<?= e(url('/user/ai-chat.php')) ?>">สร้างเคสจาก AI Chat</a>
+                    <a class="btn btn-primary" href="<?= e(url('/user/ai-chat.php')) ?>">เริ่มปรึกษา AI</a>
                 </div>
                 <div class="app-card p-3">
                     <div class="table-responsive">
@@ -34,7 +34,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <td><?= e($case['category_name'] ?? '-') ?></td>
                                     <td><?= e(levelLabel($case['complexity_level'])) ?></td>
                                     <td><?= e(levelLabel($case['urgency'])) ?></td>
-                                    <td><span class="badge text-bg-light text-dark"><?= e($case['match_status']) ?></span></td>
+                                    <td><span class="badge text-bg-light text-dark"><?= e(matchStatusLabel($case['match_status'])) ?></span></td>
                                     <td><a class="btn btn-sm btn-outline-primary" href="<?= e(url('/user/case-detail.php?id=' . $case['id'])) ?>">รายละเอียด</a></td>
                                 </tr>
                             <?php endforeach; ?>

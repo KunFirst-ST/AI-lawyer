@@ -1,7 +1,11 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../services/PaymentService.php';
+require_once __DIR__ . '/../services/N8nPaymentVerificationService.php';
 requireRole('admin');
+
+$n8nVerifier = new N8nPaymentVerificationService();
+$n8nReady = $n8nVerifier->isConfigured();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
@@ -75,8 +79,12 @@ require_once __DIR__ . '/../includes/header.php';
                     <div>
                         <span class="page-kicker">ตรวจสอบการชำระเงิน</span>
                         <h1 class="h3 fw-bold mb-1">ตรวจสอบสลิป</h1>
-                        <p class="text-muted mb-0">อนุมัติเมื่อยอดและหลักฐานถูกต้อง ระบบจะยืนยันนัดหมายและสร้างคอมมิชชันทันที</p>
+                        <p class="text-muted mb-0">รองรับทั้งการตรวจโดยแอดมินและการตรวจอัตโนมัติผ่าน n8n เมื่อ workflow ส่งผลกลับมา</p>
                     </div>
+                    <span class="legal-badge">
+                        <i class="bi bi-diagram-3"></i>
+                        <?= $n8nReady ? 'n8n ตรวจอัตโนมัติเปิดอยู่' : 'n8n ยังไม่เปิดใช้' ?>
+                    </span>
                 </div>
 
                 <div class="payment-admin-stats mb-3">
@@ -159,7 +167,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-                        <?php if (!$payments): ?><tr><td colspan="6" class="text-muted">ยังไม่มี payment</td></tr><?php endif; ?>
+                        <?php if (!$payments): ?><tr><td colspan="6" class="text-muted">ยังไม่มีรายการชำระเงิน</td></tr><?php endif; ?>
                         </tbody>
                     </table>
                 </div>

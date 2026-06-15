@@ -42,11 +42,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <tr>
                                 <td class="text-nowrap"><?= e($log['created_at']) ?></td>
                                 <td>
-                                    <div class="fw-semibold"><?= e($log['actor_name'] ?: 'system') ?></div>
+                                    <div class="fw-semibold"><?= e($log['actor_name'] ?: 'ระบบ') ?></div>
                                     <div class="small-muted"><?= e($log['actor_email'] ?: '-') ?></div>
                                 </td>
-                                <td><span class="badge text-bg-light text-dark"><?= e($log['action']) ?></span></td>
-                                <td><?= e($log['entity_type']) ?><?= $log['entity_id'] !== null ? ' #' . e((string) $log['entity_id']) : '' ?></td>
+                                <td><span class="badge text-bg-light text-dark"><?= e(auditActionLabel($log['action'])) ?></span></td>
+                                <td><?= e(auditEntityLabel($log['entity_type'])) ?><?= $log['entity_id'] !== null ? ' #' . e((string) $log['entity_id']) : '' ?></td>
                                 <td class="text-nowrap"><?= e($log['ip_address'] ?: '-') ?></td>
                                 <td><small><?= e($details) ?></small></td>
                             </tr>

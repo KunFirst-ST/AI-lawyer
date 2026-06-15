@@ -62,7 +62,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <h1 class="h3 fw-bold"><?= e($lawyer['name']) ?></h1>
                             <div class="small-muted"><?= e($lawyer['email']) ?> · <?= e($lawyer['phone']) ?></div>
                         </div>
-                        <span class="badge text-bg-light text-dark align-self-start"><?= e($lawyer['status']) ?></span>
+                        <span class="badge text-bg-light text-dark align-self-start"><?= e(lawyerStatusLabel($lawyer['status'])) ?></span>
                     </div>
                     <hr>
                     <div class="row g-3">

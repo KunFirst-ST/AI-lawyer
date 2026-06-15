@@ -40,7 +40,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <h1 class="h3 fw-bold"><?= e($case['title']) ?></h1>
                             <div class="small-muted"><?= e(formatDateThai($case['created_at'])) ?></div>
                         </div>
-                        <span class="badge text-bg-light text-dark align-self-start"><?= e($case['match_status']) ?></span>
+                        <span class="badge text-bg-light text-dark align-self-start"><?= e(matchStatusLabel($case['match_status'])) ?></span>
                     </div>
                     <hr>
                     <div class="row g-3">
@@ -48,7 +48,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="col-md-4"><div class="small-muted">ความซับซ้อน</div><div class="fw-semibold"><?= e(levelLabel($case['complexity_level'])) ?></div></div>
                         <div class="col-md-4"><div class="small-muted">ความเร่งด่วน</div><div class="fw-semibold"><?= e(levelLabel($case['urgency'])) ?></div></div>
                         <div class="col-md-4"><div class="small-muted">จังหวัด</div><div class="fw-semibold"><?= e($case['province'] ?? '-') ?></div></div>
-                        <div class="col-md-4"><div class="small-muted">รูปแบบปรึกษา</div><div class="fw-semibold"><?= e($case['consultation_type']) ?></div></div>
+                        <div class="col-md-4"><div class="small-muted">รูปแบบปรึกษา</div><div class="fw-semibold"><?= e(consultationTypeLabel($case['consultation_type'])) ?></div></div>
                         <div class="col-md-4"><div class="small-muted">งบประมาณ</div><div class="fw-semibold"><?= $case['budget_max'] ? e(formatMoney($case['budget_max'])) : '-' ?></div></div>
                     </div>
                     <div class="mt-3">
@@ -63,7 +63,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="app-card p-3 h-100">
-                            <h2 class="h5 fw-bold">ประวัติ AI Chat</h2>
+                            <h2 class="h5 fw-bold">ประวัติการปรึกษา AI</h2>
                             <?php foreach ($chats as $chat): ?>
                                 <div class="border-bottom py-2">
                                     <div class="fw-semibold"><?= e(mb_substr($chat['user_message'], 0, 120)) ?></div>
@@ -84,7 +84,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
                 <div class="app-card p-3 mt-3">
-                    <h2 class="h5 fw-bold mb-3">Timeline เคส</h2>
+                    <h2 class="h5 fw-bold mb-3">ไทม์ไลน์เคส</h2>
                     <div class="case-timeline">
                         <?php foreach ($timeline as $event): ?>
                             <div class="case-timeline-item">
@@ -95,7 +95,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </div>
                             </div>
                         <?php endforeach; ?>
-                        <?php if (!$timeline): ?><div class="text-muted">ยังไม่มีเหตุการณ์ใน timeline</div><?php endif; ?>
+                        <?php if (!$timeline): ?><div class="text-muted">ยังไม่มีเหตุการณ์ในไทม์ไลน์</div><?php endif; ?>
                     </div>
                 </div>
             </div>

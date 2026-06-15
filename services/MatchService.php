@@ -14,7 +14,7 @@ final class MatchService
             throw new RuntimeException('ไม่พบเคส');
         }
         if ((int) $case['user_wants_lawyer'] !== 1) {
-            throw new RuntimeException('ยังไม่ได้รับความยินยอมให้ Match ทนาย');
+            throw new RuntimeException('ยังไม่ได้รับความยินยอมให้ระบบค้นหาทนาย');
         }
 
         $caseCategories = $this->caseCategories($caseId);
@@ -193,7 +193,7 @@ final class MatchService
     private function notifyMatches(array $case, array $matches): void
     {
         $notify = new NotificationService();
-        $notify->create((int) $case['user_id'], 'พบทนายที่เหมาะกับเคสแล้ว', 'ระบบ Match ทนายให้เคสของคุณแล้ว กรุณาตรวจสอบรายชื่อและเลือกทนายที่ต้องการปรึกษา', 'match');
+        $notify->create((int) $case['user_id'], 'พบทนายที่เหมาะกับเคสแล้ว', 'ระบบค้นหาทนายที่เหมาะกับเคสของคุณแล้ว กรุณาตรวจสอบรายชื่อและเลือกทนายที่ต้องการปรึกษา', 'match');
 
         $stmt = db()->prepare('SELECT user_id FROM lawyers WHERE id = ? LIMIT 1');
         foreach ($matches as $match) {

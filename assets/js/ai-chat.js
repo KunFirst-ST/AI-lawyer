@@ -375,7 +375,7 @@ function renderConsentDetails(caseId, questions) {
                     <input class="form-control" type="number" name="budget_max" min="0" step="100" required>
                 </div>
                 <div class="col-12">
-                    <button class="btn btn-primary" type="submit">เริ่ม Match ทนาย</button>
+                    <button class="btn btn-primary" type="submit">เริ่มค้นหาทนาย</button>
                 </div>
             </form>
         </div>
@@ -396,7 +396,7 @@ function renderMatches(matches) {
                     <div class="flex-grow-1">
                         <h6 class="fw-bold mb-1">${escapeHtml(match.name)}</h6>
                         <div class="small-muted">${escapeHtml(match.province || '-')} · ${escapeHtml(match.consultation_fee)} บาท</div>
-                        <div class="mt-2"><span class="badge text-bg-primary">Match ${Math.round(match.match_score)} คะแนน</span> ${Number(match.verified) === 1 ? '<span class="badge text-bg-success">Verified</span>' : ''}</div>
+                        <div class="mt-2"><span class="badge text-bg-primary">ความเหมาะสม ${Math.round(match.match_score)} คะแนน</span> ${Number(match.verified) === 1 ? '<span class="badge text-bg-success">ยืนยันโปรไฟล์แล้ว</span>' : ''}</div>
                     </div>
                 </div>
                 <p class="small-muted mt-3 mb-3">${escapeHtml(match.match_reason)}</p>

@@ -28,7 +28,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td><div class="fw-semibold"><?= e($lawyer['name']) ?></div><div class="small-muted"><?= e($lawyer['email']) ?> · <?= e($lawyer['phone']) ?></div></td>
                                 <td><?= e($lawyer['province']) ?></td>
                                 <td><?= e($lawyer['license_number']) ?></td>
-                                <td><span class="badge text-bg-light text-dark"><?= e($lawyer['status']) ?></span></td>
+                                <td><span class="badge text-bg-light text-dark"><?= e(lawyerStatusLabel($lawyer['status'])) ?></span></td>
                                 <td><?= (int) $lawyer['verified'] ? 'ใช่' : 'ไม่' ?></td>
                                 <td><a class="btn btn-sm btn-outline-primary" href="<?= e(url('/admin/lawyer-verify.php?id=' . $lawyer['id'])) ?>">ตรวจสอบ</a></td>
                             </tr>

@@ -91,15 +91,15 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="admin-hero-panel">
                         <div class="admin-secure-ring"><i class="bi bi-lock-fill"></i></div>
                         <div class="small">ลงชื่อเข้าใช้ในฐานะ</div>
-                        <strong><?= e($adminUser['name'] ?? 'Administrator') ?></strong>
+                        <strong><?= e($adminUser['name'] ?? 'ผู้ดูแลระบบ') ?></strong>
                         <span><?= e($adminUser['email'] ?? '') ?></span>
-                        <em>Role: admin</em>
+                        <em>สิทธิ์ผู้ดูแลระบบ</em>
                     </div>
                 </div>
 
                 <div class="row g-3 mb-4">
                     <?php foreach ([
-                        ['label' => 'ผู้ใช้ทั้งหมด', 'value' => $stats['users'], 'hint' => 'active ' . $stats['active_users'], 'icon' => 'people', 'tone' => 'blue'],
+                        ['label' => 'ผู้ใช้ทั้งหมด', 'value' => $stats['users'], 'hint' => 'ใช้งานอยู่ ' . $stats['active_users'], 'icon' => 'people', 'tone' => 'blue'],
                         ['label' => 'ทนายทั้งหมด', 'value' => $stats['lawyers'], 'hint' => 'approved ' . $stats['approved_lawyers'], 'icon' => 'person-badge', 'tone' => 'green'],
                         ['label' => 'ทนายรอตรวจ', 'value' => $stats['pending_lawyers'], 'hint' => 'ต้องอนุมัติ', 'icon' => 'hourglass-split', 'tone' => 'amber'],
                         ['label' => 'เคสทั้งหมด', 'value' => $stats['cases'], 'hint' => 'ขอ match ' . $stats['requested_matches'], 'icon' => 'folder2-open', 'tone' => 'blue'],
@@ -138,7 +138,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <?php $percent = $maxCaseStatus > 0 ? ((int) $row['total'] / $maxCaseStatus) * 100 : 0; ?>
                                     <div>
                                         <div class="d-flex justify-content-between gap-2">
-                                            <span><?= e($row['status']) ?></span>
+                                            <span><?= e(caseStatusLabel($row['status'])) ?></span>
                                             <strong><?= e((string) $row['total']) ?></strong>
                                         </div>
                                         <div class="admin-progress"><span style="width: <?= e((string) $percent) ?>%"></span></div>
@@ -248,8 +248,8 @@ require_once __DIR__ . '/../includes/header.php';
                                     <tr>
                                         <td class="fw-semibold"><?= e($case['title']) ?></td>
                                         <td><?= e($case['user_name']) ?></td>
-                                        <td><?= e($case['match_status']) ?></td>
-                                        <td><?= e($case['status']) ?></td>
+                                        <td><?= e(matchStatusLabel($case['match_status'])) ?></td>
+                                        <td><?= e(caseStatusLabel($case['status'])) ?></td>
                                         <td><?= e($case['created_at']) ?></td>
                                     </tr>
                                 <?php endforeach; ?>

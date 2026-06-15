@@ -40,7 +40,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <th>ราคา</th>
                                 <th>การตอบรับ</th>
                                 <th>การชำระเงิน</th>
-                                <th>Status</th>
+                                <th>สถานะรายการ</th>
                             </tr>
                         </thead>
                         <tbody>

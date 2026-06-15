@@ -55,15 +55,15 @@ final class BookingWorkflowService
     {
         $this->ensureSchema();
         if (!in_array($action, ['accept', 'reject'], true)) {
-            throw new DomainException('คำสั่งตอบรับ Booking ไม่ถูกต้อง');
+            throw new DomainException('คำสั่งตอบรับนัดหมายไม่ถูกต้อง');
         }
 
         $booking = $this->forLawyer($lawyerUserId, $bookingId);
         if (!$booking || $booking['status'] !== 'pending' || $booking['lawyer_response_status'] !== 'pending') {
-            throw new DomainException('Booking นี้ไม่อยู่ในสถานะที่ตอบรับได้');
+            throw new DomainException('รายการนัดหมายนี้ไม่อยู่ในสถานะที่ตอบรับได้');
         }
         if (($booking['payment_status'] ?? '') === 'approved') {
-            throw new DomainException('Booking ที่ชำระเงินแล้วต้องให้แอดมินเป็นผู้ดำเนินการ');
+            throw new DomainException('รายการที่ชำระเงินแล้วต้องให้แอดมินเป็นผู้ดำเนินการ');
         }
 
         $pdo = db();
@@ -100,8 +100,8 @@ final class BookingWorkflowService
             (int) $booking['user_id'],
             $action === 'accept' ? 'ทนายตอบรับนัดหมายแล้ว' : 'ทนายไม่สะดวกรับนัดหมาย',
             $action === 'accept'
-                ? 'Booking #' . $bookingId . ' ได้รับการตอบรับแล้ว กรุณาชำระเงินเพื่อยืนยันนัดหมาย'
-                : 'Booking #' . $bookingId . ' ถูกปฏิเสธ' . ($note !== '' ? ': ' . $note : ' กรุณาเลือกทนายคนอื่นจากผล Match'),
+                ? 'คำขอนัดหมาย #' . $bookingId . ' ได้รับการตอบรับแล้ว กรุณาชำระเงินเพื่อยืนยันนัดหมาย'
+                : 'คำขอนัดหมาย #' . $bookingId . ' ถูกปฏิเสธ' . ($note !== '' ? ': ' . $note : ' กรุณาเลือกทนายคนอื่นจากรายการแนะนำ'),
             'booking'
         );
     }
@@ -111,7 +111,7 @@ final class BookingWorkflowService
         $this->ensureSchema();
         $booking = $this->forLawyer($lawyerUserId, $bookingId);
         if (!$booking || $booking['status'] !== 'confirmed') {
-            throw new DomainException('สามารถปิดงานได้เฉพาะ Booking ที่ยืนยันแล้วเท่านั้น');
+            throw new DomainException('สามารถปิดงานได้เฉพาะนัดหมายที่ยืนยันแล้วเท่านั้น');
         }
 
         $pdo = db();
@@ -131,7 +131,7 @@ final class BookingWorkflowService
         (new NotificationService())->create(
             (int) $booking['user_id'],
             'การปรึกษาเสร็จสิ้นแล้ว',
-            'Booking สำหรับเคส "' . ($booking['case_title'] ?: 'ไม่ระบุชื่อเคส') . '" ถูกปิดงานแล้ว คุณสามารถให้รีวิวทนายได้',
+            'การปรึกษาสำหรับเคส "' . ($booking['case_title'] ?: 'ไม่ระบุชื่อเคส') . '" ถูกปิดงานแล้ว คุณสามารถให้รีวิวทนายได้',
             'booking'
         );
     }
@@ -150,7 +150,7 @@ final class BookingWorkflowService
         $stmt->execute([$bookingId, $userId]);
         $booking = $stmt->fetch();
         if (!$booking || $booking['status'] !== 'pending' || ($booking['payment_status'] ?? '') === 'approved' || (!empty($booking['slip_image']) && ($booking['payment_status'] ?? '') !== 'rejected')) {
-            throw new DomainException('Booking นี้ไม่สามารถยกเลิกเองได้ กรุณาติดต่อผู้ดูแลระบบ');
+            throw new DomainException('นัดหมายนี้ไม่สามารถยกเลิกเองได้ กรุณาติดต่อผู้ดูแลระบบ');
         }
 
         $pdo = db();
@@ -168,7 +168,7 @@ final class BookingWorkflowService
             throw $exception;
         }
 
-        (new NotificationService())->create((int) $booking['lawyer_user_id'], 'Booking ถูกยกเลิก', 'ผู้ใช้ยกเลิก Booking #' . $bookingId, 'booking');
+        (new NotificationService())->create((int) $booking['lawyer_user_id'], 'นัดหมายถูกยกเลิก', 'ผู้ใช้ยกเลิกนัดหมาย #' . $bookingId, 'booking');
     }
 
     private function forLawyer(int $lawyerUserId, int $bookingId): ?array

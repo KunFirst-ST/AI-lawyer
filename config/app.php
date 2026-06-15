@@ -7,7 +7,7 @@ return [
     'base_url' => envValue('APP_URL', ''),
     'env' => envValue('APP_ENV', 'local'),
     'debug' => envBool('APP_DEBUG', false),
-    'show_demo_accounts' => envBool('SHOW_DEMO_ACCOUNTS', envValue('APP_ENV', 'local') !== 'production'),
+    'show_demo_accounts' => envBool('SHOW_DEMO_ACCOUNTS', false),
     'timezone' => 'Asia/Bangkok',
     'commission_percent' => 20,
     'registration_enabled' => envBool('REGISTRATION_ENABLED', true),
@@ -58,8 +58,8 @@ return [
     ],
     'bank' => [
         'account_name' => 'ทนายคู่ดี',
-        'account_number' => '000-0-00000-0',
-        'bank_name' => 'ธนาคารตัวอย่าง',
-        'promptpay_id' => '0999999999',
+        'account_number' => '',
+        'bank_name' => '',
+        'promptpay_id' => '',
     ],
 ];

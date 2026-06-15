@@ -107,9 +107,9 @@ final class EmailNotificationService
         $this->mailer->send(
             $email,
             $name,
-            'Thanai Khu Dee Gmail notification test',
-            '<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:24px"><h2 style="color:#0f766e">Thanai Khu Dee</h2><p>Gmail SMTP is configured correctly.</p><p>You can now receive important platform notifications by email.</p></div>',
-            "Thanai Khu Dee\n\nGmail SMTP is configured correctly.\nYou can now receive important platform notifications by email."
+            'ทดสอบแจ้งเตือนจากทนายคู่ดี',
+            '<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:24px"><h2 style="color:#0f766e">ทนายคู่ดี</h2><p>ระบบส่งอีเมลพร้อมใช้งานแล้ว</p><p>จากนี้คุณจะได้รับอีเมลแจ้งเตือนสำคัญของแพลตฟอร์มได้ตามปกติ</p></div>',
+            "ทนายคู่ดี\n\nระบบส่งอีเมลพร้อมใช้งานแล้ว\nจากนี้คุณจะได้รับอีเมลแจ้งเตือนสำคัญของแพลตฟอร์มได้ตามปกติ"
         );
     }
 
@@ -232,13 +232,13 @@ final class EmailNotificationService
         $notificationsUrl = url('/public/notifications.php');
         $safeUrl = htmlspecialchars($notificationsUrl, ENT_QUOTES, 'UTF-8');
         $html = '<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:24px;color:#102a43">'
-            . '<div style="font-size:13px;color:#0f766e;font-weight:700">THANAI KHU DEE</div>'
+            . '<div style="font-size:13px;color:#0f766e;font-weight:700">ทนายคู่ดี</div>'
             . '<h2 style="margin:12px 0">' . $safeTitle . '</h2>'
             . '<div style="line-height:1.7">' . $safeMessage . '</div>'
-            . '<p style="margin-top:24px"><a href="' . $safeUrl . '" style="display:inline-block;background:#0f766e;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px">Open notifications</a></p>'
-            . '<p style="font-size:12px;color:#64748b;margin-top:28px">This is an automated notification from Thanai Khu Dee.</p>'
+            . '<p style="margin-top:24px"><a href="' . $safeUrl . '" style="display:inline-block;background:#0f766e;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px">เปิดหน้าการแจ้งเตือน</a></p>'
+            . '<p style="font-size:12px;color:#64748b;margin-top:28px">อีเมลนี้ส่งโดยระบบแจ้งเตือนของทนายคู่ดี</p>'
             . '</div>';
-        $text = "Thanai Khu Dee\n\n" . $title . "\n\n" . $message . "\n\nOpen notifications: " . $notificationsUrl;
+        $text = "ทนายคู่ดี\n\n" . $title . "\n\n" . $message . "\n\nเปิดหน้าการแจ้งเตือน: " . $notificationsUrl;
         return [$html, $text];
     }
 }

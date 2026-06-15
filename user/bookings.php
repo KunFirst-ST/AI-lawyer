@@ -121,7 +121,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             <?= e(formatDateThai($booking['booking_date'])) ?>
                                             <?= e(substr((string) $booking['booking_time'], 0, 5)) ?>
                                             <span>·</span>
-                                            <?= e($booking['consultation_type']) ?>
+                                            <?= e(consultationTypeLabel($booking['consultation_type'])) ?>
                                         </p>
                                     </div>
                                     <div class="booking-price">

@@ -44,7 +44,7 @@ try {
     }
 
     if (setting('auto_match_after_consent', '1') !== '1') {
-        jsonResponse(true, 'ระบบรับคำขอ Match แล้ว แอดมินตั้งค่าให้รอตรวจสอบก่อนจับคู่', [
+        jsonResponse(true, 'ระบบรับคำขอค้นหาทนายแล้ว แอดมินตั้งค่าให้รอตรวจสอบก่อนจับคู่', [
             'case_id' => $caseId,
             'requires_more_info' => false,
             'matches' => [],

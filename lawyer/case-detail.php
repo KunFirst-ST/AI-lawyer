@@ -52,7 +52,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php if (!$documents): ?><div class="text-muted">ยังไม่มีเอกสาร</div><?php endif; ?>
                 </div>
                 <div class="app-card p-3 mt-3">
-                    <h2 class="h5 fw-bold mb-3">Timeline เคส</h2>
+                    <h2 class="h5 fw-bold mb-3">ไทม์ไลน์เคส</h2>
                     <div class="case-timeline">
                         <?php foreach ($timeline as $event): ?>
                             <div class="case-timeline-item">

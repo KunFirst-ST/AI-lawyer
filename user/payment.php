@@ -29,6 +29,9 @@ $bank = [
     'account_number' => setting('bank_account_number', $bankConfig['account_number']),
     'promptpay_id' => setting('promptpay_id', $bankConfig['promptpay_id']),
 ];
+$bankReady = trim((string) $bank['bank_name']) !== ''
+    && trim((string) $bank['account_name']) !== ''
+    && trim((string) $bank['account_number']) !== '';
 $paymentFlow = paymentWorkflowState($booking);
 $paymentLabel = paymentStatusLabel(
     $booking['payment_status'] ?? null,
@@ -85,21 +88,31 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="payment-bank-grid">
                         <div class="payment-bank-item">
                             <span>ธนาคาร</span>
-                            <strong><?= e($bank['bank_name']) ?></strong>
+                            <strong><?= e($bank['bank_name'] ?: 'รอแอดมินตั้งค่าบัญชีรับชำระ') ?></strong>
                         </div>
                         <div class="payment-bank-item">
                             <span>ชื่อบัญชี</span>
-                            <strong><?= e($bank['account_name']) ?></strong>
+                            <strong><?= e($bank['account_name'] ?: '-') ?></strong>
                         </div>
                         <div class="payment-bank-item">
                             <span>เลขบัญชี</span>
-                            <strong><?= e($bank['account_number']) ?></strong>
+                            <strong><?= e($bank['account_number'] ?: '-') ?></strong>
                         </div>
                         <div class="payment-bank-item">
                             <span>PromptPay</span>
-                            <strong><?= e($bank['promptpay_id']) ?></strong>
+                            <strong><?= e($bank['promptpay_id'] ?: '-') ?></strong>
                         </div>
                     </div>
+
+                    <?php if (!$bankReady): ?>
+                        <div class="payment-note is-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <div>
+                                <strong>ยังไม่พร้อมรับชำระเงิน</strong>
+                                <span>แอดมินยังไม่ได้ตั้งค่าบัญชีรับชำระ กรุณารอการยืนยันหรือสอบถามทีมงานก่อนโอนเงิน</span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
                     <?php if (!empty($booking['admin_note']) && ($booking['payment_status'] ?? '') === 'rejected'): ?>
                         <div class="payment-note is-danger">
@@ -108,7 +121,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($paymentFlow['can_upload']): ?>
+                    <?php if ($paymentFlow['can_upload'] && $bankReady): ?>
                         <form id="paymentForm" enctype="multipart/form-data" class="payment-upload-form">
                             <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                             <input type="hidden" name="booking_id" value="<?= e($booking['id']) ?>">

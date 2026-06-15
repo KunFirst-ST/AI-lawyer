@@ -265,7 +265,7 @@ final class SocialAuthService
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
         if (!$user) {
-            throw new RuntimeException('สร้างบัญชีจาก Social Login ไม่สำเร็จ');
+            throw new RuntimeException('สร้างบัญชีจาก Google Login ไม่สำเร็จ');
         }
 
         $this->linkProviderAccount($userId, $provider, $providerUserId, $email);
@@ -288,10 +288,10 @@ final class SocialAuthService
             return null;
         }
         if (($user['status'] ?? '') !== 'active') {
-            throw new InvalidArgumentException('This account is not active. Please contact the administrator.');
+            throw new InvalidArgumentException('บัญชีนี้ยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
         }
         if (($user['role'] ?? '') !== 'user') {
-            throw new InvalidArgumentException('This social account cannot sign in to the user portal.');
+            throw new InvalidArgumentException('บัญชี Google นี้ไม่สามารถเข้าสู่พอร์ทัลผู้ใช้ได้');
         }
 
         return $user;
@@ -303,7 +303,7 @@ final class SocialAuthService
         $existing->execute([$userId, $provider]);
         $existingProviderUserId = $existing->fetchColumn();
         if ($existingProviderUserId !== false && !hash_equals((string) $existingProviderUserId, $providerUserId)) {
-            throw new InvalidArgumentException('This account is already connected to another ' . self::PROVIDERS[$provider]['name'] . ' account.');
+            throw new InvalidArgumentException('บัญชีนี้เชื่อมกับบัญชี ' . self::PROVIDERS[$provider]['name'] . ' อื่นอยู่แล้ว');
         }
 
         if (db_driver() === 'sqlite') {
@@ -336,7 +336,7 @@ final class SocialAuthService
 
             $admins = db()->query('SELECT id FROM users WHERE role = "admin" AND status = "active"')->fetchAll();
             foreach ($admins as $admin) {
-                $notify->create((int) $admin['id'], 'มีสมาชิกใหม่จาก Social Login', $user['name'] . ' สมัครด้วย ' . $providerName . ' (' . $user['email'] . ')', 'account');
+                $notify->create((int) $admin['id'], 'มีสมาชิกใหม่จาก Google Login', $user['name'] . ' สมัครด้วย ' . $providerName . ' (' . $user['email'] . ')', 'account');
             }
         } catch (Throwable) {
             // Social login should not fail because notifications cannot be written.

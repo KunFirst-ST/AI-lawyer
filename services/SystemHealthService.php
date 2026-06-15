@@ -12,16 +12,17 @@ final class SystemHealthService
     {
         $this->includePrivateDetails = $includePrivateDetails;
         $checks = [];
-        $checks[] = $this->check('app', 'Application boot', 'required', true, 'Core PHP bootstrap is available.');
+        $checks[] = $this->check('app', 'เริ่มระบบแอปพลิเคชัน', 'required', true, 'ระบบ PHP หลักพร้อมทำงาน');
         $checks[] = $this->databaseCheck();
-        $checks[] = $this->writableCheck('uploads_writable', 'Uploads writable', dirname(__DIR__) . '/uploads', 'required');
-        $checks[] = $this->writableCheck('sessions_writable', 'Sessions writable', dirname(__DIR__) . '/storage/sessions', 'required');
-        $checks[] = $this->writableCheck('logs_writable', 'Logs writable', dirname(__DIR__) . '/storage/logs', 'required');
+        $checks[] = $this->writableCheck('uploads_writable', 'พื้นที่เก็บไฟล์อัปโหลด', dirname(__DIR__) . '/uploads', 'required');
+        $checks[] = $this->writableCheck('sessions_writable', 'พื้นที่เก็บเซสชันผู้ใช้', dirname(__DIR__) . '/storage/sessions', 'required');
+        $checks[] = $this->writableCheck('logs_writable', 'พื้นที่เก็บบันทึกระบบ', dirname(__DIR__) . '/storage/logs', 'required');
         $checks[] = $this->rateLimitStorageCheck();
         $checks[] = $this->debugCheck();
         $checks[] = $this->httpsCheck();
         $checks[] = $this->aiCheck();
         $checks[] = $this->mailCheck();
+        $checks[] = $this->n8nPaymentCheck();
         $checks[] = $this->googleLoginCheck();
         $checks[] = $this->turnCheck();
         $checks = array_merge($checks, $this->extensionChecks());
@@ -66,15 +67,15 @@ final class SystemHealthService
     {
         try {
             db()->query('SELECT 1');
-            return $this->check('database', 'Database connection', 'required', true, 'Database responds to SELECT 1.');
+            return $this->check('database', 'การเชื่อมต่อฐานข้อมูล', 'required', true, 'ฐานข้อมูลตอบสนองตามปกติ');
         } catch (Throwable $exception) {
-            return $this->check('database', 'Database connection', 'required', false, 'Database is not reachable.');
+            return $this->check('database', 'การเชื่อมต่อฐานข้อมูล', 'required', false, 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้');
         }
     }
 
     private function writableCheck(string $key, string $label, string $path, string $severity): array
     {
-        $message = $this->includePrivateDetails ? $path : ($label . ' check completed.');
+        $message = $this->includePrivateDetails ? $path : 'ตรวจสิทธิ์เขียนไฟล์เรียบร้อย';
         return $this->check($key, $label, $severity, is_dir($path) && is_writable($path), $message);
     }
 
@@ -85,8 +86,8 @@ final class SystemHealthService
             @mkdir($path, 0755, true);
         }
 
-        $message = $this->includePrivateDetails ? $path : 'Rate limit storage check completed.';
-        return $this->check('rate_limits_writable', 'Rate limit storage writable', 'required', is_dir($path) && is_writable($path), $message);
+        $message = $this->includePrivateDetails ? $path : 'ตรวจพื้นที่จำกัดการใช้งานเรียบร้อย';
+        return $this->check('rate_limits_writable', 'พื้นที่เก็บข้อมูลป้องกันการใช้งานถี่เกินไป', 'required', is_dir($path) && is_writable($path), $message);
     }
 
     private function debugCheck(): array
@@ -95,10 +96,10 @@ final class SystemHealthService
         $debug = (bool) app_config('debug', false);
         return [
             'key' => 'debug_mode',
-            'label' => 'Debug mode',
+            'label' => 'โหมดดีบัก',
             'severity' => $production ? 'required' : 'info',
             'status' => $production && $debug ? 'error' : 'ok',
-            'message' => $debug ? 'APP_DEBUG is enabled.' : 'APP_DEBUG is disabled.',
+            'message' => $debug ? 'เปิดโหมดแสดงข้อผิดพลาดอยู่ ควรปิดบนระบบจริง' : 'ปิดโหมดแสดงข้อผิดพลาดแล้ว',
         ];
     }
 
@@ -108,10 +109,10 @@ final class SystemHealthService
         $https = request_is_https();
         return [
             'key' => 'https',
-            'label' => 'HTTPS request',
+            'label' => 'การใช้งานผ่าน HTTPS',
             'severity' => $production ? 'required' : 'info',
             'status' => (!$production || $https) ? 'ok' : 'error',
-            'message' => $https ? 'Current request is HTTPS.' : 'Current request is not HTTPS.',
+            'message' => $https ? 'ผู้ใช้กำลังเข้าเว็บผ่าน HTTPS' : 'คำขอนี้ยังไม่ได้เข้าเว็บผ่าน HTTPS',
         ];
     }
 
@@ -121,10 +122,10 @@ final class SystemHealthService
         $configured = !empty($config['api_key']);
         return [
             'key' => 'ai_configured',
-            'label' => 'AI provider configured',
+            'label' => 'บริการ AI',
             'severity' => 'optional',
             'status' => $configured ? 'ok' : 'warn',
-            'message' => $configured ? 'OpenAI API key is configured.' : 'OpenAI API key is missing; rule-based fallback will answer.',
+            'message' => $configured ? 'ตั้งค่าบริการ AI แล้ว' : 'ยังไม่ได้ตั้งค่า AI ระบบจะใช้คำตอบสำรอง',
         ];
     }
 
@@ -140,10 +141,10 @@ final class SystemHealthService
 
         return [
             'key' => 'mail_configured',
-            'label' => 'Gmail notifications',
+            'label' => 'แจ้งเตือนผ่าน Gmail',
             'severity' => 'optional',
             'status' => $configured ? 'ok' : 'warn',
-            'message' => $configured ? 'SMTP notifications are ready.' : ($enabled ? 'SMTP is enabled but incomplete.' : 'SMTP notifications are disabled.'),
+            'message' => $configured ? 'ระบบส่งอีเมลพร้อมใช้งาน' : ($enabled ? 'เปิด SMTP แล้ว แต่ข้อมูลยังไม่ครบ' : 'ยังไม่ได้เปิดระบบส่งอีเมล'),
         ];
     }
 
@@ -153,10 +154,27 @@ final class SystemHealthService
         $configured = !empty($config['enabled']) && !empty($config['client_id']) && !empty($config['client_secret']);
         return [
             'key' => 'google_login_configured',
-            'label' => 'Google login',
+            'label' => 'เข้าสู่ระบบด้วย Google',
             'severity' => 'optional',
             'status' => $configured ? 'ok' : 'warn',
-            'message' => $configured ? 'Google OAuth is configured.' : 'Google OAuth is disabled or incomplete.',
+            'message' => $configured ? 'ตั้งค่า Google Login แล้ว' : 'ยังไม่ได้เปิดใช้ Google Login หรือข้อมูลยังไม่ครบ',
+        ];
+    }
+
+    private function n8nPaymentCheck(): array
+    {
+        $config = require __DIR__ . '/../config/n8n.php';
+        $configured = !empty($config['payment_verification_enabled'])
+            && !empty($config['payment_webhook_url'])
+            && !empty($config['payment_callback_secret'])
+            && function_exists('curl_init');
+
+        return [
+            'key' => 'n8n_payment_verification',
+            'label' => 'ตรวจสลิปอัตโนมัติผ่าน n8n',
+            'severity' => 'optional',
+            'status' => $configured ? 'ok' : 'warn',
+            'message' => $configured ? 'n8n พร้อมรับสลิปและส่งผลตรวจกลับ' : 'ยังไม่ได้เปิด n8n สำหรับตรวจสลิปอัตโนมัติ',
         ];
     }
 
@@ -166,10 +184,10 @@ final class SystemHealthService
         $configured = !empty($config['turn_url']) && !empty($config['turn_username']) && !empty($config['turn_credential']);
         return [
             'key' => 'turn_configured',
-            'label' => 'TURN relay for calls',
+            'label' => 'ตัวช่วยเชื่อมต่อการโทร',
             'severity' => 'optional',
             'status' => $configured ? 'ok' : 'warn',
-            'message' => $configured ? 'TURN relay is configured.' : 'TURN relay is missing; calls may fail across restrictive networks.',
+            'message' => $configured ? 'ตั้งค่าเซิร์ฟเวอร์ช่วยเชื่อมต่อการโทรแล้ว' : 'ยังไม่ได้ตั้งค่าเซิร์ฟเวอร์ช่วยเชื่อมต่อ การโทรบางเครือข่ายอาจใช้งานไม่ได้',
         ];
     }
 
@@ -184,10 +202,10 @@ final class SystemHealthService
         foreach (array_unique($extensions) as $extension) {
             $checks[] = [
                 'key' => 'php_ext_' . $extension,
-                'label' => 'PHP extension: ' . $extension,
+                'label' => 'ส่วนขยาย PHP: ' . $extension,
                 'severity' => in_array($extension, ['pdo', 'fileinfo'], true) ? 'required' : 'optional',
                 'status' => extension_loaded($extension) ? 'ok' : 'warn',
-                'message' => extension_loaded($extension) ? 'Loaded.' : 'Not loaded.',
+                'message' => extension_loaded($extension) ? 'พร้อมใช้งาน' : 'ยังไม่พร้อมใช้งาน',
             ];
         }
 

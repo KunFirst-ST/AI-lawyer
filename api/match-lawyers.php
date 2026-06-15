@@ -18,20 +18,20 @@ try {
         jsonResponse(false, 'ไม่พบเคสนี้', [], [], 404);
     }
     if ((int) $case['user_wants_lawyer'] !== 1) {
-        jsonResponse(false, 'ระบบยังไม่สามารถ Match ได้ เพราะผู้ใช้ยังไม่ได้ยินยอม', [], ['consent' => 'required'], 403);
+        jsonResponse(false, 'ระบบยังไม่สามารถค้นหาทนายได้ เพราะผู้ใช้ยังไม่ได้ยินยอม', [], ['consent' => 'required'], 403);
     }
 
     $caseService->updateMatchDetails($caseId, (int) $user['id'], $_POST);
     $readiness = $caseService->readiness($caseId, (int) $user['id']);
     if (!$readiness['ready']) {
-        jsonResponse(false, 'ข้อมูลยังไม่ครบสำหรับ Match ทนาย', [
+        jsonResponse(false, 'ข้อมูลยังไม่ครบสำหรับค้นหาทนาย', [
             'missing' => $readiness['missing'],
             'questions' => $readiness['questions'],
         ], [], 422);
     }
 
     $matches = (new MatchService())->matchCase($caseId);
-    jsonResponse(true, 'Match ทนายสำเร็จ', ['matches' => $matches]);
+    jsonResponse(true, 'ค้นหาทนายสำเร็จ', ['matches' => $matches]);
 } catch (Throwable $exception) {
-    jsonResponse(false, 'เกิดข้อผิดพลาดในการ Match ทนาย', [], ['detail' => $exception->getMessage()], 500);
+    jsonResponse(false, 'เกิดข้อผิดพลาดในการค้นหาทนาย', [], ['detail' => $exception->getMessage()], 500);
 }

@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new DomainException('กรุณากรอกอีเมลสำหรับทดสอบให้ถูกต้อง');
             }
             $emailService->sendTest($testEmail, (string) ($user['name'] ?? ''));
-            flash('success', 'ส่งอีเมลทดสอบแล้ว กรุณาตรวจ Inbox และ Spam ของ Gmail');
+            flash('success', 'ส่งอีเมลทดสอบแล้ว กรุณาตรวจกล่องจดหมายเข้าและโฟลเดอร์สแปมของ Gmail');
         } elseif ($action === 'retry_pending') {
             $result = $emailService->retryPending(50);
             flash('success', 'ลองส่งรายการค้างใหม่แล้ว: สำเร็จ ' . $result['sent'] . ' รายการ, ยังล้มเหลว ' . $result['failed'] . ' รายการ');
@@ -60,9 +60,9 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
                         <div>
                             <h2 class="h5 fw-bold">การตั้งค่า SMTP</h2>
-                            <div class="small-muted">Host: <?= e($mailStatus['host']) ?>:<?= e((string) $mailStatus['port']) ?></div>
-                            <div class="small-muted">From: <?= e($mailStatus['from_address'] ?: '-') ?></div>
-                            <div class="small-muted">ประเภทแจ้งเตือน: <?= e(implode(', ', $mailStatus['notify_types'])) ?></div>
+                            <div class="small-muted">เซิร์ฟเวอร์ส่งอีเมล: <?= e($mailStatus['host']) ?>:<?= e((string) $mailStatus['port']) ?></div>
+                            <div class="small-muted">อีเมลผู้ส่ง: <?= e($mailStatus['from_address'] ?: '-') ?></div>
+                            <div class="small-muted">ประเภทแจ้งเตือน: <?= e(implode(', ', array_map('emailNotificationTypeLabel', $mailStatus['notify_types']))) ?></div>
                         </div>
                         <?php if ($summary['queued'] > 0 || $summary['failed'] > 0): ?>
                             <form method="post" class="align-self-start">
@@ -73,7 +73,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <?php if (!$mailStatus['configured']): ?>
                         <div class="alert alert-warning mt-3 mb-0">
-                            ตั้งค่า <code>MAIL_ENABLED=true</code>, <code>MAIL_USERNAME</code>, <code>MAIL_PASSWORD</code> และ <code>MAIL_FROM_ADDRESS</code> ในไฟล์ <code>.env</code> โดยใช้ Google App Password
+                            ตั้งค่าอีเมลผู้ส่งในไฟล์ <code>.env</code> ให้ครบก่อนเปิดใช้งานจริง โดยใช้ Google App Password สำหรับบัญชี Gmail
                         </div>
                     <?php endif; ?>
                 </div>
@@ -101,8 +101,8 @@ require_once __DIR__ . '/../includes/header.php';
                                         <div><?= e((string) $email['subject']) ?></div>
                                         <?php if (!empty($email['last_error'])): ?><small class="text-danger"><?= e((string) $email['last_error']) ?></small><?php endif; ?>
                                     </td>
-                                    <td><?= e((string) $email['notification_type']) ?></td>
-                                    <td><span class="badge <?= $email['status'] === 'sent' ? 'text-bg-success' : ($email['status'] === 'failed' ? 'text-bg-danger' : 'text-bg-warning') ?>"><?= e((string) $email['status']) ?></span></td>
+                                    <td><?= e(emailNotificationTypeLabel((string) $email['notification_type'])) ?></td>
+                                    <td><span class="badge <?= $email['status'] === 'sent' ? 'text-bg-success' : ($email['status'] === 'failed' ? 'text-bg-danger' : 'text-bg-warning') ?>"><?= e(emailStatusLabel((string) $email['status'])) ?></span></td>
                                     <td><?= e((string) $email['attempts']) ?></td>
                                 </tr>
                             <?php endforeach; ?>

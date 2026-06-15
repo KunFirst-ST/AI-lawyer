@@ -77,7 +77,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <span class="chat-avatar"><i class="bi bi-folder2-open"></i></span>
                                     <span class="min-w-0">
                                         <strong><?= e($case['title']) ?></strong>
-                                        <small><?= e($case['category_name'] ?? 'ยังไม่จัดหมวด') ?> · <?= e($case['status']) ?></small>
+                                        <small><?= e($case['category_name'] ?? 'ยังไม่จัดหมวด') ?> · <?= e(caseStatusLabel($case['status'])) ?></small>
                                     </span>
                                     <em><?= e(substr((string) $case['created_at'], 5, 5)) ?></em>
                                 </a>
